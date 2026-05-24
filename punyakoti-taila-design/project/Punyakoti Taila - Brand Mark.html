@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Punyakoti Taila — Brand mark</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  html, body { margin: 0; padding: 0; background: var(--cream-200); font-family: var(--font-body); color: var(--ink-900); }
+  .stage { max-width: 1280px; margin: 0 auto; padding: 80px 56px 120px; }
+  .stage-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 48px; padding-bottom: 32px; border-bottom: 1px solid var(--cream-400); }
+  .stage-head h1 { font-family: var(--font-display); font-weight: 400; font-size: 64px; line-height: 1; letter-spacing: -0.025em; color: var(--green-900); margin: 16px 0 0; }
+  .stage-head p { max-width: 480px; font-size: 15px; color: var(--ink-500); line-height: 1.65; margin: 0; }
+
+  .grid { display: grid; gap: 24px; margin-top: 40px; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: repeat(3, 1fr); }
+  .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+  .card { background: var(--cream-100); border-radius: var(--r-lg); box-shadow: var(--sh-sm); overflow: hidden; display: flex; flex-direction: column; }
+  .card-stage { flex: 1; display: grid; place-items: center; padding: 56px 32px; min-height: 280px; position: relative; }
+  .card-stage--cream-light { background: var(--cream-100); }
+  .card-stage--cream { background: var(--cream-200); }
+  .card-stage--green { background: #133320; }
+  .card-stage--mustard { background: #C58A1F; }
+  .card-stage--wood { background: var(--wood-900); }
+  .card-stage--sage { background: linear-gradient(180deg, #4a6b3a 0%, #2a3f1f 100%); }
+
+  .card-meta { padding: 18px 22px; border-top: 1px solid var(--cream-300); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; background: var(--cream-100); }
+  .card-meta-title { font-family: var(--font-display); font-size: 18px; color: var(--green-900); }
+  .card-meta-sub { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-500); }
+
+  .section-title { font-family: var(--font-display); font-weight: 400; font-size: 36px; color: var(--green-900); margin: 72px 0 0; letter-spacing: -0.02em; }
+  .eyebrow { font-family: var(--font-body); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--mustard-700); font-weight: 600; }
+  .footnote { font-size: 13px; color: var(--ink-500); margin-top: 8px; line-height: 1.6; max-width: 720px; }
+
+  svg.logo { display: block; }
+
+  .swatch-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 32px; }
+  .swatch { aspect-ratio: 1/1.1; border-radius: var(--r-md); display: flex; flex-direction: column; justify-content: flex-end; padding: 16px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; }
+  .swatch b { display: block; font-family: var(--font-display); font-size: 16px; margin-bottom: 6px; letter-spacing: 0; }
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOGO MARK — defined once, reused via <use>
+     ============================================================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <!-- Golden drop gradient -->
+    <linearGradient id="drop-gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#F4D58A"/>
+      <stop offset="35%"  stop-color="#E0AF52"/>
+      <stop offset="75%"  stop-color="#C58A1F"/>
+      <stop offset="100%" stop-color="#8B5F12"/>
+    </linearGradient>
+    <linearGradient id="leaf-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3F5E2E"/>
+      <stop offset="100%" stop-color="#1F3217"/>
+    </linearGradient>
+
+    <!-- THE MARK · drop + leaves + landscape + broken ring -->
+    <symbol id="pt-mark" viewBox="0 0 200 200">
+      <!-- broken hand-painted ring -->
+      <path d="M 100 18 C 145 18 182 55 182 100 C 182 145 145 182 100 182 C 60 182 28 153 20 116"
+            fill="none" stroke="var(--ring, #C58A1F)" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+      <path d="M 35 145 C 50 165 70 178 92 181" fill="none" stroke="var(--ring, #C58A1F)" stroke-width="1.4" stroke-linecap="round" opacity="0.55"/>
+      <!-- sun -->
+      <circle cx="148" cy="118" r="9" fill="var(--sun, #E0AF52)" opacity="0.85"/>
+      <!-- horizon -->
+      <path d="M 50 135 Q 80 122 110 130 T 170 128" fill="none" stroke="var(--field, #2E4222)" stroke-width="1.5" stroke-linecap="round" opacity="0.7"/>
+      <path d="M 35 145 Q 75 138 115 142 T 175 140" fill="none" stroke="var(--field, #2E4222)" stroke-width="1.5" stroke-linecap="round" opacity="0.45"/>
+      <!-- small tree (left side, behind drop) -->
+      <g>
+        <rect x="44" y="124" width="2.2" height="13" fill="var(--field, #2E4222)"/>
+        <path d="M 45 130 C 39 126 39 118 45 113 C 51 118 51 126 45 130 Z" fill="var(--field, #2E4222)"/>
+      </g>
+      <!-- OIL DROP -->
+      <ellipse cx="100" cy="148" rx="22" ry="3" fill="#000" opacity="0.18"/>
+      <path d="M 100 38 C 100 38 124 78 124 110 C 124 130 113 145 100 145 C 87 145 76 130 76 110 C 76 78 100 38 100 38 Z" fill="var(--drop, url(#drop-gold))"/>
+      <!-- specular highlight -->
+      <path d="M 88 75 C 84 90 85 105 92 116" fill="none" stroke="#F8E7B8" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+      <ellipse cx="92" cy="92" rx="4" ry="9" fill="#F8E7B8" opacity="0.4" transform="rotate(-12 92 92)"/>
+      <!-- LEFT leaf -->
+      <path d="M 92 145 C 65 152 42 152 32 138 C 38 130 56 124 78 130 C 88 133 92 138 92 145 Z" fill="var(--leaf, url(#leaf-grad))"/>
+      <path d="M 92 145 Q 70 145 38 138" fill="none" stroke="#1A2918" stroke-width="0.8" opacity="0.45"/>
+      <!-- RIGHT leaf -->
+      <path d="M 108 145 C 130 152 152 152 162 140 C 158 132 144 126 124 130 C 114 132 108 138 108 145 Z" fill="var(--leaf, url(#leaf-grad))"/>
+      <path d="M 108 145 Q 130 145 158 140" fill="none" stroke="#1A2918" stroke-width="0.8" opacity="0.45"/>
+      <!-- center notch -->
+      <path d="M 92 145 Q 100 150 108 145" fill="none" stroke="var(--leaf, #2E4222)" stroke-width="2"/>
+    </symbol>
+
+    <!-- WORDMARK · PUNYAKOTI / arrow / TAILA / tagline -->
+    <symbol id="pt-wordmark" viewBox="0 0 460 150">
+      <text x="230" y="56" text-anchor="middle" font-family="'Cormorant Garamond', 'Times New Roman', serif" font-size="58" font-weight="500" fill="var(--word, #0F1A0E)" letter-spacing="3">PUNYAKOTI</text>
+      <!-- arrow flourish divider -->
+      <g transform="translate(230,80)" stroke="var(--accent, #C58A1F)" fill="var(--accent, #C58A1F)" stroke-linecap="round">
+        <line x1="-78" y1="0" x2="-22" y2="0" stroke-width="1.2"/>
+        <path d="M -84 0 L -78 -3 L -78 3 Z" stroke="none"/>
+        <line x1="22" y1="0" x2="78" y2="0" stroke-width="1.2"/>
+        <path d="M 84 0 L 78 -3 L 78 3 Z" stroke="none"/>
+        <path d="M 0 -4 L 4 0 L 0 4 L -4 0 Z" stroke="none"/>
+      </g>
+      <text x="230" y="112" text-anchor="middle" font-family="'Cormorant Garamond', serif" font-size="34" font-weight="400" font-style="italic" fill="var(--accent, #C58A1F)" letter-spacing="8">TAILA</text>
+      <text x="230" y="138" text-anchor="middle" font-family="'Manrope', system-ui, sans-serif" font-size="9" font-weight="600" fill="var(--word, #0F1A0E)" letter-spacing="4">PURE TRADITION · PURE GOODNESS</text>
+    </symbol>
+
+    <!-- MONOGRAM · P with leaf flourish + T -->
+    <symbol id="pt-monogram" viewBox="0 0 240 240">
+      <text x="48" y="180" font-family="'Cormorant Garamond', serif" font-size="220" font-weight="500" fill="var(--mono, #0F1A0E)" letter-spacing="-6">P</text>
+      <text x="118" y="210" font-family="'Cormorant Garamond', serif" font-style="italic" font-size="130" font-weight="500" fill="var(--mono-accent, #C58A1F)" letter-spacing="-2">T</text>
+      <!-- tiny leaf flourish over T -->
+      <path d="M 170 110 Q 188 100 204 108" fill="none" stroke="var(--mono-accent, #C58A1F)" stroke-width="2.2" stroke-linecap="round"/>
+      <ellipse cx="206" cy="106" rx="6" ry="3.5" fill="var(--mono-accent, #C58A1F)" transform="rotate(-20 206 106)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="stage">
+
+  <div class="stage-head">
+    <div>
+      <div class="eyebrow">Brand identity</div>
+      <h1>A drop of oil, two<br/><span style="font-style: italic; color: var(--mustard-600);">cradling leaves.</span></h1>
+    </div>
+    <p>A golden drop held by two green leaves, encircled by a hand-painted ring suggesting a sunlit field. Pair it with the <i>PUNYAKOTI / TAILA</i> wordmark and the tagline <i>"Pure tradition. Pure goodness."</i> The mark is never re-drawn.</p>
+  </div>
+
+  <!-- PRIMARY -->
+  <h2 class="section-title">Primary lockup</h2>
+  <p class="footnote">The default — mark above wordmark, centred. Use on cream, deep green, or any quiet ground. Minimum width 200 px so the tagline stays legible.</p>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-stage card-stage--cream-light">
+        <svg class="logo" width="400" viewBox="0 0 460 480" aria-label="Punyakoti Taila">
+          <use href="#pt-mark" x="130" y="0" width="200" height="200"/>
+          <use href="#pt-wordmark" x="0" y="240" width="460" height="150"/>
+        </svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Primary · on cream</span>
+        <span class="card-meta-sub">PT-LOGO-01 · DEFAULT</span>
+      </div>
+    </div>
+    <div class="card" style="--word: #F5EFE0; --accent: #E0AF52; --ring: #E0AF52; --sun: #F4D58A; --field: #C58A1F; --leaf: #E0AF52;">
+      <div class="card-stage card-stage--green">
+        <svg class="logo" width="400" viewBox="0 0 460 480" aria-label="Punyakoti Taila">
+          <use href="#pt-mark" x="130" y="0" width="200" height="200"/>
+          <use href="#pt-wordmark" x="0" y="240" width="460" height="150"/>
+        </svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Inverse · on deep green</span>
+        <span class="card-meta-sub">PT-LOGO-02 · GOLD-ON-GREEN</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HORIZONTAL VARIATIONS -->
+  <h2 class="section-title">Horizontal &amp; compact</h2>
+  <p class="footnote">For headers, footers, and any time vertical space is tight. The mark sits left of the wordmark, baseline-aligned.</p>
+  <div class="grid grid-2">
+    <div class="card">
+      <div class="card-stage card-stage--cream-light">
+        <svg class="logo" width="540" viewBox="0 0 660 200" aria-label="Punyakoti Taila horizontal">
+          <use href="#pt-mark" x="0" y="0" width="180" height="180"/>
+          <g transform="translate(200,30)">
+            <use href="#pt-wordmark" width="460" height="150"/>
+          </g>
+        </svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Horizontal lockup</span>
+        <span class="card-meta-sub">PT-LOGO-03</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-stage card-stage--cream-light">
+        <svg class="logo" width="540" viewBox="0 0 660 110" aria-label="Punyakoti Taila compact">
+          <use href="#pt-mark" x="0" y="-15" width="120" height="120"/>
+          <g transform="translate(126,12)">
+            <text font-family="'Cormorant Garamond', serif" font-size="46" font-weight="500" fill="#0F1A0E" letter-spacing="2">PUNYAKOTI</text>
+            <text x="0" y="34" font-family="'Cormorant Garamond', serif" font-style="italic" font-size="22" font-weight="400" fill="#C58A1F" letter-spacing="5">TAILA <tspan font-family="'Manrope', sans-serif" font-style="normal" font-size="8" fill="#0F1A0E" letter-spacing="3" dx="6" dy="-2">PURE · GOODNESS</tspan></text>
+          </g>
+        </svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Header compact</span>
+        <span class="card-meta-sub">PT-LOGO-04 · HEADER</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BADGE / SEAL -->
+  <h2 class="section-title">Circular seal</h2>
+  <p class="footnote">The mark inside a circular badge of curved text. Use on bottle labels, packing tape, hang-tags, and any place that asks for a stamp-like seal.</p>
+  <div class="grid grid-3">
+    <div class="card">
+      <div class="card-stage card-stage--cream-light">
+        <svg class="logo" width="280" viewBox="0 0 320 320">
+          <circle cx="160" cy="160" r="148" fill="none" stroke="#0F1A0E" stroke-width="1.4"/>
+          <circle cx="160" cy="160" r="140" fill="none" stroke="#0F1A0E" stroke-width="0.6" opacity="0.4"/>
+          <defs>
+            <path id="seal-top" d="M 40 160 A 120 120 0 0 1 280 160"/>
+            <path id="seal-bot" d="M 40 165 A 120 120 0 0 0 280 165"/>
+          </defs>
+          <text font-family="'Cormorant Garamond', serif" font-size="20" font-weight="500" fill="#0F1A0E" letter-spacing="6"><textPath href="#seal-top" startOffset="50%" text-anchor="middle">PUNYAKOTI TAILA</textPath></text>
+          <text font-family="'Manrope', sans-serif" font-size="9" font-weight="600" fill="#0F1A0E" letter-spacing="3.5"><textPath href="#seal-bot" startOffset="50%" text-anchor="middle">PURE TRADITION · PURE GOODNESS</textPath></text>
+          <circle cx="30" cy="162" r="2" fill="#C58A1F"/>
+          <circle cx="290" cy="162" r="2" fill="#C58A1F"/>
+          <use href="#pt-mark" x="80" y="78" width="160" height="160"/>
+        </svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Seal · on cream</span>
+        <span class="card-meta-sub">PT-SEAL-01</span>
+      </div>
+    </div>
+    <div class="card" style="--word: #F5EFE0; --accent: #E0AF52; --ring: #E0AF52; --sun: #F4D58A; --field: #C58A1F; --leaf: #E0AF52;">
+      <div class="card-stage card-stage--green">
+        <svg class="logo" width="280" viewBox="0 0 320 320">
+          <circle cx="160" cy="160" r="148" fill="none" stroke="#E0AF52" stroke-width="1.4"/>
+          <circle cx="160" cy="160" r="140" fill="none" stroke="#E0AF52" stroke-width="0.6" opacity="0.45"/>
+          <defs>
+            <path id="seal-top-g" d="M 40 160 A 120 120 0 0 1 280 160"/>
+            <path id="seal-bot-g" d="M 40 165 A 120 120 0 0 0 280 165"/>
+          </defs>
+          <text font-family="'Cormorant Garamond', serif" font-size="20" font-weight="500" fill="#F5EFE0" letter-spacing="6"><textPath href="#seal-top-g" startOffset="50%" text-anchor="middle">PUNYAKOTI TAILA</textPath></text>
+          <text font-family="'Manrope', sans-serif" font-size="9" font-weight="600" fill="#E0AF52" letter-spacing="3.5"><textPath href="#seal-bot-g" startOffset="50%" text-anchor="middle">PURE TRADITION · PURE GOODNESS</textPath></text>
+          <circle cx="30" cy="162" r="2" fill="#E0AF52"/>
+          <circle cx="290" cy="162" r="2" fill="#E0AF52"/>
+          <use href="#pt-mark" x="80" y="78" width="160" height="160"/>
+        </svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Seal · on green</span>
+        <span class="card-meta-sub">PT-SEAL-02 · LABEL</span>
+      </div>
+    </div>
+    <div class="card" style="--word: #F5EFE0; --mono: #0F1A0E; --mono-accent: #F5EFE0;">
+      <div class="card-stage card-stage--mustard">
+        <svg class="logo" width="280" viewBox="0 0 320 320">
+          <circle cx="160" cy="160" r="148" fill="none" stroke="#0F1A0E" stroke-width="1.4"/>
+          <circle cx="160" cy="160" r="140" fill="none" stroke="#0F1A0E" stroke-width="0.6" opacity="0.4"/>
+          <defs>
+            <path id="seal-top-m" d="M 40 160 A 120 120 0 0 1 280 160"/>
+            <path id="seal-bot-m" d="M 40 165 A 120 120 0 0 0 280 165"/>
+          </defs>
+          <text font-family="'Cormorant Garamond', serif" font-size="20" font-weight="500" fill="#0F1A0E" letter-spacing="6"><textPath href="#seal-top-m" startOffset="50%" text-anchor="middle">PUNYAKOTI TAILA</textPath></text>
+          <text font-family="'Manrope', sans-serif" font-size="9" font-weight="600" fill="#0F1A0E" letter-spacing="3.5"><textPath href="#seal-bot-m" startOffset="50%" text-anchor="middle">PURE TRADITION · PURE GOODNESS</textPath></text>
+          <use href="#pt-monogram" x="60" y="60" width="200" height="200"/>
+        </svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Seal · monogram on mustard</span>
+        <span class="card-meta-sub">PT-SEAL-03</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP ICONS -->
+  <h2 class="section-title">App icon &amp; favicon</h2>
+  <p class="footnote">Solid backgrounds for app icons. At very small sizes the mark drops the landscape and ring to stay legible — only the drop and leaves remain.</p>
+  <div class="grid grid-4">
+    <div class="card">
+      <div class="card-stage card-stage--green">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 22px;">
+          <div style="background: #133320; width: 132px; height: 132px; border-radius: 28px; display: grid; place-items: center; box-shadow: 0 12px 28px rgba(0,0,0,0.3);">
+            <svg width="92" height="92" viewBox="0 0 200 200">
+              <path d="M 100 38 C 100 38 124 78 124 110 C 124 130 113 145 100 145 C 87 145 76 130 76 110 C 76 78 100 38 100 38 Z" fill="url(#drop-gold)"/>
+              <path d="M 92 145 C 65 152 42 152 32 138 C 38 130 56 124 78 130 C 88 133 92 138 92 145 Z" fill="#C58A1F"/>
+              <path d="M 108 145 C 130 152 152 152 162 140 C 158 132 144 126 124 130 C 114 132 108 138 108 145 Z" fill="#C58A1F"/>
+            </svg>
+          </div>
+          <div style="background: #133320; width: 58px; height: 58px; border-radius: 13px; display: grid; place-items: center;">
+            <svg width="42" height="42" viewBox="0 0 200 200">
+              <path d="M 100 38 C 100 38 124 78 124 110 C 124 130 113 145 100 145 C 87 145 76 130 76 110 C 76 78 100 38 100 38 Z" fill="url(#drop-gold)"/>
+              <path d="M 92 145 C 65 152 42 152 32 138 C 38 130 56 124 78 130 C 88 133 92 138 92 145 Z" fill="#C58A1F"/>
+              <path d="M 108 145 C 130 152 152 152 162 140 C 158 132 144 126 124 130 C 114 132 108 138 108 145 Z" fill="#C58A1F"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Icon · gold on green</span>
+        <span class="card-meta-sub">PT-ICON-01 · DEFAULT</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-stage card-stage--cream">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 22px;">
+          <div style="background: var(--cream-100); width: 132px; height: 132px; border-radius: 28px; display: grid; place-items: center; box-shadow: 0 8px 18px rgba(43,28,15,0.12);">
+            <svg width="92" height="92" viewBox="0 0 200 200">
+              <path d="M 100 38 C 100 38 124 78 124 110 C 124 130 113 145 100 145 C 87 145 76 130 76 110 C 76 78 100 38 100 38 Z" fill="url(#drop-gold)"/>
+              <path d="M 92 145 C 65 152 42 152 32 138 C 38 130 56 124 78 130 C 88 133 92 138 92 145 Z" fill="url(#leaf-grad)"/>
+              <path d="M 108 145 C 130 152 152 152 162 140 C 158 132 144 126 124 130 C 114 132 108 138 108 145 Z" fill="url(#leaf-grad)"/>
+            </svg>
+          </div>
+          <div style="background: var(--cream-100); width: 58px; height: 58px; border-radius: 13px; display: grid; place-items: center;">
+            <svg width="42" height="42" viewBox="0 0 200 200">
+              <path d="M 100 38 C 100 38 124 78 124 110 C 124 130 113 145 100 145 C 87 145 76 130 76 110 C 76 78 100 38 100 38 Z" fill="url(#drop-gold)"/>
+              <path d="M 92 145 C 65 152 42 152 32 138 C 38 130 56 124 78 130 C 88 133 92 138 92 145 Z" fill="url(#leaf-grad)"/>
+              <path d="M 108 145 C 130 152 152 152 162 140 C 158 132 144 126 124 130 C 114 132 108 138 108 145 Z" fill="url(#leaf-grad)"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Icon · colour on cream</span>
+        <span class="card-meta-sub">PT-ICON-02</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-stage card-stage--mustard">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 22px;">
+          <div style="background: #C58A1F; width: 132px; height: 132px; border-radius: 28px; display: grid; place-items: center; box-shadow: 0 12px 28px rgba(0,0,0,0.2);">
+            <svg width="92" height="92" viewBox="0 0 200 200">
+              <path d="M 100 38 C 100 38 124 78 124 110 C 124 130 113 145 100 145 C 87 145 76 130 76 110 C 76 78 100 38 100 38 Z" fill="#F5EFE0"/>
+              <path d="M 92 145 C 65 152 42 152 32 138 C 38 130 56 124 78 130 C 88 133 92 138 92 145 Z" fill="#0F1A0E" opacity="0.88"/>
+              <path d="M 108 145 C 130 152 152 152 162 140 C 158 132 144 126 124 130 C 114 132 108 138 108 145 Z" fill="#0F1A0E" opacity="0.88"/>
+            </svg>
+          </div>
+          <div style="background: #C58A1F; width: 58px; height: 58px; border-radius: 13px; display: grid; place-items: center;">
+            <svg width="42" height="42" viewBox="0 0 200 200">
+              <path d="M 100 38 C 100 38 124 78 124 110 C 124 130 113 145 100 145 C 87 145 76 130 76 110 C 76 78 100 38 100 38 Z" fill="#F5EFE0"/>
+              <path d="M 92 145 C 65 152 42 152 32 138 C 38 130 56 124 78 130 C 88 133 92 138 92 145 Z" fill="#0F1A0E" opacity="0.88"/>
+              <path d="M 108 145 C 130 152 152 152 162 140 C 158 132 144 126 124 130 C 114 132 108 138 108 145 Z" fill="#0F1A0E" opacity="0.88"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Icon · cream-on-mustard</span>
+        <span class="card-meta-sub">PT-ICON-03</span>
+      </div>
+    </div>
+    <div class="card" style="--ring: #E0AF52; --sun: #F4D58A; --field: #C58A1F; --leaf: #5A7B3E;">
+      <div class="card-stage card-stage--wood">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 22px;">
+          <div style="background: var(--wood-900); width: 132px; height: 132px; border-radius: 28px; display: grid; place-items: center; box-shadow: 0 12px 28px rgba(0,0,0,0.3);">
+            <svg width="106" height="106" viewBox="0 0 200 200">
+              <use href="#pt-mark"/>
+            </svg>
+          </div>
+          <div style="background: var(--wood-900); width: 58px; height: 58px; border-radius: 13px; display: grid; place-items: center;">
+            <svg width="48" height="48" viewBox="0 0 200 200">
+              <use href="#pt-mark"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Icon · full mark on wood</span>
+        <span class="card-meta-sub">PT-ICON-04</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MONOGRAM -->
+  <h2 class="section-title">Monogram</h2>
+  <p class="footnote">The typographic shortcut — when the icon won't fit (loading spinner, watermark, social avatar at small sizes).</p>
+  <div class="grid grid-3">
+    <div class="card">
+      <div class="card-stage card-stage--cream-light">
+        <svg width="220" height="220" viewBox="0 0 240 240"><use href="#pt-monogram"/></svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">P·T · cream</span>
+        <span class="card-meta-sub">PT-MONO-01</span>
+      </div>
+    </div>
+    <div class="card" style="--mono: #F5EFE0; --mono-accent: #E0AF52;">
+      <div class="card-stage card-stage--green">
+        <svg width="220" height="220" viewBox="0 0 240 240"><use href="#pt-monogram"/></svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">P·T · gold-on-green</span>
+        <span class="card-meta-sub">PT-MONO-02</span>
+      </div>
+    </div>
+    <div class="card" style="--mono: #0F1A0E; --mono-accent: #F5EFE0;">
+      <div class="card-stage card-stage--mustard">
+        <svg width="220" height="220" viewBox="0 0 240 240"><use href="#pt-monogram"/></svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">P·T · on mustard</span>
+        <span class="card-meta-sub">PT-MONO-03</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- HANGING SIGN -->
+  <h2 class="section-title">In context</h2>
+  <p class="footnote">A peek at the mark in real-world placement — the hanging shop sign and a bottle label band.</p>
+  <div class="grid grid-2">
+    <!-- Hanging sign -->
+    <div class="card">
+      <div class="card-stage card-stage--sage" style="padding: 40px 32px;">
+        <svg width="320" viewBox="0 0 320 360">
+          <!-- bracket -->
+          <rect x="155" y="0" width="10" height="14" fill="#3a2410"/>
+          <rect x="80" y="14" width="160" height="6" fill="#1a0f06"/>
+          <rect x="80" y="14" width="6" height="50" fill="#1a0f06"/>
+          <!-- chains -->
+          <line x1="120" y1="20" x2="120" y2="48" stroke="#0a0502" stroke-width="2"/>
+          <line x1="200" y1="20" x2="200" y2="48" stroke="#0a0502" stroke-width="2"/>
+          <!-- frame -->
+          <circle cx="160" cy="190" r="135" fill="#5a3719" stroke="#2a1709" stroke-width="6"/>
+          <circle cx="160" cy="190" r="126" fill="#F5EFE0"/>
+          <!-- mark inside -->
+          <use href="#pt-mark" x="78" y="100" width="164" height="164"/>
+          <text x="160" y="266" text-anchor="middle" font-family="'Cormorant Garamond', serif" font-size="22" font-weight="500" fill="#0F1A0E" letter-spacing="3">PUNYAKOTI</text>
+          <line x1="135" y1="276" x2="185" y2="276" stroke="#C58A1F" stroke-width="0.8"/>
+          <text x="160" y="290" text-anchor="middle" font-family="'Cormorant Garamond', serif" font-style="italic" font-size="14" fill="#C58A1F" letter-spacing="5">TAILA</text>
+          <text x="160" y="306" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="7" font-weight="600" fill="#0F1A0E" letter-spacing="2.5">PURE TRADITION · PURE GOODNESS</text>
+        </svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Shop sign · hanging</span>
+        <span class="card-meta-sub">PT-CTX-01</span>
+      </div>
+    </div>
+
+    <!-- Bottle -->
+    <div class="card">
+      <div class="card-stage" style="background: linear-gradient(180deg, #1d1108 0%, #382009 100%); align-items: end; padding-top: 32px; padding-bottom: 0;">
+        <svg width="220" viewBox="0 0 220 400">
+          <defs>
+            <linearGradient id="glass-x" x1="0" x2="1">
+              <stop offset="0%" stop-color="#1a0d05"/>
+              <stop offset="50%" stop-color="#7d4716"/>
+              <stop offset="100%" stop-color="#1a0d05"/>
+            </linearGradient>
+          </defs>
+          <ellipse cx="110" cy="392" rx="92" ry="8" fill="#000" opacity="0.5"/>
+          <path d="M65,148 L65,374 Q65,392 110,392 Q155,392 155,374 L155,148 Q155,116 135,106 L135,68 L85,68 L85,106 Q65,116 65,148 Z" fill="url(#glass-x)"/>
+          <rect x="89" y="46" width="42" height="26" rx="4" fill="#7a5230"/>
+          <rect x="89" y="46" width="42" height="6" fill="#5a3720"/>
+          <path d="M72,158 L72,358" stroke="#c89a4d" stroke-width="2" opacity="0.5"/>
+          <path d="M148,168 L148,348" stroke="#0a0502" stroke-width="4" opacity="0.6"/>
+          <!-- label -->
+          <rect x="58" y="178" width="104" height="142" rx="2" fill="#F5EFE0"/>
+          <!-- mark on label -->
+          <g transform="translate(80,188) scale(0.30)">
+            <use href="#pt-mark"/>
+          </g>
+          <!-- wordmark on label -->
+          <text x="110" y="266" text-anchor="middle" font-family="'Cormorant Garamond', serif" font-size="16" font-weight="500" fill="#0F1A0E" letter-spacing="1.5">PUNYAKOTI</text>
+          <line x1="92" y1="272" x2="128" y2="272" stroke="#C58A1F" stroke-width="0.4"/>
+          <text x="110" y="283" text-anchor="middle" font-family="'Cormorant Garamond', serif" font-style="italic" font-size="10" fill="#C58A1F" letter-spacing="3">TAILA</text>
+          <text x="110" y="298" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="4.5" font-weight="600" fill="#0F1A0E" letter-spacing="2">SESAME · COLD-PRESSED</text>
+          <text x="110" y="310" text-anchor="middle" font-family="'Manrope', sans-serif" font-size="4" fill="#6f4823" letter-spacing="2">500 ML · 16.9 FL OZ</text>
+          <!-- batch stamp -->
+          <text x="110" y="346" text-anchor="middle" font-family="ui-monospace, monospace" font-size="5.5" fill="#F5EFE0" opacity="0.8" letter-spacing="2.4">BATCH #047 · NOV 2025</text>
+          <text x="110" y="358" text-anchor="middle" font-family="ui-monospace, monospace" font-size="5" fill="#E0AF52" opacity="0.9" letter-spacing="2.4">ERODE · TAMIL NADU</text>
+        </svg>
+      </div>
+      <div class="card-meta">
+        <span class="card-meta-title">Bottle · 500 ml sesame</span>
+        <span class="card-meta-sub">PT-CTX-02 · PACKAGING</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- COLOURS -->
+  <h2 class="section-title">Colour pairings</h2>
+  <p class="footnote">The mark wants cream, deep green, gold, or wood. Avoid bright white and high-saturation backdrops — they fight the hand-painted feel of the ring.</p>
+  <div class="swatch-row">
+    <div class="swatch" style="background: #FBF7EC; color: #0F1A0E;"><b>Cream 200</b>DEFAULT</div>
+    <div class="swatch" style="background: #133320; color: #E0AF52;"><b>Forest</b>INVERSE</div>
+    <div class="swatch" style="background: #0F1A0E; color: #F5EFE0;"><b>Green 950</b>DARK</div>
+    <div class="swatch" style="background: #C58A1F; color: #F5EFE0;"><b>Mustard 500</b>ACCENT</div>
+    <div class="swatch" style="background: linear-gradient(135deg, #4d2f15 0%, #1f1208 100%); color: #E0AF52;"><b>Amber</b>BOTTLE</div>
+    <div class="swatch" style="background: #2B1810; color: #F5EFE0;"><b>Wood 900</b>FOOTER</div>
+  </div>
+
+  <!-- DO / DONT -->
+  <div style="margin-top: 56px; padding: 32px; background: var(--cream-100); border-radius: var(--r-lg); display: grid; grid-template-columns: 1fr 1fr; gap: 32px;">
+    <div>
+      <div class="eyebrow" style="color: var(--green-800);">DO</div>
+      <ul style="margin: 12px 0 0; padding-left: 20px; font-size: 14px; line-height: 1.8; color: var(--ink-700);">
+        <li>Keep clear space equal to the height of one "P" of PUNYAKOTI around the lockup.</li>
+        <li>Use the seal version on labels, hang-tags, packing tape, and any stamp-like context.</li>
+        <li>At icon sizes under 32px, drop the ring and landscape — only drop + leaves remain.</li>
+        <li>Pair with batch / region stamps in mono (Manrope or DM Mono, 0.18em tracking).</li>
+      </ul>
+    </div>
+    <div>
+      <div class="eyebrow" style="color: var(--terra-600);">DON'T</div>
+      <ul style="margin: 12px 0 0; padding-left: 20px; font-size: 14px; line-height: 1.8; color: var(--ink-700);">
+        <li>Don't re-draw the drop or leaves. Don't add stems, veins, or extra leaves.</li>
+        <li>Don't tilt or rotate the mark — keep it upright.</li>
+        <li>Don't ALL-CAPS the tagline larger than 12px; it loses its quietness.</li>
+        <li>Don't combine the mark with bright photographic backgrounds — use a solid panel beneath.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

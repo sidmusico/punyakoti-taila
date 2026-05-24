@@ -48,9 +48,8 @@ export const seed = async ({
     globals.map((global) =>
       payload.updateGlobal({
         slug: global,
-        data: {
-          navItems: [],
-        },
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: { navItems: [] } as any,
         depth: 0,
         context: {
           disableRevalidate: true,
@@ -220,57 +219,56 @@ export const seed = async ({
   await Promise.all([
     payload.updateGlobal({
       slug: 'header',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: {
-        navItems: [
-          {
-            link: {
-              type: 'custom',
-              label: 'Posts',
-              url: '/posts',
-            },
-          },
-          {
-            link: {
-              type: 'reference',
-              label: 'Contact',
-              reference: {
-                relationTo: 'pages',
-                value: contactPage.id,
-              },
-            },
-          },
+        announcementBar: {
+          enabled: true,
+          text: 'Free shipping on orders over ₹999 · Single-origin · Pressed weekly',
+          highlight: '₹999',
+        },
+        navLinks: [
+          { label: 'Oils',      href: '/shop' },
+          { label: 'Wellness',  href: '/shop?category=wellness' },
+          { label: 'Gift sets', href: '/shop?category=gift-sets' },
+          { label: 'Our story', href: '/about' },
+          { label: 'Journal',   href: '/journal' },
         ],
-      },
+        logoText: 'Punyakoti·',
+        logoTagline: 'T A I L A',
+      } as any,
     }),
     payload.updateGlobal({
       slug: 'footer',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: {
-        navItems: [
-          {
-            link: {
-              type: 'custom',
-              label: 'Admin',
-              url: '/admin',
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Source Code',
-              newTab: true,
-              url: 'https://github.com/payloadcms/payload/tree/3.x/templates/website',
-            },
-          },
-          {
-            link: {
-              type: 'custom',
-              label: 'Payload',
-              newTab: true,
-              url: 'https://payloadcms.com/',
-            },
-          },
+        tagline: 'Wood-pressed oils from Raibag, Karnataka. Pressed slowly, bottled with care.',
+        copyrightName: 'Punyakoti Taila',
+        freeShippingThreshold: 999,
+        shopLinks: [
+          { label: 'All Oils',     href: '/shop' },
+          { label: 'Cooking Oils', href: '/shop?category=cooking' },
+          { label: 'Wellness',     href: '/shop?category=wellness' },
+          { label: 'Gift Sets',    href: '/shop?category=gift-sets' },
         ],
-      },
+        companyLinks: [
+          { label: 'Our Story',      href: '/about' },
+          { label: 'Journal',        href: '/journal' },
+          { label: 'Sustainability', href: '/sustainability' },
+          { label: 'Wholesale',      href: '/wholesale' },
+        ],
+        contact: {
+          address: 'Near Mahaveer Bhavan, Ankali Road, Raibag – 591317, Karnataka',
+          phone: '+91 89047 38151',
+          email: 'hello@punyakoitaila.com',
+          supportLabel: 'Help & FAQs →',
+          supportHref: '/support',
+        },
+        legalLinks: [
+          { label: 'Privacy', href: '/privacy' },
+          { label: 'Terms',   href: '/terms' },
+          { label: 'Returns', href: '/returns' },
+        ],
+      } as any,
     }),
   ])
 

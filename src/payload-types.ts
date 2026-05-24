@@ -72,6 +72,10 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    products: Product;
+    orders: Order;
+    reviews: Review;
+    testimonials: Testimonial;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -94,6 +98,10 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    reviews: ReviewsSelect<false> | ReviewsSelect<true>;
+    testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -106,16 +114,30 @@ export interface Config {
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
   };
   db: {
-    defaultIDType: string;
+    defaultIDType: number;
   };
   fallbackLocale: null;
   globals: {
     header: Header;
     footer: Footer;
+    'site-settings': SiteSetting;
+    'homepage-settings': HomepageSetting;
+    'shop-listing': ShopListing;
+    'product-detail': ProductDetail;
+    cart: Cart;
+    account: Account;
+    'order-success': OrderSuccess;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    'homepage-settings': HomepageSettingsSelect<false> | HomepageSettingsSelect<true>;
+    'shop-listing': ShopListingSelect<false> | ShopListingSelect<true>;
+    'product-detail': ProductDetailSelect<false> | ProductDetailSelect<true>;
+    cart: CartSelect<false> | CartSelect<true>;
+    account: AccountSelect<false> | AccountSelect<true>;
+    'order-success': OrderSuccessSelect<false> | OrderSuccessSelect<true>;
   };
   locale: null;
   widgets: {
@@ -156,7 +178,7 @@ export interface UserAuthOperations {
  * via the `definition` "pages".
  */
 export interface Page {
-  id: string;
+  id: number;
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
@@ -183,11 +205,11 @@ export interface Page {
             reference?:
               | ({
                   relationTo: 'pages';
-                  value: string | Page;
+                  value: number | Page;
                 } | null)
               | ({
                   relationTo: 'posts';
-                  value: string | Post;
+                  value: number | Post;
                 } | null);
             url?: string | null;
             label: string;
@@ -199,15 +221,171 @@ export interface Page {
           id?: string | null;
         }[]
       | null;
-    media?: (string | null) | Media;
+    media?: (number | null) | Media;
   };
-  layout: (CallToActionBlock | ContentBlock | MediaBlock | ArchiveBlock | FormBlock)[];
+  layout: (
+    | {
+        eyebrow?: string | null;
+        headlineLine1?: string | null;
+        headlineLine2?: string | null;
+        /**
+         * Must match a word in line 2 exactly — shown in italic mustard gold
+         */
+        headlineItalicWord?: string | null;
+        body?: string | null;
+        primaryCTA?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        secondaryCTA?: {
+          label?: string | null;
+          href?: string | null;
+        };
+        reviewRating?: string | null;
+        reviewCount?: string | null;
+        backgroundStyle?: ('cream' | 'dark-green' | 'warm-white') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ptHeroSection';
+      }
+    | {
+        items?:
+          | {
+              icon: 'leaf' | 'drop' | 'truck' | 'shield' | 'star' | 'check';
+              label: string;
+              sub?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ptTrustStrip';
+      }
+    | {
+        eyebrow?: string | null;
+        headline?: string | null;
+        body?: string | null;
+        ctaLabel?: string | null;
+        ctaHref?: string | null;
+        /**
+         * Select up to 6 products to feature. Only published products appear on the site.
+         */
+        products?: (number | Product)[] | null;
+        columns?: ('2' | '3' | '4') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ptFeaturedProducts';
+      }
+    | {
+        eyebrow?: string | null;
+        headlineLine1?: string | null;
+        headlineLine2?: string | null;
+        body?: string | null;
+        stats?:
+          | {
+              value: string;
+              label: string;
+              id?: string | null;
+            }[]
+          | null;
+        ctaLabel?: string | null;
+        ctaHref?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ptProcessBanner';
+      }
+    | {
+        eyebrow?: string | null;
+        headline?: string | null;
+        /**
+         * Must be an exact substring of Headline above
+         */
+        headlineItalic?: string | null;
+        cards?:
+          | {
+              icon: 'leaf' | 'drop' | 'shield' | 'star' | 'check';
+              title: string;
+              body: string;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ptBenefitCards';
+      }
+    | {
+        eyebrow?: string | null;
+        headline?: string | null;
+        source?: ('featured' | 'manual') | null;
+        /**
+         * Only used when source is set to "Manual"
+         */
+        manualItems?:
+          | {
+              customerName: string;
+              customerLocation?: string | null;
+              rating?: number | null;
+              title?: string | null;
+              body: string;
+              id?: string | null;
+            }[]
+          | null;
+        maxItems?: number | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ptTestimonialsSection';
+      }
+    | {
+        headline?: string | null;
+        body?: string | null;
+        legalText?: string | null;
+        buttonLabel?: string | null;
+        style?: ('dark-green' | 'cream' | 'mustard') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ptNewsletterBand';
+      }
+    | {
+        eyebrow?: string | null;
+        headline?: string | null;
+        items?:
+          | {
+              question: string;
+              answer: string;
+              id?: string | null;
+            }[]
+          | null;
+        style?: ('light' | 'dark') | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ptFAQSection';
+      }
+    | {
+        icon?: ('drop' | 'leaf' | 'cart' | 'user' | 'package' | 'search' | 'shield') | null;
+        headline: string;
+        body?: string | null;
+        ctaLabel?: string | null;
+        ctaHref?: string | null;
+        /**
+         * Describe what this page section is for (admin only reference)
+         */
+        note?: string | null;
+        id?: string | null;
+        blockName?: string | null;
+        blockType: 'ptEmptyState';
+      }
+    | CallToActionBlock
+    | ContentBlock
+    | MediaBlock
+    | ArchiveBlock
+    | FormBlock
+  )[];
   meta?: {
     title?: string | null;
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
@@ -225,9 +403,9 @@ export interface Page {
  * via the `definition` "posts".
  */
 export interface Post {
-  id: string;
+  id: number;
   title: string;
-  heroImage?: (string | null) | Media;
+  heroImage?: (number | null) | Media;
   content: {
     root: {
       type: string;
@@ -243,18 +421,18 @@ export interface Post {
     };
     [k: string]: unknown;
   };
-  relatedPosts?: (string | Post)[] | null;
-  categories?: (string | Category)[] | null;
+  relatedPosts?: (number | Post)[] | null;
+  categories?: (number | Category)[] | null;
   meta?: {
     title?: string | null;
     /**
      * Maximum upload file size: 12MB. Recommended file size for images is <500KB.
      */
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
     description?: string | null;
   };
   publishedAt?: string | null;
-  authors?: (string | User)[] | null;
+  authors?: (number | User)[] | null;
   populatedAuthors?:
     | {
         id?: string | null;
@@ -275,7 +453,7 @@ export interface Post {
  * via the `definition` "media".
  */
 export interface Media {
-  id: string;
+  id: number;
   alt?: string | null;
   caption?: {
     root: {
@@ -292,7 +470,7 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
-  folder?: (string | null) | FolderInterface;
+  folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
   url?: string | null;
@@ -368,18 +546,18 @@ export interface Media {
  * via the `definition` "payload-folders".
  */
 export interface FolderInterface {
-  id: string;
+  id: number;
   name: string;
-  folder?: (string | null) | FolderInterface;
+  folder?: (number | null) | FolderInterface;
   documentsAndFolders?: {
     docs?: (
       | {
           relationTo?: 'payload-folders';
-          value: string | FolderInterface;
+          value: number | FolderInterface;
         }
       | {
           relationTo?: 'media';
-          value: string | Media;
+          value: number | Media;
         }
     )[];
     hasNextPage?: boolean;
@@ -394,17 +572,17 @@ export interface FolderInterface {
  * via the `definition` "categories".
  */
 export interface Category {
-  id: string;
+  id: number;
   title: string;
   /**
    * When enabled, the slug will auto-generate from the title field on save and autosave.
    */
   generateSlug?: boolean | null;
   slug: string;
-  parent?: (string | null) | Category;
+  parent?: (number | null) | Category;
   breadcrumbs?:
     | {
-        doc?: (string | null) | Category;
+        doc?: (number | null) | Category;
         url?: string | null;
         label?: string | null;
         id?: string | null;
@@ -418,7 +596,7 @@ export interface Category {
  * via the `definition` "users".
  */
 export interface User {
-  id: string;
+  id: number;
   name?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -438,6 +616,135 @@ export interface User {
     | null;
   password?: string | null;
   collection: 'users';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number;
+  name: string;
+  /**
+   * Controls which SVG bottle is shown in the UI
+   */
+  oilVariant?: ('sesame' | 'coconut' | 'groundnut' | 'mustard' | 'sunflower' | 'blackSes' | 'castor') | null;
+  /**
+   * e.g. "Erode · Tamil Nadu"
+   */
+  region?: string | null;
+  /**
+   * Optional badge shown on card (e.g. "Best seller", "Limited")
+   */
+  tag?: string | null;
+  categoryType?: ('cooking' | 'wellness' | 'gift-sets') | null;
+  /**
+   * URL-friendly identifier (auto-fill from name)
+   */
+  slug: string;
+  /**
+   * Short sentence shown on cards
+   */
+  tagline?: string | null;
+  /**
+   * Optional — overrides PDP global default for this product.
+   */
+  ratingDisplay?: string | null;
+  /**
+   * Optional — overrides PDP global default for this product.
+   */
+  reviewsDisplay?: string | null;
+  /**
+   * Optional — overrides PDP global star count for this product.
+   */
+  ratingStars?: number | null;
+  description?: string | null;
+  richDescription?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  category?: (number | null) | Category;
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  images?:
+    | {
+        image: number | Media;
+        alt?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  variants?:
+    | {
+        size: '250ml' | '500ml' | '1L' | '5L';
+        sku: string;
+        /**
+         * Price in INR (₹)
+         */
+        price: number;
+        /**
+         * Maximum retail price (for strike-through)
+         */
+        mrp?: number | null;
+        /**
+         * Subscribe & save price
+         */
+        subscribePrice?: number | null;
+        stock?: number | null;
+        isDefault?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  batch?: {
+    batchNumber?: string | null;
+    pressDate?: string | null;
+    bestBefore?: string | null;
+    /**
+     * e.g. < 40°C
+     */
+    pressTemperature?: string | null;
+    /**
+     * e.g. 32% (cold-press standard)
+     */
+    yield?: string | null;
+    /**
+     * e.g. Erode, Tamil Nadu
+     */
+    farmLocation?: string | null;
+    labReportUrl?: string | null;
+  };
+  benefits?:
+    | {
+        title: string;
+        description?: string | null;
+        icon?: ('leaf' | 'drop' | 'shield' | 'star' | 'heart') | null;
+        id?: string | null;
+      }[]
+    | null;
+  usageNote?: string | null;
+  meta?: {
+    title?: string | null;
+    description?: string | null;
+    image?: (number | null) | Media;
+  };
+  status?: ('draft' | 'published' | 'archived') | null;
+  featured?: boolean | null;
+  bestSeller?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -467,11 +774,11 @@ export interface CallToActionBlock {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -517,11 +824,11 @@ export interface ContentBlock {
           reference?:
             | ({
                 relationTo: 'pages';
-                value: string | Page;
+                value: number | Page;
               } | null)
             | ({
                 relationTo: 'posts';
-                value: string | Post;
+                value: number | Post;
               } | null);
           url?: string | null;
           label: string;
@@ -542,7 +849,7 @@ export interface ContentBlock {
  * via the `definition` "MediaBlock".
  */
 export interface MediaBlock {
-  media: string | Media;
+  media: number | Media;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaBlock';
@@ -569,12 +876,12 @@ export interface ArchiveBlock {
   } | null;
   populateBy?: ('collection' | 'selection') | null;
   relationTo?: 'posts' | null;
-  categories?: (string | Category)[] | null;
+  categories?: (number | Category)[] | null;
   limit?: number | null;
   selectedDocs?:
     | {
         relationTo: 'posts';
-        value: string | Post;
+        value: number | Post;
       }[]
     | null;
   id?: string | null;
@@ -586,7 +893,7 @@ export interface ArchiveBlock {
  * via the `definition` "FormBlock".
  */
 export interface FormBlock {
-  form: string | Form;
+  form: number | Form;
   enableIntro?: boolean | null;
   introContent?: {
     root: {
@@ -612,7 +919,7 @@ export interface FormBlock {
  * via the `definition` "forms".
  */
 export interface Form {
-  id: string;
+  id: number;
   title: string;
   fields?:
     | (
@@ -782,11 +1089,122 @@ export interface Form {
   createdAt: string;
 }
 /**
+ * Customer orders. Created programmatically via checkout API.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: number;
+  /**
+   * e.g. PT-20240601-0001
+   */
+  orderId: string;
+  razorpayOrderId?: string | null;
+  razorpayPaymentId?: string | null;
+  customer?: (number | null) | User;
+  customerName: string;
+  customerEmail: string;
+  customerPhone?: string | null;
+  shippingAddress: {
+    name: string;
+    line1: string;
+    line2?: string | null;
+    city: string;
+    state: string;
+    pincode: string;
+    phone?: string | null;
+  };
+  items: {
+    product: number | Product;
+    productName: string;
+    variantSize: string;
+    sku?: string | null;
+    quantity: number;
+    unitPrice: number;
+    lineTotal: number;
+    isSubscription?: boolean | null;
+    id?: string | null;
+  }[];
+  subtotal: number;
+  shippingFee?: number | null;
+  discount?: number | null;
+  couponCode?: string | null;
+  total: number;
+  paymentMethod?: ('upi' | 'card' | 'netbanking' | 'paylater' | 'cod') | null;
+  paymentStatus?: ('pending' | 'paid' | 'failed' | 'refunded') | null;
+  status?: ('pending' | 'confirmed' | 'packed' | 'shipped' | 'delivered' | 'cancelled' | 'returned') | null;
+  trackingNumber?: string | null;
+  /**
+   * e.g. Delhivery, Shiprocket
+   */
+  courierPartner?: string | null;
+  estimatedDelivery?: string | null;
+  deliveredAt?: string | null;
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews".
+ */
+export interface Review {
+  id: number;
+  product: number | Product;
+  customer?: (number | null) | User;
+  customerName: string;
+  /**
+   * e.g. Mumbai, Maharashtra
+   */
+  customerLocation?: string | null;
+  rating: number;
+  title: string;
+  body: string;
+  verifiedPurchase?: boolean | null;
+  status?: ('pending' | 'approved' | 'rejected') | null;
+  images?:
+    | {
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials".
+ */
+export interface Testimonial {
+  id: number;
+  customerName: string;
+  /**
+   * e.g. "Bangalore" or "Chennai, Tamil Nadu"
+   */
+  customerLocation?: string | null;
+  rating: number;
+  /**
+   * Short compelling title for the review card
+   */
+  title: string;
+  body: string;
+  product?: (number | null) | Product;
+  verifiedPurchase?: boolean | null;
+  /**
+   * Include in homepage testimonials carousel
+   */
+  featuredOnHome?: boolean | null;
+  status?: ('pending' | 'approved' | 'rejected') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
 export interface Redirect {
-  id: string;
+  id: number;
   /**
    * You will need to rebuild the website when changing this field.
    */
@@ -796,11 +1214,11 @@ export interface Redirect {
     reference?:
       | ({
           relationTo: 'pages';
-          value: string | Page;
+          value: number | Page;
         } | null)
       | ({
           relationTo: 'posts';
-          value: string | Post;
+          value: number | Post;
         } | null);
     url?: string | null;
   };
@@ -812,8 +1230,8 @@ export interface Redirect {
  * via the `definition` "form-submissions".
  */
 export interface FormSubmission {
-  id: string;
-  form: string | Form;
+  id: number;
+  form: number | Form;
   submissionData?:
     | {
         field: string;
@@ -831,18 +1249,18 @@ export interface FormSubmission {
  * via the `definition` "search".
  */
 export interface Search {
-  id: string;
+  id: number;
   title?: string | null;
   priority?: number | null;
   doc: {
     relationTo: 'posts';
-    value: string | Post;
+    value: number | Post;
   };
   slug?: string | null;
   meta?: {
     title?: string | null;
     description?: string | null;
-    image?: (string | null) | Media;
+    image?: (number | null) | Media;
   };
   categories?:
     | {
@@ -860,7 +1278,7 @@ export interface Search {
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
-  id: string;
+  id: number;
   key: string;
   data:
     | {
@@ -877,7 +1295,7 @@ export interface PayloadKv {
  * via the `definition` "payload-jobs".
  */
 export interface PayloadJob {
-  id: string;
+  id: number;
   /**
    * Input data provided to the job
    */
@@ -969,52 +1387,68 @@ export interface PayloadJob {
  * via the `definition` "payload-locked-documents".
  */
 export interface PayloadLockedDocument {
-  id: string;
+  id: number;
   document?:
     | ({
         relationTo: 'pages';
-        value: string | Page;
+        value: number | Page;
       } | null)
     | ({
         relationTo: 'posts';
-        value: string | Post;
+        value: number | Post;
       } | null)
     | ({
         relationTo: 'media';
-        value: string | Media;
+        value: number | Media;
       } | null)
     | ({
         relationTo: 'categories';
-        value: string | Category;
+        value: number | Category;
       } | null)
     | ({
         relationTo: 'users';
-        value: string | User;
+        value: number | User;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'reviews';
+        value: number | Review;
+      } | null)
+    | ({
+        relationTo: 'testimonials';
+        value: number | Testimonial;
       } | null)
     | ({
         relationTo: 'redirects';
-        value: string | Redirect;
+        value: number | Redirect;
       } | null)
     | ({
         relationTo: 'forms';
-        value: string | Form;
+        value: number | Form;
       } | null)
     | ({
         relationTo: 'form-submissions';
-        value: string | FormSubmission;
+        value: number | FormSubmission;
       } | null)
     | ({
         relationTo: 'search';
-        value: string | Search;
+        value: number | Search;
       } | null)
     | ({
         relationTo: 'payload-folders';
-        value: string | FolderInterface;
+        value: number | FolderInterface;
       } | null);
   globalSlug?: string | null;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   updatedAt: string;
   createdAt: string;
@@ -1024,10 +1458,10 @@ export interface PayloadLockedDocument {
  * via the `definition` "payload-preferences".
  */
 export interface PayloadPreference {
-  id: string;
+  id: number;
   user: {
     relationTo: 'users';
-    value: string | User;
+    value: number | User;
   };
   key?: string | null;
   value?:
@@ -1047,7 +1481,7 @@ export interface PayloadPreference {
  * via the `definition` "payload-migrations".
  */
 export interface PayloadMigration {
-  id: string;
+  id: number;
   name?: string | null;
   batch?: number | null;
   updatedAt: string;
@@ -1084,6 +1518,154 @@ export interface PagesSelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        ptHeroSection?:
+          | T
+          | {
+              eyebrow?: T;
+              headlineLine1?: T;
+              headlineLine2?: T;
+              headlineItalicWord?: T;
+              body?: T;
+              primaryCTA?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              secondaryCTA?:
+                | T
+                | {
+                    label?: T;
+                    href?: T;
+                  };
+              reviewRating?: T;
+              reviewCount?: T;
+              backgroundStyle?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptTrustStrip?:
+          | T
+          | {
+              items?:
+                | T
+                | {
+                    icon?: T;
+                    label?: T;
+                    sub?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        ptFeaturedProducts?:
+          | T
+          | {
+              eyebrow?: T;
+              headline?: T;
+              body?: T;
+              ctaLabel?: T;
+              ctaHref?: T;
+              products?: T;
+              columns?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptProcessBanner?:
+          | T
+          | {
+              eyebrow?: T;
+              headlineLine1?: T;
+              headlineLine2?: T;
+              body?: T;
+              stats?:
+                | T
+                | {
+                    value?: T;
+                    label?: T;
+                    id?: T;
+                  };
+              ctaLabel?: T;
+              ctaHref?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptBenefitCards?:
+          | T
+          | {
+              eyebrow?: T;
+              headline?: T;
+              headlineItalic?: T;
+              cards?:
+                | T
+                | {
+                    icon?: T;
+                    title?: T;
+                    body?: T;
+                    id?: T;
+                  };
+              id?: T;
+              blockName?: T;
+            };
+        ptTestimonialsSection?:
+          | T
+          | {
+              eyebrow?: T;
+              headline?: T;
+              source?: T;
+              manualItems?:
+                | T
+                | {
+                    customerName?: T;
+                    customerLocation?: T;
+                    rating?: T;
+                    title?: T;
+                    body?: T;
+                    id?: T;
+                  };
+              maxItems?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptNewsletterBand?:
+          | T
+          | {
+              headline?: T;
+              body?: T;
+              legalText?: T;
+              buttonLabel?: T;
+              style?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptFAQSection?:
+          | T
+          | {
+              eyebrow?: T;
+              headline?: T;
+              items?:
+                | T
+                | {
+                    question?: T;
+                    answer?: T;
+                    id?: T;
+                  };
+              style?: T;
+              id?: T;
+              blockName?: T;
+            };
+        ptEmptyState?:
+          | T
+          | {
+              icon?: T;
+              headline?: T;
+              body?: T;
+              ctaLabel?: T;
+              ctaHref?: T;
+              note?: T;
+              id?: T;
+              blockName?: T;
+            };
         cta?: T | CallToActionBlockSelect<T>;
         content?: T | ContentBlockSelect<T>;
         mediaBlock?: T | MediaBlockSelect<T>;
@@ -1355,6 +1937,174 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  name?: T;
+  oilVariant?: T;
+  region?: T;
+  tag?: T;
+  categoryType?: T;
+  slug?: T;
+  tagline?: T;
+  ratingDisplay?: T;
+  reviewsDisplay?: T;
+  ratingStars?: T;
+  description?: T;
+  richDescription?: T;
+  category?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  images?:
+    | T
+    | {
+        image?: T;
+        alt?: T;
+        id?: T;
+      };
+  variants?:
+    | T
+    | {
+        size?: T;
+        sku?: T;
+        price?: T;
+        mrp?: T;
+        subscribePrice?: T;
+        stock?: T;
+        isDefault?: T;
+        id?: T;
+      };
+  batch?:
+    | T
+    | {
+        batchNumber?: T;
+        pressDate?: T;
+        bestBefore?: T;
+        pressTemperature?: T;
+        yield?: T;
+        farmLocation?: T;
+        labReportUrl?: T;
+      };
+  benefits?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        icon?: T;
+        id?: T;
+      };
+  usageNote?: T;
+  meta?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+      };
+  status?: T;
+  featured?: T;
+  bestSeller?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  orderId?: T;
+  razorpayOrderId?: T;
+  razorpayPaymentId?: T;
+  customer?: T;
+  customerName?: T;
+  customerEmail?: T;
+  customerPhone?: T;
+  shippingAddress?:
+    | T
+    | {
+        name?: T;
+        line1?: T;
+        line2?: T;
+        city?: T;
+        state?: T;
+        pincode?: T;
+        phone?: T;
+      };
+  items?:
+    | T
+    | {
+        product?: T;
+        productName?: T;
+        variantSize?: T;
+        sku?: T;
+        quantity?: T;
+        unitPrice?: T;
+        lineTotal?: T;
+        isSubscription?: T;
+        id?: T;
+      };
+  subtotal?: T;
+  shippingFee?: T;
+  discount?: T;
+  couponCode?: T;
+  total?: T;
+  paymentMethod?: T;
+  paymentStatus?: T;
+  status?: T;
+  trackingNumber?: T;
+  courierPartner?: T;
+  estimatedDelivery?: T;
+  deliveredAt?: T;
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "reviews_select".
+ */
+export interface ReviewsSelect<T extends boolean = true> {
+  product?: T;
+  customer?: T;
+  customerName?: T;
+  customerLocation?: T;
+  rating?: T;
+  title?: T;
+  body?: T;
+  verifiedPurchase?: T;
+  status?: T;
+  images?:
+    | T
+    | {
+        image?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "testimonials_select".
+ */
+export interface TestimonialsSelect<T extends boolean = true> {
+  customerName?: T;
+  customerLocation?: T;
+  rating?: T;
+  title?: T;
+  body?: T;
+  product?: T;
+  verifiedPurchase?: T;
+  featuredOnHome?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1636,27 +2386,45 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  * via the `definition` "header".
  */
 export interface Header {
-  id: string;
-  navItems?:
+  id: number;
+  announcementBar?: {
+    enabled?: boolean | null;
+    /**
+     * Full bar text
+     */
+    text?: string | null;
+    /**
+     * This exact substring will be shown in mustard gold — must appear in the text above
+     */
+    highlight?: string | null;
+    /**
+     * If set, the bar becomes a clickable link
+     */
+    link?: string | null;
+  };
+  /**
+   * Order determines display order. Maximum 7 items recommended.
+   */
+  navLinks?:
     | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: string | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: string | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-        };
+        label: string;
+        /**
+         * e.g. /shop or /shop?category=wellness
+         */
+        href: string;
+        openInNewTab?: boolean | null;
         id?: string | null;
       }[]
     | null;
+  /**
+   * Display name in the header wordmark
+   */
+  logoText?: string | null;
+  logoTagline?: string | null;
+  /**
+   * If set, shows image instead of wordmark text
+   */
+  logoImage?: (number | null) | Media;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1665,24 +2433,121 @@ export interface Header {
  * via the `definition` "footer".
  */
 export interface Footer {
-  id: string;
-  navItems?:
+  id: number;
+  tagline?: string | null;
+  locations?: string | null;
+  contact?: {
+    email?: string | null;
+    phone?: string | null;
+    address?: string | null;
+  };
+  shopColumnHeading?: string | null;
+  shopLinks?:
     | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: string | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: string | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-        };
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  learnColumnHeading?: string | null;
+  learnLinks?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  helpColumnHeading?: string | null;
+  helpLinks?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  legalColumnHeading?: string | null;
+  legalLinks?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  legalEntityName?: string | null;
+  gstin?: string | null;
+  footerNote?: string | null;
+  /**
+   * e.g. "v2.4 · batch 047"
+   */
+  versionBadge?: string | null;
+  /**
+   * Used in cart drawer progress bar
+   */
+  freeShippingThreshold?: number | null;
+  social?: {
+    instagram?: string | null;
+    youtube?: string | null;
+    facebook?: string | null;
+    twitter?: string | null;
+    /**
+     * e.g. https://wa.me/918904738151
+     */
+    whatsapp?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings".
+ */
+export interface SiteSetting {
+  id: number;
+  announcementBar?: {
+    enabled?: boolean | null;
+    /**
+     * Main announcement text
+     */
+    text?: string | null;
+    /**
+     * Text to highlight in mustard colour (must match text above)
+     */
+    highlight?: string | null;
+  };
+  /**
+   * Used by cart drawer progress and checkout copy.
+   */
+  freeShippingThreshold?: number | null;
+  contact?: {
+    address?: string | null;
+    phone?: string | null;
+    email?: string | null;
+  };
+  social?: {
+    instagram?: string | null;
+    facebook?: string | null;
+    youtube?: string | null;
+    twitter?: string | null;
+  };
+  footerTagline?: string | null;
+  shopLinks?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  companyLinks?:
+    | {
+        label: string;
+        href: string;
+        id?: string | null;
+      }[]
+    | null;
+  navLinks?:
+    | {
+        label: string;
+        href: string;
         id?: string | null;
       }[]
     | null;
@@ -1691,23 +2556,421 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage-settings".
+ */
+export interface HomepageSetting {
+  id: number;
+  hero?: {
+    eyebrow?: string | null;
+    headlineLine1?: string | null;
+    headlineLine2?: string | null;
+    /**
+     * Must match text in line 2 exactly — this word is shown in italic mustard gold
+     */
+    headlineItalicWord?: string | null;
+    body?: string | null;
+    primaryCTA?: {
+      label?: string | null;
+      href?: string | null;
+    };
+    secondaryCTA?: {
+      label?: string | null;
+      href?: string | null;
+    };
+    reviewRating?: string | null;
+    reviewCount?: string | null;
+    featuredBatch?: string | null;
+    featuredYear?: string | null;
+    pressOfWeekName?: string | null;
+  };
+  trustStrip?:
+    | {
+        icon: 'leaf' | 'drop' | 'truck' | 'shield' | 'star' | 'check';
+        label: string;
+        sub?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  featuredSection?: {
+    eyebrow?: string | null;
+    headline?: string | null;
+    body?: string | null;
+    ctaLabel?: string | null;
+    ctaHref?: string | null;
+    /**
+     * Select up to 6 products to feature. Only published products appear on the site.
+     */
+    products?: (number | Product)[] | null;
+  };
+  processSection?: {
+    eyebrow?: string | null;
+    headlineLine1?: string | null;
+    headlineLine2?: string | null;
+    body?: string | null;
+    stats?:
+      | {
+          value: string;
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    ctaLabel?: string | null;
+    ctaHref?: string | null;
+  };
+  whyColdPressed?: {
+    eyebrow?: string | null;
+    headline?: string | null;
+    /**
+     * Must be an exact substring of Headline above
+     */
+    headlineItalic?: string | null;
+    cards?:
+      | {
+          icon: 'leaf' | 'drop' | 'shield' | 'star';
+          title: string;
+          body: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  newsletter?: {
+    headline?: string | null;
+    body?: string | null;
+    legalText?: string | null;
+  };
+  faq?:
+    | {
+        question: string;
+        answer: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shop-listing".
+ */
+export interface ShopListing {
+  id: number;
+  /**
+   * Use the tabs below to jump between SEO, headlines, filters, and media.
+   */
+  plp?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    eyebrow?: string | null;
+    headline?: string | null;
+    /**
+     * Use {count} and {oilWord} — oilWord becomes "oil" or "oils" automatically.
+     */
+    introWithCount?: string | null;
+    /**
+     * Shown when ?cat= (category slug) is set. Use {category} for the category title.
+     */
+    eyebrowWhenCategory?: string | null;
+    /**
+     * Headline when a category filter is active. Placeholders: {category}.
+     */
+    headlineWhenCategory?: string | null;
+    /**
+     * Intro when ?cat= is set. Placeholders: {count}, {oilWord}, {category} (category title).
+     */
+    introWhenCategory?: string | null;
+    filterCategoryLabel?: string | null;
+    filterSortLabel?: string | null;
+    categoryFilters?:
+      | {
+          label: string;
+          /**
+           * Query param value; empty string = All
+           */
+          value?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    sortOptions?:
+      | {
+          label: string;
+          value: string;
+          id?: string | null;
+        }[]
+      | null;
+    emptyTitle?: string | null;
+    emptyCtaLabel?: string | null;
+    emptyCtaHref?: string | null;
+    /**
+     * Optional — reserved for future PLP banner
+     */
+    decorativeImage?: (number | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-detail".
+ */
+export interface ProductDetail {
+  id: number;
+  /**
+   * Defaults for PDP UI; products can override ratings where configured.
+   */
+  pdp?: {
+    ratingDisplay?: string | null;
+    reviewsDisplay?: string | null;
+    /**
+     * Filled stars shown when the product has no per-product override.
+     */
+    starsCount?: number | null;
+    /**
+     * Maps each variant size value to the label shown in the shop.
+     */
+    variantSizeLabels?:
+      | {
+          sizeValue: '250ml' | '500ml' | '1L' | '5L';
+          label: string;
+          id?: string | null;
+        }[]
+      | null;
+    batchBadge?: string | null;
+    labelPressDate?: string | null;
+    labelTemperature?: string | null;
+    labelYield?: string | null;
+    labelOrigin?: string | null;
+    shippingBullets?:
+      | {
+          icon?: ('leaf' | 'drop' | 'truck' | 'shield' | 'package' | 'star') | null;
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    aboutHeading?: string | null;
+    howToUseHeading?: string | null;
+    benefitsHeading?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cart".
+ */
+export interface Cart {
+  id: number;
+  /**
+   * Slide-out basket (Zustand-driven UI).
+   */
+  cartDrawer?: {
+    title?: string | null;
+    emptyTitle?: string | null;
+    emptySubtitle?: string | null;
+    browseButtonLabel?: string | null;
+    /**
+     * {remaining} is replaced with formatted rupees
+     */
+    freeShippingProgress?: string | null;
+    freeShippingUnlocked?: string | null;
+    /**
+     * Uses free-shipping threshold from Site Settings
+     */
+    flatShippingAmount?: number | null;
+    subtotalLabel?: string | null;
+    shippingLabel?: string | null;
+    shippingFreeLabel?: string | null;
+    totalLabel?: string | null;
+    continueCheckoutLabel?: string | null;
+    continueShoppingLabel?: string | null;
+    removeLineLabel?: string | null;
+    subscribeSuffix?: string | null;
+    /**
+     * Badge on cart lines when the item is a subscription.
+     */
+    subscribePillLabel?: string | null;
+  };
+  /**
+   * Full cart route copy and layout hints.
+   */
+  cartPage?: {
+    metaTitle?: string | null;
+    metaDescription?: string | null;
+    listingEyebrow?: string | null;
+    breadcrumbHomeLabel?: string | null;
+    breadcrumbHomeHref?: string | null;
+    breadcrumbCurrentLabel?: string | null;
+    /**
+     * Fallback single headline if the split headline fields below are empty.
+     */
+    headline?: string | null;
+    /**
+     * Shown before the mustard italic phrase (e.g. “Three bottles, ”).
+     */
+    headlineLineBeforeItalic?: string | null;
+    /**
+     * Mustard italic display line (e.g. “well chosen.”).
+     */
+    headlineItalic?: string | null;
+    /**
+     * Optional text after the italic phrase.
+     */
+    headlineLineAfterItalic?: string | null;
+    subhead?: string | null;
+    heroImage?: (number | null) | Media;
+    checkoutHref?: string | null;
+    continueShoppingHref?: string | null;
+    orderSummaryEyebrow?: string | null;
+    /**
+     * {count} = item count · {bottleWord} = singular/plural below. If empty, falls back to the drawer “Subtotal” label.
+     */
+    subtotalLineTemplate?: string | null;
+    bottleWordSingular?: string | null;
+    bottleWordPlural?: string | null;
+    gstLabel?: string | null;
+    gstDisplayValue?: string | null;
+    promoCodePlaceholder?: string | null;
+    promoApplyLabel?: string | null;
+    securedPaymentLine?: string | null;
+    trustFootnote?: string | null;
+    /**
+     * Leave empty to hide “Save for later” (link-only for now).
+     */
+    saveForLaterLabel?: string | null;
+    saveForLaterHref?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "account".
+ */
+export interface Account {
+  id: number;
+  /**
+   * Account dashboard chrome.
+   */
+  account?: {
+    metaTitle?: string | null;
+    pageTitle?: string | null;
+    profileCardTitle?: string | null;
+    labelName?: string | null;
+    labelEmail?: string | null;
+    ordersCardTitle?: string | null;
+    viewAllOrdersLabel?: string | null;
+    emptyOrdersMessage?: string | null;
+    shopNowLabel?: string | null;
+    navItems?:
+      | {
+          href: string;
+          label: string;
+          icon?: ('user' | 'package' | 'heart' | 'refresh') | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "order-success".
+ */
+export interface OrderSuccess {
+  id: number;
+  /**
+   * Thank-you page and timeline copy.
+   */
+  orderSuccess?: {
+    metaTitle?: string | null;
+    /**
+     * Optional logo for the top bar; if empty the site falls back to /logo-wordmark.svg.
+     */
+    headerWordmark?: (number | null) | Media;
+    headerAsideLabel?: string | null;
+    /**
+     * Shown when ?id= is present. Use {id} for the order reference.
+     */
+    orderRefEyebrowTemplate?: string | null;
+    thankYouHeadline?: string | null;
+    /**
+     * When ?name= is set, headline becomes prefix + italic name + suffix.
+     */
+    thankYouLinePrefix?: string | null;
+    thankYouNameSuffix?: string | null;
+    thankYouBody?: string | null;
+    /**
+     * Secondary line with raw id
+     */
+    orderRefPrefix?: string | null;
+    /**
+     * Shown under primary actions.
+     */
+    confirmationNote?: string | null;
+    trackOrderLabel?: string | null;
+    trackOrderHref?: string | null;
+    downloadInvoiceLabel?: string | null;
+    downloadInvoiceHref?: string | null;
+    nextStepsTitle?: string | null;
+    timelineSteps?:
+      | {
+          label: string;
+          sub: string;
+          /**
+           * Small mono line under the title (dates, windows, etc.)
+           */
+          stamp?: string | null;
+          done?: boolean | null;
+          /**
+           * Current step highlight
+           */
+          active?: boolean | null;
+          id?: string | null;
+        }[]
+      | null;
+    upsellTitle?: string | null;
+    upsellBody?: string | null;
+    upsellCtaLabel?: string | null;
+    upsellCtaHref?: string | null;
+    continueShoppingLabel?: string | null;
+    viewOrdersLabel?: string | null;
+    /**
+     * Caption under hero image — left side
+     */
+    heroImageCaptionLeft?: string | null;
+    /**
+     * Caption under hero image — right side
+     */
+    heroImageCaptionRight?: string | null;
+    celebrationImage?: (number | null) | Media;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
-  navItems?:
+  announcementBar?:
     | T
     | {
-        link?:
-          | T
-          | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-              label?: T;
-            };
+        enabled?: T;
+        text?: T;
+        highlight?: T;
+        link?: T;
+      };
+  navLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        openInNewTab?: T;
         id?: T;
       };
+  logoText?: T;
+  logoTagline?: T;
+  logoImage?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -1717,19 +2980,428 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
-  navItems?:
+  tagline?: T;
+  locations?: T;
+  contact?:
     | T
     | {
-        link?:
+        email?: T;
+        phone?: T;
+        address?: T;
+      };
+  shopColumnHeading?: T;
+  shopLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  learnColumnHeading?: T;
+  learnLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  helpColumnHeading?: T;
+  helpLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  legalColumnHeading?: T;
+  legalLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  legalEntityName?: T;
+  gstin?: T;
+  footerNote?: T;
+  versionBadge?: T;
+  freeShippingThreshold?: T;
+  social?:
+    | T
+    | {
+        instagram?: T;
+        youtube?: T;
+        facebook?: T;
+        twitter?: T;
+        whatsapp?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-settings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  announcementBar?:
+    | T
+    | {
+        enabled?: T;
+        text?: T;
+        highlight?: T;
+      };
+  freeShippingThreshold?: T;
+  contact?:
+    | T
+    | {
+        address?: T;
+        phone?: T;
+        email?: T;
+      };
+  social?:
+    | T
+    | {
+        instagram?: T;
+        facebook?: T;
+        youtube?: T;
+        twitter?: T;
+      };
+  footerTagline?: T;
+  shopLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  companyLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  navLinks?:
+    | T
+    | {
+        label?: T;
+        href?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homepage-settings_select".
+ */
+export interface HomepageSettingsSelect<T extends boolean = true> {
+  hero?:
+    | T
+    | {
+        eyebrow?: T;
+        headlineLine1?: T;
+        headlineLine2?: T;
+        headlineItalicWord?: T;
+        body?: T;
+        primaryCTA?:
           | T
           | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
               label?: T;
+              href?: T;
             };
+        secondaryCTA?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        reviewRating?: T;
+        reviewCount?: T;
+        featuredBatch?: T;
+        featuredYear?: T;
+        pressOfWeekName?: T;
+      };
+  trustStrip?:
+    | T
+    | {
+        icon?: T;
+        label?: T;
+        sub?: T;
         id?: T;
+      };
+  featuredSection?:
+    | T
+    | {
+        eyebrow?: T;
+        headline?: T;
+        body?: T;
+        ctaLabel?: T;
+        ctaHref?: T;
+        products?: T;
+      };
+  processSection?:
+    | T
+    | {
+        eyebrow?: T;
+        headlineLine1?: T;
+        headlineLine2?: T;
+        body?: T;
+        stats?:
+          | T
+          | {
+              value?: T;
+              label?: T;
+              id?: T;
+            };
+        ctaLabel?: T;
+        ctaHref?: T;
+      };
+  whyColdPressed?:
+    | T
+    | {
+        eyebrow?: T;
+        headline?: T;
+        headlineItalic?: T;
+        cards?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+      };
+  newsletter?:
+    | T
+    | {
+        headline?: T;
+        body?: T;
+        legalText?: T;
+      };
+  faq?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shop-listing_select".
+ */
+export interface ShopListingSelect<T extends boolean = true> {
+  plp?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        eyebrow?: T;
+        headline?: T;
+        introWithCount?: T;
+        eyebrowWhenCategory?: T;
+        headlineWhenCategory?: T;
+        introWhenCategory?: T;
+        filterCategoryLabel?: T;
+        filterSortLabel?: T;
+        categoryFilters?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+            };
+        sortOptions?:
+          | T
+          | {
+              label?: T;
+              value?: T;
+              id?: T;
+            };
+        emptyTitle?: T;
+        emptyCtaLabel?: T;
+        emptyCtaHref?: T;
+        decorativeImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product-detail_select".
+ */
+export interface ProductDetailSelect<T extends boolean = true> {
+  pdp?:
+    | T
+    | {
+        ratingDisplay?: T;
+        reviewsDisplay?: T;
+        starsCount?: T;
+        variantSizeLabels?:
+          | T
+          | {
+              sizeValue?: T;
+              label?: T;
+              id?: T;
+            };
+        batchBadge?: T;
+        labelPressDate?: T;
+        labelTemperature?: T;
+        labelYield?: T;
+        labelOrigin?: T;
+        shippingBullets?:
+          | T
+          | {
+              icon?: T;
+              text?: T;
+              id?: T;
+            };
+        aboutHeading?: T;
+        howToUseHeading?: T;
+        benefitsHeading?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cart_select".
+ */
+export interface CartSelect<T extends boolean = true> {
+  cartDrawer?:
+    | T
+    | {
+        title?: T;
+        emptyTitle?: T;
+        emptySubtitle?: T;
+        browseButtonLabel?: T;
+        freeShippingProgress?: T;
+        freeShippingUnlocked?: T;
+        flatShippingAmount?: T;
+        subtotalLabel?: T;
+        shippingLabel?: T;
+        shippingFreeLabel?: T;
+        totalLabel?: T;
+        continueCheckoutLabel?: T;
+        continueShoppingLabel?: T;
+        removeLineLabel?: T;
+        subscribeSuffix?: T;
+        subscribePillLabel?: T;
+      };
+  cartPage?:
+    | T
+    | {
+        metaTitle?: T;
+        metaDescription?: T;
+        listingEyebrow?: T;
+        breadcrumbHomeLabel?: T;
+        breadcrumbHomeHref?: T;
+        breadcrumbCurrentLabel?: T;
+        headline?: T;
+        headlineLineBeforeItalic?: T;
+        headlineItalic?: T;
+        headlineLineAfterItalic?: T;
+        subhead?: T;
+        heroImage?: T;
+        checkoutHref?: T;
+        continueShoppingHref?: T;
+        orderSummaryEyebrow?: T;
+        subtotalLineTemplate?: T;
+        bottleWordSingular?: T;
+        bottleWordPlural?: T;
+        gstLabel?: T;
+        gstDisplayValue?: T;
+        promoCodePlaceholder?: T;
+        promoApplyLabel?: T;
+        securedPaymentLine?: T;
+        trustFootnote?: T;
+        saveForLaterLabel?: T;
+        saveForLaterHref?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "account_select".
+ */
+export interface AccountSelect<T extends boolean = true> {
+  account?:
+    | T
+    | {
+        metaTitle?: T;
+        pageTitle?: T;
+        profileCardTitle?: T;
+        labelName?: T;
+        labelEmail?: T;
+        ordersCardTitle?: T;
+        viewAllOrdersLabel?: T;
+        emptyOrdersMessage?: T;
+        shopNowLabel?: T;
+        navItems?:
+          | T
+          | {
+              href?: T;
+              label?: T;
+              icon?: T;
+              id?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "order-success_select".
+ */
+export interface OrderSuccessSelect<T extends boolean = true> {
+  orderSuccess?:
+    | T
+    | {
+        metaTitle?: T;
+        headerWordmark?: T;
+        headerAsideLabel?: T;
+        orderRefEyebrowTemplate?: T;
+        thankYouHeadline?: T;
+        thankYouLinePrefix?: T;
+        thankYouNameSuffix?: T;
+        thankYouBody?: T;
+        orderRefPrefix?: T;
+        confirmationNote?: T;
+        trackOrderLabel?: T;
+        trackOrderHref?: T;
+        downloadInvoiceLabel?: T;
+        downloadInvoiceHref?: T;
+        nextStepsTitle?: T;
+        timelineSteps?:
+          | T
+          | {
+              label?: T;
+              sub?: T;
+              stamp?: T;
+              done?: T;
+              active?: T;
+              id?: T;
+            };
+        upsellTitle?: T;
+        upsellBody?: T;
+        upsellCtaLabel?: T;
+        upsellCtaHref?: T;
+        continueShoppingLabel?: T;
+        viewOrdersLabel?: T;
+        heroImageCaptionLeft?: T;
+        heroImageCaptionRight?: T;
+        celebrationImage?: T;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1756,14 +3428,14 @@ export interface TaskSchedulePublish {
     doc?:
       | ({
           relationTo: 'pages';
-          value: string | Page;
+          value: number | Page;
         } | null)
       | ({
           relationTo: 'posts';
-          value: string | Post;
+          value: number | Post;
         } | null);
     global?: string | null;
-    user?: (string | null) | User;
+    user?: (number | null) | User;
   };
   output?: unknown;
 }

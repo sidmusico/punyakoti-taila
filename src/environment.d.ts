@@ -3,6 +3,8 @@ declare global {
     interface ProcessEnv {
       PAYLOAD_SECRET: string
       DATABASE_URL: string
+      /** Set to `true` to skip Drizzle dev push (avoids interactive prompts blocking Next dev). */
+      PAYLOAD_DISABLE_DB_PUSH?: string
       NEXT_PUBLIC_SERVER_URL: string
       VERCEL_PROJECT_PRODUCTION_URL: string
     }

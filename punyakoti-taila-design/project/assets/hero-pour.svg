@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" role="img" aria-label="Hero — pour into thali">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#F5EFE0"></stop>
+      <stop offset="1" stop-color="#ECE3CE"></stop>
+    </linearGradient>
+    <linearGradient id="oilstream" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#DEB04D" stop-opacity="0"></stop>
+      <stop offset="0.3" stop-color="#C99837"></stop>
+      <stop offset="1" stop-color="#8C6516"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"></rect>
+
+  
+  <g transform="translate(280 60) rotate(-28)">
+    <rect x="40" y="0" width="60" height="22" rx="4" fill="#6E4A28"></rect>
+    <path d="M30 30 Q30 24 48 22 L92 22 Q110 24 110 30 L110 210 Q110 220 100 220 L40 220 Q30 220 30 210 Z" fill="#1A2E18"></path>
+    <rect x="36" y="80" width="68" height="100" rx="3" fill="#FBF7EC"></rect>
+    <text x="70" y="120" text-anchor="middle" font-family="Cormorant Garamond, serif" font-size="16" fill="#1A2E18">Punyakoti</text>
+    <line x1="48" y1="130" x2="92" y2="130" stroke="#C99837" stroke-width="1"></line>
+    <text x="70" y="148" text-anchor="middle" font-family="Manrope, sans-serif" font-size="7" letter-spacing="2" fill="#6E4A28">SESAME · TIL</text>
+  </g>
+
+  
+  <path d="M420 200 Q430 280 440 360 Q445 420 450 460" stroke="url(#oilstream)" stroke-width="6" fill="none" stroke-linecap="round"></path>
+
+  
+  <ellipse cx="460" cy="500" rx="160" ry="32" fill="#B0801E"></ellipse>
+  <ellipse cx="460" cy="496" rx="150" ry="26" fill="#8C6516"></ellipse>
+  <ellipse cx="460" cy="494" rx="120" ry="18" fill="#3E2A14"></ellipse>
+  <ellipse cx="455" cy="490" rx="40" ry="6" fill="#DEB04D" opacity="0.6"></ellipse>
+
+  
+  <g fill="#1A2E18" opacity="0.04">
+    <circle cx="100" cy="100" r="1"></circle><circle cx="200" cy="180" r="1"></circle>
+    <circle cx="600" cy="120" r="1"></circle><circle cx="700" cy="250" r="1"></circle>
+    <circle cx="150" cy="400" r="1"></circle><circle cx="650" cy="450" r="1"></circle>
+  </g>
+</svg>
