@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Punyakoti Taila — Print export</title>
+<link rel="stylesheet" href="tokens.css"/>
+<link rel="stylesheet" href="styles.css"/>
+<style>
+  html, body { margin: 0; padding: 0; background: var(--cream-200); }
+  body { font-family: var(--font-body); color: var(--ink-900); }
+
+  /* --- print layout: stack every artboard, one per page --- */
+  .print-stack { display: flex; flex-direction: column; }
+  .print-page {
+    width: 1280px;
+    margin: 0 auto;
+    background: var(--cream-200);
+    page-break-after: always;
+    break-after: page;
+    page-break-inside: avoid;
+    position: relative;
+    overflow: hidden;
+  }
+  .print-page--mobile {
+    width: 460px;
+    padding: 24px 0 32px;
+  }
+  .print-page-label {
+    padding: 14px 24px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-500);
+    border-bottom: 1px solid var(--cream-400);
+    background: var(--cream-100);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .print-page-label b { color: var(--green-900); }
+  .print-page-body {
+    background: var(--cream-200);
+    min-height: 760px;
+  }
+
+  /* artboards inside become natural-height, not scrolling */
+  .print-page .pt-artboard {
+    height: auto !important;
+    overflow: visible !important;
+  }
+  .print-page .pt-noscroll {
+    overflow: visible !important;
+  }
+
+  /* phone frame stays sized but its inner becomes auto */
+  .print-phone {
+    width: 412px;
+    margin: 0 auto;
+    border-radius: 38px;
+    background: #0d0d0d;
+    padding: 12px;
+    box-shadow: 0 24px 50px rgba(43,28,15,0.18);
+  }
+  .print-phone-screen {
+    width: 388px;
+    background: var(--cream-200);
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+    min-height: 760px;
+  }
+  .print-phone-screen .pt-artboard {
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* TOC */
+  .print-toc {
+    width: 1280px;
+    margin: 0 auto;
+    padding: 80px;
+    background: var(--cream-100);
+    page-break-after: always;
+    break-after: page;
+  }
+
+  /* ---------- @page rules ---------- */
+  @page { size: 1280px auto; margin: 0; }
+  @page :first { size: 1280px auto; margin: 0; }
+
+  /* hide interactive chrome */
+  .pt-floatcluster, .pt-pagemenu, .pt-menubackdrop, .pt-tip, .twk-panel { display: none !important; }
+
+  /* kill animations for print */
+  *, *::before, *::after {
+    animation-duration: 0.001s !important;
+    transition: none !important;
+  }
+  .pt-fade-up { opacity: 1 !important; transform: none !important; }
+
+  @media print {
+    body { background: #fff; }
+    .print-page { box-shadow: none; }
+    .print-toc { background: var(--cream-100); }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<!-- Reuse all original components -->
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="primitives.jsx"></script>
+<script type="text/babel" src="home-animated.jsx"></script>
+<script type="text/babel" src="home.jsx"></script>
+<script type="text/babel" src="plp-pdp.jsx"></script>
+<script type="text/babel" src="cart-checkout.jsx"></script>
+<script type="text/babel" src="payment-order.jsx"></script>
+<script type="text/babel" src="auth-account-popups.jsx"></script>
+
+<!-- Print app -->
+<script type="text/babel">
+const PRINT_PAGES = [
+  // Shop
+  { id: "home",       label: "Homepage",                   group: "Shop",      kind: "desktop", render: () => <HomeDesktop heroVariant="poetic" quiet={true}/> },
+  { id: "home-m",     label: "Homepage — mobile",          group: "Shop",      kind: "mobile",  render: () => <HomeMobile heroVariant="poetic"/> },
+  { id: "plp",        label: "All oils · PLP",             group: "Shop",      kind: "desktop", render: () => <PLPDesktop/> },
+  { id: "plp-m",      label: "All oils · PLP — mobile",    group: "Shop",      kind: "mobile",  render: () => <PLPMobile/> },
+  { id: "pdp",        label: "Product detail · PDP",       group: "Shop",      kind: "desktop", render: () => <PDPDesktop/> },
+  { id: "pdp-m",      label: "Product detail — mobile",    group: "Shop",      kind: "mobile",  render: () => <PDPMobile/> },
+  // Buy
+  { id: "cart",       label: "Basket",                     group: "Buy",       kind: "desktop", render: () => <CartDesktop/> },
+  { id: "cart-m",     label: "Basket — mobile",            group: "Buy",       kind: "mobile",  render: () => <CartMobile/> },
+  { id: "checkout",   label: "Checkout",                   group: "Buy",       kind: "desktop", render: () => <CheckoutDesktop/> },
+  { id: "checkout-m", label: "Checkout — mobile",          group: "Buy",       kind: "mobile",  render: () => <CheckoutMobile/> },
+  { id: "pay-modal",  label: "Pay · Razorpay modal",       group: "Buy",       kind: "desktop", render: () => <PaymentRazorpayDesktop/> },
+  { id: "pay-modal-m",label: "Pay · Razorpay — mobile",    group: "Buy",       kind: "mobile",  render: () => <PaymentRazorpay/> },
+  { id: "pay-proc",   label: "Pay · UPI waiting",          group: "Buy",       kind: "desktop", render: () => <PaymentProcessingDesktop/> },
+  { id: "pay-proc-m", label: "Pay · UPI waiting — mobile", group: "Buy",       kind: "mobile",  render: () => <PaymentProcessing/> },
+  { id: "pay-fail",   label: "Pay · failure",              group: "Buy",       kind: "desktop", render: () => <PaymentFailedDesktop/> },
+  { id: "pay-fail-m", label: "Pay · failure — mobile",     group: "Buy",       kind: "mobile",  render: () => <PaymentFailed/> },
+  // Order
+  { id: "ord-success",  label: "Order success",            group: "Order",     kind: "desktop", render: () => <OrderSuccess/> },
+  { id: "ord-success-m",label: "Order success — mobile",   group: "Order",     kind: "mobile",  render: () => <OrderSuccessMobile/> },
+  { id: "ord-track",    label: "Order tracking",           group: "Order",     kind: "desktop", render: () => <OrderTracking/> },
+  { id: "ord-track-m",  label: "Order tracking — mobile",  group: "Order",     kind: "mobile",  render: () => <OrderTrackingMobile/> },
+  // Account
+  { id: "auth-login",   label: "Sign in",                  group: "Account",   kind: "desktop", render: () => <AuthLoginDesktop/> },
+  { id: "auth-login-m", label: "Sign in — mobile",         group: "Account",   kind: "mobile",  render: () => <AuthLogin/> },
+  { id: "auth-reg",     label: "Register",                 group: "Account",   kind: "desktop", render: () => <AuthRegisterDesktop/> },
+  { id: "auth-reg-m",   label: "Register — mobile",        group: "Account",   kind: "mobile",  render: () => <AuthRegister/> },
+  { id: "auth-otp",     label: "OTP verify",               group: "Account",   kind: "desktop", render: () => <AuthOTPDesktop/> },
+  { id: "auth-otp-m",   label: "OTP verify — mobile",      group: "Account",   kind: "mobile",  render: () => <AuthOTP/> },
+  { id: "account",      label: "Account dashboard",        group: "Account",   kind: "desktop", render: () => <AccountDesktop/> },
+  { id: "account-m",    label: "Account — mobile",         group: "Account",   kind: "mobile",  render: () => <AccountMobile/> },
+  // Mobile-only navigation tabs
+  { id: "nav-shop",     label: "Mobile · Oils tab",        group: "Mobile",    kind: "mobile",  render: () => <MobileNavOils/> },
+  { id: "nav-saved",    label: "Mobile · Saved",           group: "Mobile",    kind: "mobile",  render: () => <MobileNavSaved/> },
+  { id: "nav-orders",   label: "Mobile · Orders",          group: "Mobile",    kind: "mobile",  render: () => <MobileNavOrders/> },
+  // Marketing overlays
+  { id: "pop-news",     label: "Newsletter modal",         group: "Marketing", kind: "overlay", render: () => <NewsletterPopup/> },
+  { id: "pop-exit",     label: "Exit-intent popup",        group: "Marketing", kind: "overlay", render: () => <ExitIntentPopup/> },
+];
+
+function PrintPage({ p, i }) {
+  const cls = "print-page" + (p.kind === "mobile" ? " print-page--mobile" : "");
+  const body = (
+    <div className="print-page-body">
+      {p.kind === "mobile" ? (
+        <div className="print-phone">
+          <div className="print-phone-screen">
+            {p.render()}
+          </div>
+        </div>
+      ) : p.render()}
+    </div>
+  );
+  return (
+    <div className={cls}>
+      <div className="print-page-label">
+        <span>{String(i + 1).padStart(2, "0")} · {p.group}</span>
+        <b>{p.label}</b>
+        <span>Punyakoti Taila</span>
+      </div>
+      {body}
+    </div>
+  );
+}
+
+function PrintCover() {
+  const groups = [...new Set(PRINT_PAGES.map(p => p.group))];
+  return (
+    <div className="print-toc">
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", borderBottom: "1px solid var(--cream-400)", paddingBottom: 36 }}>
+        <div>
+          <div className="pt-eyebrow">Design export · {new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</div>
+          <h1 style={{ fontFamily: "var(--font-display)", fontWeight: 400, fontSize: 88, lineHeight: 1, color: "var(--green-900)", margin: "20px 0 0", letterSpacing: "-0.025em" }}>
+            Punyakoti Taila<br/>
+            <span className="pt-display-italic" style={{ color: "var(--mustard-600)" }}>full-site design.</span>
+          </h1>
+          <p style={{ marginTop: 22, fontSize: 17, color: "var(--ink-500)", maxWidth: 620, lineHeight: 1.65 }}>
+            Wood-pressed oils, one batch at a time. {PRINT_PAGES.length} screens across {groups.length} flows — Shop, Buy, Order, Account, Mobile navigation, and Marketing overlays.
+          </p>
+        </div>
+        <div style={{ textAlign: "right" }}>
+          <Monogram size={64}/>
+          <div className="pt-mono-stamp" style={{ marginTop: 14 }}>BATCH #047 · NOV 2025</div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 56, display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 48 }}>
+        {groups.map(g => (
+          <div key={g}>
+            <div className="pt-eyebrow" style={{ marginBottom: 18 }}>{g}</div>
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              {PRINT_PAGES.map((p, i) => p.group === g && (
+                <div key={p.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "10px 0", borderBottom: "1px solid var(--cream-400)" }}>
+                  <span style={{ fontSize: 15, color: "var(--green-900)" }}>{p.label}</span>
+                  <span style={{ display: "inline-flex", alignItems: "center", gap: 12 }}>
+                    <span style={{ fontSize: 10, fontFamily: "var(--font-mono)", letterSpacing: "0.1em", color: "var(--ink-500)", textTransform: "uppercase" }}>{p.kind}</span>
+                    <span className="pt-mono-stamp">P. {String(i + 2).padStart(2, "0")}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ marginTop: 56, paddingTop: 24, borderTop: "1px solid var(--cream-400)", display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--ink-500)" }}>
+        <span>Design system · Punyakoti Taila v2.4</span>
+        <span>Made slowly in Bangalore</span>
+      </div>
+    </div>
+  );
+}
+
+function PrintApp() {
+  return (
+    <div className="print-stack">
+      <PrintCover/>
+      {PRINT_PAGES.map((p, i) => <PrintPage key={p.id} p={p} i={i}/>)}
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<PrintApp/>);
+
+// Auto-trigger print after fonts + Babel + first paint settle
+window.addEventListener("load", () => {
+  Promise.all([
+    document.fonts?.ready || Promise.resolve(),
+    new Promise(r => setTimeout(r, 1500)),
+  ]).then(() => {
+    setTimeout(() => window.print(), 500);
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Wooden ghani press">
+  <rect width="400" height="300" fill="#ECE3CE"></rect>
+  <g stroke="#1A2E18" stroke-width="1.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    
+    <line x1="20" y1="260" x2="380" y2="260"></line>
+    
+    <ellipse cx="200" cy="260" rx="120" ry="14"></ellipse>
+    <path d="M88 256 Q90 200 120 180 L280 180 Q310 200 312 256"></path>
+    
+    <line x1="200" y1="180" x2="200" y2="60"></line>
+    
+    <path d="M120 60 L280 60"></path>
+    
+    <line x1="170" y1="40" x2="230" y2="80"></line>
+    <line x1="170" y1="80" x2="230" y2="40"></line>
+    
+    <path d="M120 60 L60 90 L40 140"></path>
+    
+    <circle cx="160" cy="240" r="1.5" fill="#1A2E18"></circle>
+    <circle cx="172" cy="244" r="1.5" fill="#1A2E18"></circle>
+    <circle cx="188" cy="246" r="1.5" fill="#1A2E18"></circle>
+    <circle cx="208" cy="244" r="1.5" fill="#1A2E18"></circle>
+    <circle cx="226" cy="242" r="1.5" fill="#1A2E18"></circle>
+    <circle cx="240" cy="246" r="1.5" fill="#1A2E18"></circle>
+  </g>
+</svg>

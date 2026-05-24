@@ -1,0 +1,314 @@
+/* ============================================================
+   PUNYAKOTI TAILA — Design Tokens
+   Colors, type, spacing, radii, shadows, motion.
+   Import this file first; everything else inherits from here.
+   ============================================================ */
+
+/* ---------- Fonts (Google Fonts — substitutions, see README) ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Manrope:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ============================================================
+     COLOR — RAW PALETTE
+     Earthy, warm, premium. Calibrated for warmth on cream.
+     ============================================================ */
+
+  /* Greens — forest, the brand's primary */
+  --green-950: #0F1A0E;   /* near-black green, hero deep */
+  --green-900: #1A2E18;   /* primary text on cream */
+  --green-800: #244023;   /* default primary action */
+  --green-700: #2D4A2B;   /* hover / brand display */
+  --green-600: #3E6039;   /* accent green */
+  --green-300: #94AC8C;   /* muted leaf */
+  --green-100: #DDE5D4;   /* soft chip bg */
+  --green-50:  #EFF2EA;   /* whisper background */
+
+  /* Mustard / turmeric — warm accent */
+  --mustard-700: #8C6516;
+  --mustard-600: #B0801E;
+  --mustard-500: #C99837;  /* the brand "gold" */
+  --mustard-400: #DEB04D;
+  --mustard-200: #F1DDA1;
+  --mustard-100: #F8EBC5;
+
+  /* Terracotta — secondary warmth (sparingly) */
+  --terra-700: #823818;
+  --terra-600: #9B4523;
+  --terra-500: #B5512D;
+  --terra-300: #D8896A;
+  --terra-100: #F1D3C2;
+
+  /* Wood — deep brown, used for borders, tags, footer */
+  --wood-900: #2B1C0F;
+  --wood-700: #4A331C;
+  --wood-600: #6E4A28;
+  --wood-500: #8B6238;
+  --wood-300: #B89572;
+
+  /* Cream / paper — backgrounds */
+  --cream-100: #FBF7EC;   /* surface lightest */
+  --cream-200: #F5EFE0;   /* default page bg */
+  --cream-300: #ECE3CE;   /* card-on-card */
+  --cream-400: #DCD0B3;   /* divider, very subtle */
+
+  /* Ink / neutrals — warm-shifted, never pure black */
+  --ink-900: #1B1E16;     /* body text */
+  --ink-700: #3D4233;
+  --ink-500: #6B6F5E;     /* secondary text */
+  --ink-400: #8A8E7C;     /* tertiary */
+  --ink-300: #B6B8A8;
+  --ink-200: #D9D9C9;
+
+  /* Semantic */
+  --success: #3E6039;
+  --warning: #C99837;
+  --danger:  #A23A1F;
+  --info:    #4B6F8E;
+
+  /* ============================================================
+     SEMANTIC ROLES — refer to these in components, not raw palette
+     ============================================================ */
+  --bg:           var(--cream-200);
+  --bg-elevated:  var(--cream-100);
+  --bg-sunken:    var(--cream-300);
+  --bg-inverse:   var(--green-900);
+
+  --fg:           var(--ink-900);
+  --fg-muted:     var(--ink-500);
+  --fg-subtle:    var(--ink-400);
+  --fg-on-dark:   var(--cream-100);
+  --fg-brand:     var(--green-800);
+
+  --border:       var(--cream-400);
+  --border-strong: var(--wood-300);
+  --border-focus: var(--green-700);
+
+  --accent:       var(--mustard-500);
+  --accent-fg:    var(--green-900);
+
+  --primary:      var(--green-800);
+  --primary-hover: var(--green-700);
+  --primary-fg:   var(--cream-100);
+
+  /* ============================================================
+     TYPE — families & scale
+     ============================================================ */
+  --font-display: "Cormorant Garamond", "Garamond", "Times New Roman", Georgia, serif;
+  --font-body:    "Manrope", "Helvetica Neue", system-ui, sans-serif;
+  --font-mono:    "DM Mono", ui-monospace, "Cascadia Mono", "SFMono-Regular", monospace;
+
+  /* Size scale — 1.250 (Major Third) for body, generous display jumps */
+  --fs-xs:    0.75rem;   /* 12 */
+  --fs-sm:    0.875rem;  /* 14 */
+  --fs-base:  1rem;      /* 16 */
+  --fs-md:    1.125rem;  /* 18 */
+  --fs-lg:    1.25rem;   /* 20 */
+  --fs-xl:    1.5rem;    /* 24 */
+  --fs-2xl:   2rem;      /* 32 */
+  --fs-3xl:   2.75rem;   /* 44 */
+  --fs-4xl:   3.75rem;   /* 60 */
+  --fs-5xl:   5rem;      /* 80 */
+  --fs-6xl:   6.5rem;    /* 104 — full hero only */
+
+  /* Leading */
+  --lh-tight: 1.05;
+  --lh-snug:  1.2;
+  --lh-base:  1.55;
+  --lh-relaxed: 1.75;
+
+  /* Tracking */
+  --tr-tight:  -0.02em;
+  --tr-snug:   -0.01em;
+  --tr-base:    0em;
+  --tr-wide:    0.04em;
+  --tr-wider:   0.12em;   /* eyebrows, all-caps labels */
+
+  /* Weights */
+  --fw-light: 300;
+  --fw-reg:   400;
+  --fw-med:   500;
+  --fw-sb:    600;
+  --fw-bold:  700;
+
+  /* ============================================================
+     SPACING — 4pt rhythm
+     ============================================================ */
+  --sp-0:  0;
+  --sp-1:  0.25rem;  /*  4 */
+  --sp-2:  0.5rem;   /*  8 */
+  --sp-3:  0.75rem;  /* 12 */
+  --sp-4:  1rem;     /* 16 */
+  --sp-5:  1.5rem;   /* 24 */
+  --sp-6:  2rem;     /* 32 */
+  --sp-7:  3rem;     /* 48 */
+  --sp-8:  4rem;     /* 64 */
+  --sp-9:  6rem;     /* 96 */
+  --sp-10: 8rem;     /* 128 */
+  --sp-11: 12rem;    /* 192 — full section gutters */
+
+  /* ============================================================
+     RADII — generous but never bubbly
+     ============================================================ */
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-xl: 28px;
+  --r-2xl: 40px;
+  --r-pill: 9999px;
+
+  /* ============================================================
+     SHADOWS — soft, layered, never harsh
+     Built warm: a touch of olive in the spread.
+     ============================================================ */
+  --sh-xs: 0 1px 2px rgba(43, 28, 15, 0.06);
+  --sh-sm: 0 2px 6px rgba(43, 28, 15, 0.05), 0 1px 2px rgba(43, 28, 15, 0.06);
+  --sh-md: 0 6px 16px rgba(43, 28, 15, 0.07), 0 2px 4px rgba(43, 28, 15, 0.04);
+  --sh-lg: 0 16px 40px rgba(43, 28, 15, 0.10), 0 4px 8px rgba(43, 28, 15, 0.04);
+  --sh-xl: 0 32px 80px rgba(43, 28, 15, 0.14), 0 8px 16px rgba(43, 28, 15, 0.05);
+
+  /* Inset / pressed */
+  --sh-inset: inset 0 1px 2px rgba(43, 28, 15, 0.08);
+
+  /* Focus ring — green halo, never blue */
+  --ring: 0 0 0 3px rgba(45, 74, 43, 0.18);
+
+  /* ============================================================
+     MOTION — easings and durations
+     ============================================================ */
+  --ease-out:  cubic-bezier(0.16, 1, 0.3, 1);     /* default reveal */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --d-fast: 140ms;
+  --d-med:  240ms;
+  --d-slow: 420ms;
+
+  /* ============================================================
+     LAYOUT
+     ============================================================ */
+  --container: 1240px;
+  --container-wide: 1440px;
+  --container-narrow: 760px;
+}
+
+/* ============================================================
+   SEMANTIC TYPE STYLES — use these by name on real text.
+   ============================================================ */
+
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-med);
+  letter-spacing: var(--tr-wider);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.h1, h1.display {
+  font-family: var(--font-display);
+  font-weight: var(--fw-reg);
+  font-size: clamp(var(--fs-4xl), 7vw, var(--fs-6xl));
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-tight);
+  color: var(--fg-brand);
+}
+
+.h2, h2 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-reg);
+  font-size: clamp(var(--fs-2xl), 4vw, var(--fs-4xl));
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-snug);
+  color: var(--fg);
+}
+
+.h3, h3 {
+  font-family: var(--font-display);
+  font-weight: var(--fw-med);
+  font-size: var(--fs-2xl);
+  line-height: var(--lh-snug);
+  color: var(--fg);
+}
+
+.h4, h4 {
+  font-family: var(--font-body);
+  font-weight: var(--fw-sb);
+  font-size: var(--fs-lg);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-snug);
+  color: var(--fg);
+}
+
+.lead {
+  font-family: var(--font-body);
+  font-weight: var(--fw-reg);
+  font-size: var(--fs-lg);
+  line-height: var(--lh-relaxed);
+  color: var(--fg-muted);
+}
+
+.body, body, p {
+  font-family: var(--font-body);
+  font-weight: var(--fw-reg);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--fg);
+}
+
+.small {
+  font-size: var(--fs-sm);
+  color: var(--fg-muted);
+}
+
+.caption {
+  font-size: var(--fs-xs);
+  color: var(--fg-subtle);
+  letter-spacing: var(--tr-wide);
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-sb);
+  letter-spacing: var(--tr-wider);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+.mono, code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.serif-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--fw-reg);
+}
+
+/* ============================================================
+   GLOBAL — set the stage
+   ============================================================ */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  line-height: var(--lh-base);
+}
+
+::selection {
+  background: var(--mustard-200);
+  color: var(--green-900);
+}
+
+*:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+  border-radius: var(--r-sm);
+}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Punyakoti Taila monogram">
+  <circle cx="60" cy="60" r="58" fill="none" stroke="#1A2E18" stroke-width="1.5"></circle>
+  <circle cx="60" cy="60" r="52" fill="#1A2E18"></circle>
+  <g font-family="Cormorant Garamond, Garamond, serif" font-weight="500" fill="#FBF7EC" text-anchor="middle">
+    <text x="60" y="72" font-size="54" letter-spacing="-2">PT</text>
+  </g>
+  <circle cx="60" cy="92" r="1.8" fill="#C99837"></circle>
+</svg>

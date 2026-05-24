@@ -6,11 +6,22 @@ import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
 import { Media } from './collections/Media'
+import { Orders } from './collections/Orders'
 import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
+import { Products } from './collections/Products'
+import { Reviews } from './collections/Reviews'
+import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
+import { AccountSettings } from './globals/AccountSettings'
+import { CartSettings } from './globals/CartSettings'
+import { HomepageSettings } from './globals/HomepageSettings'
+import { OrderSuccessSettings } from './globals/OrderSuccessSettings'
+import { ProductDetail } from './globals/ProductDetail'
+import { ShopListing } from './globals/ShopListing'
+import { SiteSettings } from './globals/SiteSettings'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
@@ -61,10 +72,26 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URL || '',
     },
+    // Dev schema push uses Drizzle Kit; ambiguous enum/table diffs open interactive prompts.
+    // Without a TTY (Next dev), that can hang every request — set PAYLOAD_DISABLE_DB_PUSH=true
+    // then run `supabase db reset` once and clear that var so a clean push can run.
+    push:
+      process.env.NODE_ENV !== 'production' &&
+      process.env.PAYLOAD_DISABLE_DB_PUSH !== 'true',
   }),
-  collections: [Pages, Posts, Media, Categories, Users],
+  collections: [Pages, Posts, Media, Categories, Users, Products, Orders, Reviews, Testimonials],
   cors: [getServerSideURL()].filter(Boolean),
-  globals: [Header, Footer],
+  globals: [
+    Header,
+    Footer,
+    SiteSettings,
+    HomepageSettings,
+    ShopListing,
+    ProductDetail,
+    CartSettings,
+    AccountSettings,
+    OrderSuccessSettings,
+  ],
   plugins,
   secret: process.env.PAYLOAD_SECRET,
   sharp,

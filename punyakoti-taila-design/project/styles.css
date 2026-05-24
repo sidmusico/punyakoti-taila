@@ -1,0 +1,344 @@
+/* ============================================================
+   Punyakoti Taila — shop-level styles
+   Builds on tokens.css. All UI primitives shared across screens.
+   ============================================================ */
+
+/* ---------- Buttons ---------- */
+.pt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  font-family: var(--font-body);
+  font-weight: var(--fw-med);
+  font-size: var(--fs-sm);
+  letter-spacing: var(--tr-snug);
+  padding: 12px 22px;
+  border-radius: var(--r-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background var(--d-med) var(--ease-out),
+              color var(--d-med) var(--ease-out),
+              transform var(--d-fast) var(--ease-out),
+              box-shadow var(--d-med) var(--ease-out);
+  white-space: nowrap;
+  text-decoration: none;
+  min-height: 44px;
+  user-select: none;
+}
+.pt-btn--primary {
+  background: var(--green-800);
+  color: var(--cream-100);
+}
+.pt-btn--primary:hover { background: var(--green-700); }
+.pt-btn--primary:active { transform: translateY(1px); opacity: 0.92; }
+
+.pt-btn--ghost {
+  background: transparent;
+  color: var(--green-900);
+  border-color: var(--wood-300);
+}
+.pt-btn--ghost:hover { background: var(--cream-300); }
+
+.pt-btn--mustard {
+  background: var(--mustard-500);
+  color: var(--green-900);
+}
+.pt-btn--mustard:hover { background: var(--mustard-400); }
+
+.pt-btn--lg { padding: 16px 28px; font-size: var(--fs-base); min-height: 52px; }
+.pt-btn--sm { padding: 8px 14px; font-size: var(--fs-xs); min-height: 36px; }
+.pt-btn--full { width: 100%; }
+.pt-btn--inverse {
+  background: var(--cream-100);
+  color: var(--green-900);
+}
+
+/* ---------- Inputs ---------- */
+.pt-input {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  padding: 14px 16px;
+  border: 1px solid var(--cream-400);
+  border-radius: var(--r-md);
+  background: var(--cream-100);
+  color: var(--ink-900);
+  transition: border-color var(--d-med) var(--ease-out),
+              box-shadow var(--d-med) var(--ease-out);
+}
+.pt-input::placeholder { color: var(--ink-400); }
+.pt-input:focus { outline: none; border-color: var(--green-700); box-shadow: var(--ring); }
+
+.pt-field { display: flex; flex-direction: column; gap: 6px; }
+.pt-field-label {
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-sb);
+  letter-spacing: var(--tr-wider);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+}
+
+/* ---------- Cards ---------- */
+.pt-card {
+  background: var(--bg-elevated);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-sm);
+  padding: 24px;
+  border: none;
+  transition: box-shadow var(--d-med) var(--ease-out),
+              transform var(--d-med) var(--ease-out);
+}
+.pt-card:hover { box-shadow: var(--sh-md); transform: translateY(-2px); }
+.pt-card--flat { box-shadow: none; }
+.pt-card--flat:hover { transform: none; box-shadow: var(--sh-xs); }
+
+/* ---------- Badges & Chips ---------- */
+.pt-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 10px;
+  font-weight: var(--fw-sb);
+  letter-spacing: var(--tr-wider);
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: var(--r-pill);
+}
+.pt-badge--green { background: var(--green-100); color: var(--green-800); }
+.pt-badge--mustard { background: var(--mustard-100); color: var(--mustard-700); }
+.pt-badge--cream { background: var(--cream-300); color: var(--wood-700); }
+.pt-badge--terra { background: var(--terra-100); color: var(--terra-700); }
+.pt-badge--dark { background: var(--green-900); color: var(--mustard-200); }
+
+.pt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: var(--r-pill);
+  background: var(--cream-100);
+  border: 1px solid var(--cream-400);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-med);
+  color: var(--green-900);
+  letter-spacing: var(--tr-snug);
+  cursor: pointer;
+  transition: all var(--d-med) var(--ease-out);
+}
+.pt-chip:hover { border-color: var(--wood-500); }
+.pt-chip--active {
+  background: var(--green-900);
+  color: var(--cream-100);
+  border-color: var(--green-900);
+}
+
+/* ---------- Hairlines ---------- */
+.pt-hr {
+  height: 1px;
+  background: var(--cream-400);
+  border: 0;
+  width: 100%;
+}
+
+/* ---------- Eyebrow ---------- */
+.pt-eyebrow {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: var(--fw-med);
+  letter-spacing: var(--tr-wider);
+  text-transform: uppercase;
+  color: var(--mustard-600);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.pt-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--mustard-500);
+}
+
+/* ---------- Sticky-feeling header background ---------- */
+.pt-header-blur {
+  background: rgba(251, 247, 236, 0.85);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+}
+
+/* ---------- Phone frame ---------- */
+.pt-phone {
+  width: 390px;
+  border-radius: 44px;
+  background: var(--green-950);
+  padding: 12px;
+  box-shadow: var(--sh-xl);
+  position: relative;
+  flex-shrink: 0;
+}
+.pt-phone-screen {
+  background: var(--cream-200);
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+}
+.pt-phone-notch {
+  position: absolute;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 110px;
+  height: 28px;
+  background: var(--green-950);
+  border-radius: 16px;
+  z-index: 20;
+}
+.pt-phone-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 26px 6px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: var(--fw-sb);
+  color: var(--ink-900);
+  position: relative;
+  z-index: 10;
+}
+
+/* ---------- Density variants (controlled via Tweaks) ---------- */
+.pt-density-compact { --pt-section-pad: 56px; --pt-card-pad: 18px; --pt-gap: 16px; }
+.pt-density-airy    { --pt-section-pad: 112px; --pt-card-pad: 32px; --pt-gap: 28px; }
+
+/* ---------- Misc helpers ---------- */
+.pt-display-italic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--fw-reg);
+  color: var(--green-800);
+}
+.pt-amount-strike { text-decoration: line-through; color: var(--fg-subtle); }
+.pt-grain {
+  position: relative;
+}
+.pt-grain::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(43,28,15,0.04) 1px, transparent 1px);
+  background-size: 4px 4px;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ---------- Common artboard reset ---------- */
+.pt-artboard {
+  font-family: var(--font-body);
+  color: var(--ink-900);
+  background: var(--cream-200);
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scrollbar hiding inside artboards */
+.pt-noscroll::-webkit-scrollbar { display: none; }
+.pt-noscroll { scrollbar-width: none; }
+
+/* Tag text styles */
+.pt-mono-stamp {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: var(--tr-wide);
+  color: var(--wood-600);
+  text-transform: uppercase;
+}
+
+/* ---------- Animations / motion ---------- */
+.pt-marquee-track {
+  display: flex; align-items: center;
+  white-space: nowrap; width: max-content;
+  animation: pt-marquee 48s linear infinite;
+}
+.pt-marquee-fast { animation-duration: 32s; }
+.pt-marquee-rev  { animation-direction: reverse; }
+.pt-marquee:hover .pt-marquee-track { animation-play-state: paused; }
+@keyframes pt-marquee {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+@keyframes pt-pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.6); opacity: 0.4; }
+}
+.pt-pulse-dot {
+  width: 8px; height: 8px; border-radius: 4px;
+  background: var(--mustard-500);
+  animation: pt-pulse-dot 1.8s var(--ease-out) infinite;
+}
+
+@keyframes pt-float {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-12px) rotate(2deg); }
+}
+.pt-float { animation: pt-float 6s var(--ease-in-out) infinite; }
+.pt-float-slow { animation: pt-float 9s var(--ease-in-out) infinite; }
+
+@keyframes pt-shimmer {
+  0%, 100% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.pt-fade-up {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .9s var(--ease-out), transform .9s var(--ease-out);
+}
+.pt-fade-up.is-in {
+  opacity: 1; transform: translateY(0);
+}
+
+.pt-scrollexpand-sticky {
+  position: sticky; top: 0;
+  height: 100vh;
+  display: grid; place-items: center;
+  overflow: hidden;
+}
+
+@keyframes pt-blink-cursor { 0%, 50% { opacity: 1; } 50.01%, 100% { opacity: 0; } }
+
+/* Drop-cap style for hero paragraphs */
+.pt-dropcap::first-letter {
+  font-family: var(--font-display);
+  font-size: 3.6em; line-height: 0.85;
+  float: left; margin: 0.05em 0.08em 0 0;
+  color: var(--mustard-600);
+  font-style: italic;
+}
+.pt-photo-placeholder {
+  background:
+    linear-gradient(180deg, rgba(15,26,14,0.0) 0%, rgba(15,26,14,0.35) 100%),
+    linear-gradient(135deg, var(--green-800) 0%, var(--green-950) 60%, var(--wood-900) 100%);
+  position: relative;
+  overflow: hidden;
+}
+.pt-photo-placeholder::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 3px 3px;
+  pointer-events: none;
+}
+
+/* Cream variants */
+.pt-cream-light { --cream-100: #FFFFFA; --cream-200: #FDFAF1; --cream-300: #F7F1DF; --cream-400: #ECE3CE; }
+.pt-cream-dark  { --cream-100: #F5EFE0; --cream-200: #ECE3CE; --cream-300: #E1D5B6; --cream-400: #CDBE93; }
+
+/* Accent variants — swap the mustard family for a different highlight */
+.pt-accent-terra   { --mustard-100: #F8E0D2; --mustard-200: #F2C9B0; --mustard-400: #E3855B; --mustard-500: #C66237; --mustard-600: #A04A22; --mustard-700: #7A371A; }
+.pt-accent-saffron { --mustard-100: #FAEBC9; --mustard-200: #F6DC9A; --mustard-400: #ECB13F; --mustard-500: #D4961F; --mustard-600: #A87410; --mustard-700: #7E5808; }
+.pt-accent-rose    { --mustard-100: #F4D7DA; --mustard-200: #ECB7BD; --mustard-400: #D6727F; --mustard-500: #B8505F; -mustard-600: #8C3A47; --mustard-700: #6A2A36; }
