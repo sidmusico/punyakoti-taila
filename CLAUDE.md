@@ -5,7 +5,7 @@ Start with `.claude/skills/payload/SKILL.md` for a quick reference, then see `.c
 
 **After changing Payload collections/globals/DB schema (dev, keep existing data):** run **`pnpm cms:sync`** — regenerates the admin import map and `payload-types.ts`, then runs Drizzle push via `scripts/payload-db-sync.ts` (not a DB reset). Use a real terminal if Drizzle asks interactive questions; use **`pnpm db:local:fresh`** only when you intentionally want a wiped local DB.
 
-**HTTP seed APIs (demo content / fresh DB):** see **`doc/SEED_APIS.md`** (`GET /api/seed-all`, `seed-categories`, `seed-media`, `seed-products`, `seed-site-pages`, `seed-storefront-globals`, `seed-pages`).
+**HTTP seed APIs (demo content / fresh DB):** see **`doc/SEED_APIS.md`** (`GET /api/seed-all`, `seed-categories`, `seed-media`, `seed-products`, `seed-site-pages`, `seed-storefront-globals`, `seed-homepage`, `seed-pages`).
 
 **Storefront globals ↔ repo seed JSON:** after changing `shop-listing`, `product-detail`, `cart`, `account`, `order-success`, or `homepage-settings` in Payload, follow `.cursor/skills/payload-storefront-seed-sync/SKILL.md` (export route + commit `src/seed/generated/*.json`).
 

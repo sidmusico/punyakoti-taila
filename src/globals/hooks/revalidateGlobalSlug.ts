@@ -6,7 +6,7 @@ export function revalidateGlobalSlug(slug: string): GlobalAfterChangeHook {
   return ({ doc, req: { payload, context } }) => {
     if (!context.disableRevalidate) {
       payload.logger.info(`Revalidating global: ${slug}`)
-      revalidateTag(`global_${slug}`, 'max')
+      revalidateTag(`global_${slug}`, { expire: 0 })
     }
     return doc
   }

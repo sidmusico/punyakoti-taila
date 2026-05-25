@@ -115,8 +115,23 @@ export async function SiteFooter() {
   /* Brand */
   const tagline   = footer?.tagline   ?? 'Wood-pressed oils, one batch at a time.'
   const locations = footer?.locations ?? 'Bangalore · Erode · Kollam.'
-  const contact   = footer?.contact as { email?: string; phone?: string; address?: string } | undefined
+  /* Contact — fallback defaults when CMS has no data */
+  const rawContact = footer?.contact as { email?: string; phone?: string; address?: string } | undefined
+  const contact = {
+    email:   rawContact?.email   ?? 'hello@punyakotitaila.com',
+    phone:   rawContact?.phone   ?? '+91 98765 43210',
+    address: rawContact?.address ?? 'Bangalore, Karnataka',
+  }
   const social    = footer?.social  as { instagram?: string; youtube?: string; facebook?: string; twitter?: string; whatsapp?: string } | undefined
+
+  /* Social — always show defaults if CMS has none configured */
+  const resolvedSocial = {
+    instagram: social?.instagram ?? 'https://www.instagram.com/punyakoitaila',
+    youtube:   social?.youtube   ?? 'https://www.youtube.com/@punyakotitaila',
+    facebook:  social?.facebook  ?? 'https://www.facebook.com/punyakotitaila',
+    twitter:   social?.twitter   ?? 'https://x.com/punyakotitaila',
+    whatsapp:  social?.whatsapp  ?? 'https://wa.me/919876543210',
+  }
 
   /* Link columns */
   const shopHeading  = footer?.shopColumnHeading  ?? 'Shop'
@@ -224,18 +239,17 @@ export async function SiteFooter() {
             )}
 
             {/* Contact */}
-            {contact && (
-              <ul
-                style={{
-                  marginTop: 24,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 10,
-                  fontSize: 13,
-                  color: 'rgba(251,247,236,0.55)',
-                  fontFamily: 'var(--font-body)',
-                }}
-              >
+            <ul
+              style={{
+                marginTop: 24,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+                fontSize: 13,
+                color: 'rgba(251,247,236,0.55)',
+                fontFamily: 'var(--font-body)',
+              }}
+            >
                 {contact.email && (
                   <li style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <MailIcon />
@@ -261,35 +275,32 @@ export async function SiteFooter() {
                   </li>
                 )}
               </ul>
-            )}
 
-            {/* Social icons */}
-            {social && (
-              <div style={{ marginTop: 28, display: 'flex', gap: 10 }}>
-                {[
-                  { key: 'instagram' as const, label: 'Instagram', Icon: InstagramIcon },
-                  { key: 'youtube'   as const, label: 'YouTube',   Icon: YouTubeIcon },
-                  { key: 'facebook'  as const, label: 'Facebook',  Icon: FacebookIcon },
-                  { key: 'twitter'   as const, label: 'X/Twitter', Icon: TwitterIcon },
-                  { key: 'whatsapp'  as const, label: 'WhatsApp',  Icon: WhatsAppIcon },
-                ].map(({ key, label, Icon }) => {
-                  const url = social[key]
-                  if (!url) return null
-                  return (
-                    <a
-                      key={key}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={label}
-                      className="footer-social-icon"
-                    >
-                      <Icon />
-                    </a>
-                  )
-                })}
-              </div>
-            )}
+            {/* Social icons — always rendered with fallback defaults */}
+            <div style={{ marginTop: 28, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              {[
+                { key: 'instagram' as const, label: 'Instagram', Icon: InstagramIcon },
+                { key: 'youtube'   as const, label: 'YouTube',   Icon: YouTubeIcon },
+                { key: 'facebook'  as const, label: 'Facebook',  Icon: FacebookIcon },
+                { key: 'twitter'   as const, label: 'X/Twitter', Icon: TwitterIcon },
+                { key: 'whatsapp'  as const, label: 'WhatsApp',  Icon: WhatsAppIcon },
+              ].map(({ key, label, Icon }) => {
+                const url = resolvedSocial[key]
+                if (!url) return null
+                return (
+                  <a
+                    key={key}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={label}
+                    className="footer-social-icon"
+                  >
+                    <Icon />
+                  </a>
+                )
+              })}
+            </div>
           </div>
 
           {/* ── Shop column ───────────────────────────────────── */}

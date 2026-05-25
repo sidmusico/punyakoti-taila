@@ -22,8 +22,8 @@ export const FAQSection: Block = {
       label: 'FAQ items',
       minRows: 1,
       fields: [
-        { name: 'question', type: 'text',     required: true, label: 'Question' },
-        { name: 'answer',   type: 'textarea', required: true, label: 'Answer' },
+        { name: 'question', type: 'text', required: true, label: 'Question' },
+        { name: 'answer', type: 'textarea', required: true, label: 'Answer' },
       ],
     },
     {
@@ -32,8 +32,8 @@ export const FAQSection: Block = {
       label: 'Section style',
       defaultValue: 'light',
       options: [
-        { label: 'Light (cream bg)',      value: 'light' },
-        { label: 'Dark (dark-green bg)',  value: 'dark' },
+        { label: 'Light (cream bg)', value: 'light' },
+        { label: 'Dark (dark-green bg)', value: 'dark' },
       ],
     },
   ],

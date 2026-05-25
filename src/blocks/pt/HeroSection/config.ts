@@ -36,7 +36,7 @@ export const HeroSection: Block = {
       label: 'Primary button',
       fields: [
         { name: 'label', type: 'text', defaultValue: 'Shop the collection' },
-        { name: 'href',  type: 'text', defaultValue: '/shop' },
+        { name: 'href', type: 'text', defaultValue: '/shop' },
       ],
     },
     {
@@ -45,7 +45,7 @@ export const HeroSection: Block = {
       label: 'Secondary button',
       fields: [
         { name: 'label', type: 'text' },
-        { name: 'href',  type: 'text' },
+        { name: 'href', type: 'text' },
       ],
     },
     {
@@ -64,9 +64,9 @@ export const HeroSection: Block = {
       label: 'Background style',
       defaultValue: 'cream',
       options: [
-        { label: 'Cream (default)',   value: 'cream' },
-        { label: 'Dark Green',        value: 'dark-green' },
-        { label: 'Warm White',        value: 'warm-white' },
+        { label: 'Cream (default)', value: 'cream' },
+        { label: 'Dark Green', value: 'dark-green' },
+        { label: 'Warm White', value: 'warm-white' },
       ],
     },
   ],

@@ -46,6 +46,7 @@ curl -sS "http://localhost:3000/api/seed-all" | jq .
 | **`GET /api/seed-products`** | `categories` + `products` | Same as above + `CATALOG_PRODUCTS` |
 | **`GET /api/seed-site-pages`** | `pages` only (full block `layout` per slug) | `src/seed/sitePagesSeed.ts` → `SITE_PAGES_SEED` |
 | **`GET /api/seed-storefront-globals`** | Globals: `shop-listing`, `product-detail`, `cart`, `account`, `order-success`, and `homepage-settings` when empty | `src/seed/storefrontSeedDefaults.ts` and optional `src/seed/generated/*.json` |
+| **`GET /api/seed-homepage`** | **`homepage-settings` only** — tab-based homepage bands (all sections). Idempotent unless **`?force=1`** (overwrites existing). | `src/seed/homepageTabDefaults.ts` via `runHomepageTabSeed.ts` |
 | **`GET /api/seed-pages`** | **Pages + storefront globals** (same as calling site-pages + storefront-globals in one response) | Combines `runSitePagesSeed` + `runStorefrontGlobalsSeed` |
 
 ### Export CMS snapshot (optional)
@@ -60,11 +61,13 @@ curl -sS "http://localhost:3000/api/seed-all" | jq .
 
 If you do **not** use `seed-all`, a safe order is:
 
-1. **`/api/seed-categories`** (or rely on **`/api/seed-products`**, which creates categories too).  
-2. **`/api/seed-media`** — optional before products; products will still upload any missing hero image per product.  
-3. **`/api/seed-products`** — demo catalog + images.  
-4. **`/api/seed-site-pages`** — CMS routes / block layouts.  
+1. **`/api/seed-categories`** (or rely on **`/api/seed-products`**, which creates categories too).
+2. **`/api/seed-media`** — optional before products; products will still upload any missing hero image per product.
+3. **`/api/seed-products`** — demo catalog + images.
+4. **`/api/seed-site-pages`** — CMS routes / block layouts.
 5. **`/api/seed-storefront-globals`** — PLP/PDP/cart copy and homepage global when empty.
+
+To **re-bootstrap only the homepage** (e.g. after a schema change) without touching other globals, use **`GET /api/seed-homepage`** (add **`?force=1`** to overwrite non-empty content).
 
 `GET /api/seed-pages` is equivalent to **4 + 5** in a single JSON payload (two logical groups in `results`).
 
@@ -72,11 +75,11 @@ If you do **not** use `seed-all`, a safe order is:
 
 ## Response shape
 
-- **Single-resource routes** (`seed-categories`, `seed-media`, `seed-products`, `seed-site-pages`, `seed-storefront-globals`):  
+- **Single-resource routes** (`seed-categories`, `seed-media`, `seed-products`, `seed-site-pages`, `seed-storefront-globals`):
 
   `{ "summary": { "total", "created", "skipped", "errors" }, "results": [ … ] }`
 
-- **`/api/seed-all`**:  
+- **`/api/seed-all`**:
 
   `{ "summary": { "steps", "created", "skipped", "errors" }, "steps": [ { "step", "summary", "results" }, … ] }`
 
@@ -89,8 +92,9 @@ If you do **not** use `seed-all`, a safe order is:
 | Category + media + product catalog | `src/seed/productCatalogSeed.ts` |
 | Page layouts (all storefront slugs) | `src/seed/sitePagesSeed.ts` |
 | Storefront global **code** defaults | `src/seed/storefrontSeedDefaults.ts` |
+| Homepage global **tab defaults** (seed / empty-DB fill) | `src/seed/homepageTabDefaults.ts` |
 | Storefront global **exported** overrides | `src/seed/generated/*.json` (optional) |
-| Orchestration helpers | `src/seed/runCategoriesSeed.ts`, `runMediaCatalogSeed.ts`, `runProductCatalogSeed.ts`, `runSitePagesSeed.ts`, `runStorefrontGlobalsSeed.ts`, `runFullSiteSeed.ts` |
+| Orchestration helpers | `src/seed/runCategoriesSeed.ts`, `runMediaCatalogSeed.ts`, `runProductCatalogSeed.ts`, `runSitePagesSeed.ts`, `runStorefrontGlobalsSeed.ts`, `runHomepageTabSeed.ts`, `runFullSiteSeed.ts` |
 | Media upload helper | `src/seed/seedMediaUpload.ts` |
 | Shared auth | `src/seed/seedApiAuth.ts` |
 
@@ -98,9 +102,9 @@ If you do **not** use `seed-all`, a safe order is:
 
 ## Not covered by these seeds
 
-- **`users`** — create the first admin via Payload UI or your auth flow.  
-- **`posts`**, **`testimonials`**, **`reviews`**, **`orders`** — not part of these GET seeds.  
-- **`header`** / **`footer`** globals — rely on Payload defaults or edit in admin.  
+- **`users`** — create the first admin via Payload UI or your auth flow.
+- **`posts`**, **`testimonials`**, **`reviews`**, **`orders`** — not part of these GET seeds.
+- **`header`** / **`footer`** globals — rely on Payload defaults or edit in admin.
 - **`site-settings`** global — not updated by these routes (edit in admin).
 
 ---

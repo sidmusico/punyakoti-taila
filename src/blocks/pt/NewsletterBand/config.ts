@@ -14,7 +14,8 @@ export const NewsletterBand: Block = {
       name: 'body',
       type: 'textarea',
       label: 'Body text',
-      defaultValue: "New batches every week. Subscribe and we'll let you know the moment fresh oil is ready — before it sells out.",
+      defaultValue:
+        "New batches every week. Subscribe and we'll let you know the moment fresh oil is ready — before it sells out.",
     },
     {
       name: 'legalText',
@@ -35,8 +36,8 @@ export const NewsletterBand: Block = {
       defaultValue: 'dark-green',
       options: [
         { label: 'Dark green', value: 'dark-green' },
-        { label: 'Cream',      value: 'cream' },
-        { label: 'Mustard',    value: 'mustard' },
+        { label: 'Cream', value: 'cream' },
+        { label: 'Mustard', value: 'mustard' },
       ],
     },
   ],
