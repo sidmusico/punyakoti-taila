@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "supabase-taila-prod": {
+      "url": "https://mcp.supabase.com/mcp?project_ref=dvjirzgoedmgofrmxwwj"
+    },
+    "supabase-taila-local": {
+      "url": "http://127.0.0.1:54321/mcp"
+    }
+  }
+}
