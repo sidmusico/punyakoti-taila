@@ -1,6 +1,35 @@
 import type { File } from 'payload'
 import type { Payload } from 'payload'
 
+/**
+ * Like `fetchRemoteFilePayloadShape` but preserves the original mime type for
+ * non-image files (videos, PDFs, audio) instead of forcing image/jpeg. Use
+ * this when seeding any arbitrary file type from a remote URL.
+ *
+ * `fallbackMime` is used only when the response has no usable content-type.
+ */
+export async function fetchRemoteFileAnyShape(
+  url: string,
+  filename: string,
+  fallbackMime = 'application/octet-stream',
+): Promise<File> {
+  const res = await fetch(url, { redirect: 'follow' })
+  if (!res.ok) {
+    throw new Error(`GET ${url} failed: ${res.status} ${res.statusText}`)
+  }
+  const rawType = res.headers.get('content-type')?.split(';')[0]?.trim()
+  let mimetype = rawType && rawType !== 'application/octet-stream' ? rawType : fallbackMime
+  if (mimetype === 'image/jpg') mimetype = 'image/jpeg'
+  const data = await res.arrayBuffer()
+  const buf = Buffer.from(data)
+  return {
+    name: filename,
+    data: buf,
+    mimetype,
+    size: buf.byteLength,
+  }
+}
+
 export async function fetchRemoteFilePayloadShape(url: string, basename: string): Promise<File> {
   const res = await fetch(url, { redirect: 'follow' })
   if (!res.ok) {

@@ -1,21 +1,27 @@
 import React from 'react'
 
+import { SectionBackgroundImage } from '@/components/home/SectionBackgroundImage'
 import { CowMark } from '@/components/ui/pt/CowMark'
 import { PtEyebrow } from '@/components/ui/pt/PtEyebrow'
+import type { MediaLike } from '@/utilities/mediaUrl'
+import { cn } from '@/utilities/ui'
 
 export function HomePoeticSection({
   eyebrow = 'An aside · from the Wood-Press Diary',
   headline1 = 'Refined oil is a shortcut.',
   headline2 = 'We press the long way around.',
   body = 'The industrial press runs at 240°C with hexane solvent — fast, high-yield, and chemically obedient. The wooden ghani turns at four revolutions per minute, peaks at 38°C, and gives you back exactly half. The other half is what tradition called flavour. We chose half.',
+  backgroundImage,
 }: {
   eyebrow?: string | null
   headline1?: string | null
   headline2?: string | null
   body?: string | null
+  backgroundImage?: MediaLike
 }) {
   return (
-    <section className="hp-poetic">
+    <section className={cn('hp-poetic', backgroundImage && 'section-has-bg-image')}>
+      <SectionBackgroundImage media={backgroundImage} altFallback="Wood-press diary" />
       <div className="hp-poetic__wm" aria-hidden="true">
         <CowMark size={520} color="var(--green-900)" />
       </div>

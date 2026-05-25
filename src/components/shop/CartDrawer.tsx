@@ -40,8 +40,15 @@ export function CartDrawer() {
 
       {/* drawer */}
       <div
-        className="fixed inset-y-0 right-0 z-50 flex flex-col w-full max-w-sm"
-        style={{ background: 'var(--cream-100)', boxShadow: 'var(--sh-xl)' }}
+        className="fixed inset-y-0 z-50 flex flex-col w-full max-w-sm"
+        // `right: var(--site-side-gutter)` keeps the drawer flush with the
+        // centered site frame on wide screens (>--site-max-width) instead of
+        // hugging the viewport edge. Falls back to 0 on narrow viewports.
+        style={{
+          right: 'var(--site-side-gutter, 0px)',
+          background: 'var(--cream-100)',
+          boxShadow: 'var(--sh-xl)',
+        }}
       >
         {/* header */}
         <div

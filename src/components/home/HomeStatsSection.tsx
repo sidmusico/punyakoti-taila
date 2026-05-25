@@ -1,7 +1,10 @@
 import React from 'react'
 
+import { SectionBackgroundImage } from '@/components/home/SectionBackgroundImage'
 import { CowMark } from '@/components/ui/pt/CowMark'
 import { PtEyebrow } from '@/components/ui/pt/PtEyebrow'
+import type { MediaLike } from '@/utilities/mediaUrl'
+import { cn } from '@/utilities/ui'
 
 const DEFAULT_STATS = [
   { value: '47', label: 'Batches', sub: 'this season alone' },
@@ -15,16 +18,19 @@ export function HomeStatsSection({
   headlinePrefix = 'What slow looks like,',
   headlineItalic = 'plainly.',
   stats,
+  backgroundImage,
 }: {
   eyebrow?: string | null
   headlinePrefix?: string | null
   headlineItalic?: string | null
   stats?: { value: string; label: string; sub: string }[] | null
+  backgroundImage?: MediaLike
 }) {
   const list = stats?.length ? stats : [...DEFAULT_STATS]
 
   return (
-    <section className="hp-stats">
+    <section className={cn('hp-stats', backgroundImage && 'section-has-bg-image')}>
+      <SectionBackgroundImage media={backgroundImage} altFallback="By the numbers" />
       <div className="hp-stats__wm" aria-hidden="true">
         <CowMark size={420} color="var(--green-900)" />
       </div>
@@ -33,9 +39,7 @@ export function HomeStatsSection({
           <PtEyebrow>{eyebrow}</PtEyebrow>
           <h2 className="hp-heading-stats">
             {headlinePrefix}{' '}
-            <em className="pt-display-italic" style={{ color: 'var(--mustard-600)' }}>
-              {headlineItalic}
-            </em>
+            <em className="pt-display-italic hp-italic-mustard-600">{headlineItalic}</em>
           </h2>
         </div>
         <div className="stats-grid-inner">

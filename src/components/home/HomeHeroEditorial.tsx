@@ -6,6 +6,7 @@ import { CowMark } from '@/components/ui/pt/CowMark'
 import { Icons } from '@/components/ui/pt/Icons'
 import { PtEyebrow } from '@/components/ui/pt/PtEyebrow'
 import { PtStars } from '@/components/ui/pt/PtStars'
+import { resolveMediaAlt, resolveMediaUrl, type MediaLike } from '@/utilities/mediaUrl'
 import { cn } from '@/utilities/ui'
 
 function renderLine2WithItalic(line2: string, italicWord: string | null | undefined) {
@@ -48,6 +49,7 @@ export function HomeHeroEditorial({
   pressWeekKicker = 'Press of the week',
   pressWeekTitle = 'Sesame · Erode',
   backgroundStyle = 'cream',
+  image,
 }: {
   eyebrow?: string | null
   headlineLine1?: string | null
@@ -64,7 +66,10 @@ export function HomeHeroEditorial({
   pressWeekKicker?: string | null
   pressWeekTitle?: string | null
   backgroundStyle?: 'cream' | 'dark-green' | 'warm-white' | null
+  image?: MediaLike
 }) {
+  const imageUrl = resolveMediaUrl(image)
+  const imageAlt = resolveMediaAlt(image, 'Punyakoti hero')
   const bgClass =
     backgroundStyle === 'warm-white'
       ? 'hp-hero-editorial--warm-white'
@@ -110,9 +115,14 @@ export function HomeHeroEditorial({
         <div className="hp-hero-editorial__bottle hero-bottle">
           <div className="hp-hero-editorial__bottle-frame">
             <div className="hp-hero-editorial__grain" />
-            <div className="hp-hero-editorial__bottle-shadow">
-              <Bottle variant={bottleVariant ?? 'sesame'} size={280} />
-            </div>
+            {imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={imageUrl} alt={imageAlt} className="hp-hero-editorial__bottle-image" />
+            ) : (
+              <div className="hp-hero-editorial__bottle-shadow">
+                <Bottle variant={bottleVariant ?? 'sesame'} size={280} />
+              </div>
+            )}
             <div className="hp-hero-editorial__bottle-caption">
               <span>{batchCaptionLeft}</span>
               <span className="hp-hero-editorial__bottle-caption-accent">{batchCaptionRight}</span>

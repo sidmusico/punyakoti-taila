@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 
+import { runImageKitMediaSeed } from '@/seed/runImageKitMediaSeed'
 import { runMediaCatalogSeed } from '@/seed/runMediaCatalogSeed'
 import { runProductCatalogSeed } from '@/seed/runProductCatalogSeed'
 import { runSitePagesSeed } from '@/seed/runSitePagesSeed'
@@ -35,6 +36,13 @@ export async function runFullSiteSeed(payload: Payload): Promise<{ steps: FullSe
     step: 'media',
     summary: summarize(media.results),
     results: media.results,
+  })
+
+  const imagekitMedia = await runImageKitMediaSeed(payload)
+  steps.push({
+    step: 'imagekit-media',
+    summary: summarize(imagekitMedia.results),
+    results: imagekitMedia.results,
   })
 
   const products = await runProductCatalogSeed(payload)

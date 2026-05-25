@@ -1,7 +1,9 @@
 import React from 'react'
 
+import { SectionBackgroundImage } from '@/components/home/SectionBackgroundImage'
 import { Icons } from '@/components/ui/pt/Icons'
 import { PtEyebrow } from '@/components/ui/pt/PtEyebrow'
+import type { MediaLike } from '@/utilities/mediaUrl'
 import { cn } from '@/utilities/ui'
 
 const DEFAULT_FAQ = [
@@ -32,25 +34,32 @@ export function HomeFaqSection({
   headlineItalic = 'answers.',
   style: variant = 'light',
   items,
+  backgroundImage,
 }: {
   eyebrow?: string | null
   headlinePrefix?: string | null
   headlineItalic?: string | null
   style?: 'light' | 'dark' | null
   items?: { question: string; answer: string }[] | null
+  backgroundImage?: MediaLike
 }) {
   const list = items?.length ? items : [...DEFAULT_FAQ]
   const isDark = variant === 'dark'
 
   return (
-    <section className={cn('faq-grid hp-faq', isDark && 'hp-faq--dark')}>
+    <section
+      className={cn(
+        'faq-grid hp-faq',
+        isDark && 'hp-faq--dark',
+        backgroundImage && 'section-has-bg-image',
+      )}
+    >
+      <SectionBackgroundImage media={backgroundImage} altFallback="Frequently asked" />
       <div>
         <PtEyebrow variant={isDark ? 'onDark' : 'default'}>{eyebrow}</PtEyebrow>
         <h2 className="hp-heading-faq">
           {headlinePrefix}{' '}
-          <em className="pt-display-italic" style={{ color: 'var(--mustard-600)' }}>
-            {headlineItalic}
-          </em>
+          <em className="pt-display-italic hp-italic-mustard-600">{headlineItalic}</em>
         </h2>
       </div>
       <div>

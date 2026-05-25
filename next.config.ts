@@ -33,6 +33,8 @@ const nextConfig: NextConfig = {
           protocol: url.protocol.replace(':', '') as 'http' | 'https',
         }
       }),
+      // ImageKit CDN — media uploads land here, see src/plugins/imagekitAdapter.ts.
+      { protocol: 'https' as const, hostname: 'ik.imagekit.io' },
     ],
   },
   webpack: (webpackConfig) => {

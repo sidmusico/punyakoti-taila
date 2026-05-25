@@ -1,9 +1,11 @@
+import { cloudStoragePlugin } from '@payloadcms/plugin-cloud-storage'
 import { formBuilderPlugin } from '@payloadcms/plugin-form-builder'
 import { nestedDocsPlugin } from '@payloadcms/plugin-nested-docs'
 import { redirectsPlugin } from '@payloadcms/plugin-redirects'
 import { seoPlugin } from '@payloadcms/plugin-seo'
 import { searchPlugin } from '@payloadcms/plugin-search'
 import { Plugin } from 'payload'
+import { imagekitAdapter } from '@/plugins/imagekitAdapter'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import { GenerateTitle, GenerateURL } from '@payloadcms/plugin-seo/types'
 import { FixedToolbarFeature, HeadingFeature, lexicalEditor } from '@payloadcms/richtext-lexical'
@@ -86,6 +88,25 @@ export const plugins: Plugin[] = [
     searchOverrides: {
       fields: ({ defaultFields }) => {
         return [...defaultFields, ...searchFields]
+      },
+    },
+  }),
+  cloudStoragePlugin({
+    enabled:
+      Boolean(process.env.IMAGEKIT_PRIVATE_KEY) &&
+      Boolean(process.env.IMAGEKIT_URL_ENDPOINT),
+    collections: {
+      media: {
+        adapter: imagekitAdapter(),
+        // Keep files on local disk too so Payload's image-size generation still works.
+        // Set to `true` once you're confident every consumer reads from `imagekitUrl`.
+        disableLocalStorage: false,
+        // REQUIRED for the adapter's `generateURL` to actually run. Without
+        // this, plugin-cloud-storage keeps `media.url` pointing at the local
+        // /api/media/file route — admin uploads end up on ImageKit but the
+        // storefront can't load them. See doc/IMAGEKIT.md §8 (URL routing).
+        // Safe because ImageKit URLs are public CDN URLs already.
+        disablePayloadAccessControl: true,
       },
     },
   }),

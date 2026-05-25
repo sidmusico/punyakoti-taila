@@ -1,16 +1,14 @@
-import { dirname } from 'path'
-import { fileURLToPath } from 'url'
-import { FlatCompat } from '@eslint/eslintrc'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = dirname(__filename)
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
+// Native flat-config. We don't go through @eslint/eslintrc's FlatCompat shim
+// because its schema validator chokes on the circular reference in
+// eslint-plugin-react ("Converting circular structure to JSON"). The flat
+// exports below are the ones eslint-config-next 16+ ships natively, so we
+// can consume them directly without any compat layer.
+import nextCoreWebVitals from 'eslint-config-next/core-web-vitals'
+import nextTypescript from 'eslint-config-next/typescript'
 
 const eslintConfig = [
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  ...nextCoreWebVitals,
+  ...nextTypescript,
   {
     rules: {
       '@typescript-eslint/ban-ts-comment': 'warn',
@@ -31,7 +29,13 @@ const eslintConfig = [
     },
   },
   {
-    ignores: ['.next/', 'src/payload-types.ts', 'src/payload-generated-schema.ts'],
+    ignores: [
+      '.next/',
+      'node_modules/',
+      'src/payload-types.ts',
+      'src/payload-generated-schema.ts',
+      'src/seed/imagekitCatalog.generated.ts',
+    ],
   },
 ]
 

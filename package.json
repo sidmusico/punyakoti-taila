@@ -20,6 +20,7 @@
     "lint:fix": "cross-env NODE_OPTIONS=--no-deprecation eslint . --fix",
     "payload": "cross-env NODE_OPTIONS=\"--no-deprecation --dns-result-order=ipv4first\" payload",
     "payload:db-sync": "cross-env NODE_OPTIONS=\"--no-deprecation --dns-result-order=ipv4first\" PAYLOAD_DISABLE_DB_PUSH=false tsx scripts/payload-db-sync.ts",
+    "imagekit:list": "cross-env NODE_OPTIONS=\"--no-deprecation --dns-result-order=ipv4first\" tsx scripts/listImageKit.ts",
     "seed:products": "node -e \"console.log('With dev server running: curl -s \\\"http://localhost:3000/api/seed-products\\\"'); console.log('Prod: curl -s -H \\\"x-cron-secret: $CRON_SECRET\\\" \\\"https://<host>/api/seed-products?secret=$CRON_SECRET\\\"')\"",
     "db:local:fresh": "supabase db reset && pnpm payload:db-sync",
     "reinstall": "cross-env NODE_OPTIONS=--no-deprecation rm -rf node_modules && rm pnpm-lock.yaml && pnpm --ignore-workspace install",
@@ -29,9 +30,12 @@
     "test:int": "cross-env NODE_OPTIONS=\"--no-deprecation --dns-result-order=ipv4first\" vitest run --config ./vitest.config.mts"
   },
   "dependencies": {
+    "@imagekit/nodejs": "^7.6.2",
     "@payloadcms/admin-bar": "3.84.1",
+    "@payloadcms/db-postgres": "3.84.1",
     "@payloadcms/live-preview-react": "3.84.1",
     "@payloadcms/next": "3.84.1",
+    "@payloadcms/plugin-cloud-storage": "^3.84.1",
     "@payloadcms/plugin-form-builder": "3.84.1",
     "@payloadcms/plugin-nested-docs": "3.84.1",
     "@payloadcms/plugin-redirects": "3.84.1",
@@ -57,11 +61,10 @@
     "react": "19.2.6",
     "react-dom": "19.2.6",
     "react-hook-form": "7.71.1",
-    "zustand": "^5.0.2",
-    "zod": "^3.23.8",
     "sharp": "0.34.2",
     "tailwind-merge": "^3.4.0",
-    "@payloadcms/db-postgres": "3.84.1"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

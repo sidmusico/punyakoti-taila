@@ -2,6 +2,7 @@ import Link from 'next/link'
 import React from 'react'
 
 import { WoodPressScene } from '@/components/home/WoodPressScene'
+import { resolveMediaAlt, resolveMediaUrl, type MediaLike } from '@/utilities/mediaUrl'
 
 export function HomeHeroCinematic({
   badge = 'Traditional extraction',
@@ -10,6 +11,7 @@ export function HomeHeroCinematic({
   lead = 'Handcrafted cold-pressed oils, honouring ancient Ayurvedic wisdom for modern wellness. Single-origin. Wooden-press. Bottled within 72 hours.',
   ctaLabel = 'Shop the collection',
   ctaHref = '/shop',
+  image,
 }: {
   badge?: string | null
   headlineLine1?: string | null
@@ -17,11 +19,19 @@ export function HomeHeroCinematic({
   lead?: string | null
   ctaLabel?: string | null
   ctaHref?: string | null
+  image?: MediaLike
 }) {
+  const imageUrl = resolveMediaUrl(image)
+  const imageAlt = resolveMediaAlt(image, 'Punyakoti cinematic hero')
   return (
     <section className="hp-hero-cinematic">
       <div className="hp-hero-cinematic__bg">
-        <WoodPressScene />
+        {imageUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={imageUrl} alt={imageAlt} className="hp-hero-cinematic__bg-image" />
+        ) : (
+          <WoodPressScene />
+        )}
       </div>
       <div className="hp-hero-cinematic__scrim" />
       <div className="hp-hero-cinematic__content">

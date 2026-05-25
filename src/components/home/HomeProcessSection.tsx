@@ -4,6 +4,7 @@ import React from 'react'
 import { CowMark } from '@/components/ui/pt/CowMark'
 import { Icons } from '@/components/ui/pt/Icons'
 import { PtEyebrow } from '@/components/ui/pt/PtEyebrow'
+import { resolveMediaAlt, resolveMediaUrl, type MediaLike } from '@/utilities/mediaUrl'
 
 const DEFAULT_STEPS = [
   { n: '01', title: 'Sourced', description: 'Single-farm seed. Sun-dried on jute mats. Cleaned by hand.' },
@@ -19,15 +20,19 @@ export function HomeProcessSection({
   body = 'A wooden ghani turns at four revolutions per minute. No heat. No solvents. Just seed, stone, and the patience to wait nine hours for two litres. The yield is half. The flavour is whole.',
   steps,
   cta = { label: 'Read our story', href: '/about' },
+  bannerImage,
 }: {
   eyebrow?: string | null
   headlineLine1?: string | null
   headlineItalic?: string | null
   body?: string | null
-  steps?: { n: string; title: string; description: string }[] | null
+  steps?: { n: string; title: string; description: string; image?: MediaLike }[] | null
   cta?: { label?: string | null; href?: string | null } | null
+  bannerImage?: MediaLike
 }) {
   const list = steps?.length ? steps : [...DEFAULT_STEPS]
+  const bannerUrl = resolveMediaUrl(bannerImage)
+  const bannerAlt = resolveMediaAlt(bannerImage, 'Process banner')
 
   return (
     <section className="hp-process">
@@ -45,14 +50,25 @@ export function HomeProcessSection({
           and <em className="pt-display-italic" style={{ color: 'var(--mustard-400)' }}>{headlineItalic}</em>
         </h2>
         <p className="hp-prose--on-dark">{body}</p>
+        {bannerUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={bannerUrl} alt={bannerAlt} className="hp-process-banner-img" />
+        ) : null}
         <div className="process-steps hp-process-steps">
-          {list.map((s) => (
-            <div key={s.n} className="hp-process-step">
-              <div className="hp-process-step__n">{s.n}</div>
-              <div className="hp-process-step__title">{s.title}</div>
-              <div className="hp-process-step__desc">{s.description}</div>
-            </div>
-          ))}
+          {list.map((s) => {
+            const stepUrl = resolveMediaUrl((s as { image?: MediaLike }).image)
+            return (
+              <div key={s.n} className="hp-process-step">
+                {stepUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={stepUrl} alt={s.title} className="hp-process-step__img" />
+                ) : null}
+                <div className="hp-process-step__n">{s.n}</div>
+                <div className="hp-process-step__title">{s.title}</div>
+                <div className="hp-process-step__desc">{s.description}</div>
+              </div>
+            )
+          })}
         </div>
         <Link href={cta?.href || '/about'} className="pt-text-link pt-text-link--mustard-muted pt-btn-inline-icon hp-process-story-link">
           {cta?.label} <Icons.arrowRight size={14} />

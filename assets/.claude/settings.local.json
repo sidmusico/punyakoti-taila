@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm generate:types)",
+      "Bash(pnpm tsc *)",
+      "Bash(pnpm lint *)"
+    ]
+  }
+}

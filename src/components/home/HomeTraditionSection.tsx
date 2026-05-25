@@ -5,6 +5,7 @@ import { WoodPressScene } from '@/components/home/WoodPressScene'
 import { CowMark } from '@/components/ui/pt/CowMark'
 import { Icons } from '@/components/ui/pt/Icons'
 import { PtEyebrow } from '@/components/ui/pt/PtEyebrow'
+import { resolveMediaAlt, resolveMediaUrl, type MediaLike } from '@/utilities/mediaUrl'
 
 export function HomeTraditionSection({
   eyebrow = 'Five generations',
@@ -16,6 +17,7 @@ export function HomeTraditionSection({
   ctaSecondary = { label: 'Visit the press', href: '/about#press' },
   mediaCaptionLeft = 'Batch #047 · 9-hour press',
   mediaCaptionRight = 'Erode · Tamil Nadu',
+  image,
 }: {
   eyebrow?: string | null
   headlineLine1?: string | null
@@ -26,7 +28,10 @@ export function HomeTraditionSection({
   ctaSecondary?: { label?: string | null; href?: string | null } | null
   mediaCaptionLeft?: string | null
   mediaCaptionRight?: string | null
+  image?: MediaLike
 }) {
+  const imageUrl = resolveMediaUrl(image)
+  const imageAlt = resolveMediaAlt(image, 'Punyakoti tradition')
   return (
     <section className="hp-tradition">
       <div className="hp-tradition__watermark" aria-hidden="true">
@@ -54,7 +59,12 @@ export function HomeTraditionSection({
           </div>
         </div>
         <div className="hp-tradition__media">
-          <WoodPressScene />
+          {imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={imageUrl} alt={imageAlt} className="hp-tradition__media-image" />
+          ) : (
+            <WoodPressScene />
+          )}
           <div className="hp-tradition__stamp">
             <CowMark size={36} color="var(--mustard-400)" />
             <span className="hp-tradition__stamp-word">PUNYAKOTI</span>

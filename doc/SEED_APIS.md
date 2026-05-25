@@ -2,6 +2,8 @@
 
 All routes are **GET** handlers under `/api/…`. They **do not** reset Postgres; they only **create missing documents** or **fill globals that still look empty** (idempotent skips when data already exists).
 
+> **Media is hosted on ImageKit.** Routes that touch the `media` collection write to ImageKit via a cloud-storage adapter. See [IMAGEKIT.md](./IMAGEKIT.md) for setup, the `/api/sync-assets` live-progress endpoint, and the local `assets/` → ImageKit → Payload workflow.
+
 ## Auth
 
 | Environment | Access |
@@ -27,7 +29,9 @@ That updates the DB schema and regenerates types. Seed routes assume tables alre
 
 | Endpoint | Purpose |
 |----------|---------|
-| **`GET /api/seed-all`** | Runs the full pipeline in order: **media → products (includes categories) → pages → storefront + homepage globals**. Best single call for a new empty DB. |
+| **`GET /api/seed-all`** | Runs the full pipeline in order: **media → ImageKit-media → products (includes categories) → pages → storefront + homepage globals**. Best single call for a new empty DB. |
+| **`GET /api/sync-assets`** | Mirror local `assets/` → ImageKit → Payload Media. Streams progress as NDJSON. The everyday workflow when you've added new files locally. See [IMAGEKIT.md §4](./IMAGEKIT.md#4-api-endpoints). |
+| **`GET /api/seed-imagekit-media`** | Cold-boot seed: every file in [imagekitCatalog.generated.ts](../src/seed/imagekitCatalog.generated.ts) becomes a Media doc. Run after `pnpm imagekit:list`. |
 
 Example (local):
 

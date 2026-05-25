@@ -7,6 +7,12 @@ Start with `.claude/skills/payload/SKILL.md` for a quick reference, then see `.c
 
 **HTTP seed APIs (demo content / fresh DB):** see **`doc/SEED_APIS.md`** (`GET /api/seed-all`, `seed-categories`, `seed-media`, `seed-products`, `seed-site-pages`, `seed-storefront-globals`, `seed-homepage`, `seed-pages`).
 
+**Media hosting (ImageKit):** all uploads go to ImageKit via a cloud-storage adapter; the storefront reads `imagekitUrl` from each Media doc. To mirror local `assets/` → ImageKit → Payload Media in one shot, run **`GET /api/sync-assets`** (streams NDJSON progress). To refresh the generated catalog (after uploading via the ImageKit dashboard), run **`pnpm imagekit:list`**. Full guide: **`doc/IMAGEKIT.md`**.
+
+**Site frame (centered max-width):** the storefront is capped at `--site-max-width` (default `1600px`) and centered with side gutters on wider screens. New `position: fixed` overlays (cart drawer, future cookie banners, etc.) must use `right: var(--site-side-gutter)` (or `left:`) to stay aligned to the centered frame — see **`doc/SITE_FRAME.md`** for variables, fixed/sticky positioning rules, and per-page opt-out.
+
+**E2E verification after every user-facing change:** see **`.claude/skills/feature-e2e-verify/SKILL.md`**. After implementing/modifying a feature, write or update the relevant `tests/e2e/*.e2e.spec.ts`, run `pnpm exec playwright test ...`, and drive a real Chromium via the Playwright MCP (`.mcp.json` is configured; Claude Code restart needed first time). Don't report a feature done until the spec passes.
+
 **Storefront globals ↔ repo seed JSON:** after changing `shop-listing`, `product-detail`, `cart`, `account`, `order-success`, or `homepage-settings` in Payload, follow `.cursor/skills/payload-storefront-seed-sync/SKILL.md` (export route + commit `src/seed/generated/*.json`).
 
 ---

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://schemas.modelcontextprotocol.io/2024-11-05/server.json",
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest",
+        "--browser=chromium",
+        "--viewport-size=1440,900",
+        "--save-trace"
+      ],
+      "description": "Microsoft Playwright MCP. Spins up its own Chromium and exposes browser tools (navigate, click, fill, screenshot, snapshot, etc.). Drop `--headless` from args to see the browser window. Requires Claude Code restart after edits to take effect."
+    }
+  }
+}

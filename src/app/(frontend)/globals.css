@@ -138,6 +138,17 @@
 
   /* Layout */
   --container-wide: 1440px;
+  /* Hard cap on the entire site frame (including full-bleed sections like the
+     dark BottleRow). Above this width the site is centered with side gutters.
+     Below this width nothing changes. See `body { max-width }` rule below. */
+  --site-max-width: 1600px;
+  /* Background colour for the gutter shown either side of the centered site.
+     Slightly darker than --bg so the boxed site reads as a foreground card. */
+  --site-gutter-bg: #ece3d0;
+  /* Width of one side gutter at the current viewport. `0` when the viewport
+     is narrower than the cap. Use this on `position: fixed` overlays (cart
+     drawer, etc.) so they stay aligned to the centered site frame. */
+  --site-side-gutter: max(0px, calc((100vw - var(--site-max-width)) / 2));
 
   /* Semantic roles */
   --bg:          var(--cream-200);
@@ -306,7 +317,24 @@
   }
   body {
     @apply bg-background text-foreground min-h-[100vh] flex flex-col;
+    /* Cap the entire site frame so it stays centered with side gutters on
+       big monitors / when the browser is zoomed out. On any viewport
+       narrower than --site-max-width these rules collapse to a no-op. */
+    max-width: var(--site-max-width);
+    margin-inline: auto;
+    /* Sticky/fixed children stay positioned relative to the viewport, not
+       relative to this constrained body — which is what we want for the
+       header and cart drawer. */
+    position: relative;
+    /* Subtle separation between the centered site and the gutter. Override
+       --site-gutter-bg if you want a flat look. */
+    box-shadow: 0 0 80px rgba(58, 38, 14, 0.06);
   }
+}
+
+/* Gutter colour shown either side of the centered site frame on wide screens. */
+html {
+  background: var(--site-gutter-bg, var(--cream-200));
 }
 
 html {

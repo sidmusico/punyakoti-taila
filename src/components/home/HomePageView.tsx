@@ -59,6 +59,7 @@ export function HomePageView({
           lead={hp?.cinematic?.lead}
           ctaLabel={hp?.cinematic?.cta?.label}
           ctaHref={hp?.cinematic?.cta?.href}
+          image={hp?.cinematic?.image}
         />
       ) : null}
 
@@ -79,6 +80,7 @@ export function HomePageView({
           pressWeekKicker={hp?.hero?.pressWeekKicker}
           pressWeekTitle={hp?.hero?.pressWeekTitle}
           backgroundStyle={hp?.hero?.backgroundStyle}
+          image={hp?.hero?.image}
         />
       ) : null}
 
@@ -112,6 +114,7 @@ export function HomePageView({
           ctaSecondary={hp.tradition.ctaSecondary}
           mediaCaptionLeft={hp.tradition.mediaCaptionLeft}
           mediaCaptionRight={hp.tradition.mediaCaptionRight}
+          image={hp.tradition.image}
         />
       ) : hp?.traditionEnabled !== false ? (
         <HomeTraditionSection />
@@ -125,6 +128,7 @@ export function HomePageView({
           body={hp.processSteps.body}
           steps={hp.processSteps.steps}
           cta={hp.processSteps.cta}
+          bannerImage={hp.processSteps.bannerImage}
         />
       ) : hp?.processStepsEnabled !== false ? (
         <HomeProcessSection />
@@ -139,6 +143,7 @@ export function HomePageView({
           stats={hp?.processSection?.stats}
           ctaLabel={hp?.processSection?.ctaLabel}
           ctaHref={hp?.processSection?.ctaHref}
+          backgroundImage={hp?.processSection?.backgroundImage}
         />
       ) : null}
 
@@ -148,6 +153,7 @@ export function HomePageView({
           headline1={hp.poetic.headline1}
           headline2={hp.poetic.headline2}
           body={hp.poetic.body}
+          backgroundImage={hp.poetic.backgroundImage}
         />
       ) : hp?.poeticEnabled !== false ? (
         <HomePoeticSection />
@@ -170,6 +176,7 @@ export function HomePageView({
           headlinePrefix={hp?.statsBand?.headlinePrefix}
           headlineItalic={hp?.statsBand?.headlineItalic}
           stats={hp?.statsBand?.stats ?? undefined}
+          backgroundImage={hp?.statsBand?.backgroundImage}
         />
       ) : null}
 
@@ -232,6 +239,7 @@ export function HomePageView({
           headlineItalic={hp?.faq?.headlineItalic}
           style={hp?.faq?.style}
           items={hp?.faq?.items ?? undefined}
+          backgroundImage={hp?.faq?.backgroundImage}
         />
       ) : null}
     </>

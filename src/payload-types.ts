@@ -459,6 +459,10 @@ export interface Post {
 export interface Media {
   id: number;
   alt?: string | null;
+  /**
+   * Sub-folder under /punyakoti-taila. Type a new name to create it on upload. Existing: brand, collections, gifting, home, ingredients, process, products, products/achaar-pickles, products/almond-oil, products/castor-oil, products/coconut-oil, products/dant-manjan, products/dhoop-batti, products/gomutra-ark, products/groundnut-oil, products/safflower-oil, products/sesame-oil, store, ui-mockups
+   */
+  imagekitFolder?: string | null;
   caption?: {
     root: {
       type: string;
@@ -474,6 +478,12 @@ export interface Media {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * ImageKit fileId.
+   */
+  imagekitFileId?: string | null;
+  imagekitFilePath?: string | null;
+  imagekitUrl?: string | null;
   folder?: (number | null) | FolderInterface;
   updatedAt: string;
   createdAt: string;
@@ -488,6 +498,12 @@ export interface Media {
   focalY?: number | null;
   sizes?: {
     thumbnail?: {
+      /**
+       * ImageKit fileId.
+       */
+      imagekitFileId?: string | null;
+      imagekitFilePath?: string | null;
+      imagekitUrl?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -496,6 +512,12 @@ export interface Media {
       filename?: string | null;
     };
     square?: {
+      /**
+       * ImageKit fileId.
+       */
+      imagekitFileId?: string | null;
+      imagekitFilePath?: string | null;
+      imagekitUrl?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -504,6 +526,12 @@ export interface Media {
       filename?: string | null;
     };
     small?: {
+      /**
+       * ImageKit fileId.
+       */
+      imagekitFileId?: string | null;
+      imagekitFilePath?: string | null;
+      imagekitUrl?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -512,6 +540,12 @@ export interface Media {
       filename?: string | null;
     };
     medium?: {
+      /**
+       * ImageKit fileId.
+       */
+      imagekitFileId?: string | null;
+      imagekitFilePath?: string | null;
+      imagekitUrl?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -520,6 +554,12 @@ export interface Media {
       filename?: string | null;
     };
     large?: {
+      /**
+       * ImageKit fileId.
+       */
+      imagekitFileId?: string | null;
+      imagekitFilePath?: string | null;
+      imagekitUrl?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -528,6 +568,12 @@ export interface Media {
       filename?: string | null;
     };
     xlarge?: {
+      /**
+       * ImageKit fileId.
+       */
+      imagekitFileId?: string | null;
+      imagekitFilePath?: string | null;
+      imagekitUrl?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -536,6 +582,12 @@ export interface Media {
       filename?: string | null;
     };
     og?: {
+      /**
+       * ImageKit fileId.
+       */
+      imagekitFileId?: string | null;
+      imagekitFilePath?: string | null;
+      imagekitUrl?: string | null;
       url?: string | null;
       width?: number | null;
       height?: number | null;
@@ -1812,7 +1864,11 @@ export interface PostsSelect<T extends boolean = true> {
  */
 export interface MediaSelect<T extends boolean = true> {
   alt?: T;
+  imagekitFolder?: T;
   caption?: T;
+  imagekitFileId?: T;
+  imagekitFilePath?: T;
+  imagekitUrl?: T;
   folder?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -1831,6 +1887,9 @@ export interface MediaSelect<T extends boolean = true> {
         thumbnail?:
           | T
           | {
+              imagekitFileId?: T;
+              imagekitFilePath?: T;
+              imagekitUrl?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1841,6 +1900,9 @@ export interface MediaSelect<T extends boolean = true> {
         square?:
           | T
           | {
+              imagekitFileId?: T;
+              imagekitFilePath?: T;
+              imagekitUrl?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1851,6 +1913,9 @@ export interface MediaSelect<T extends boolean = true> {
         small?:
           | T
           | {
+              imagekitFileId?: T;
+              imagekitFilePath?: T;
+              imagekitUrl?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1861,6 +1926,9 @@ export interface MediaSelect<T extends boolean = true> {
         medium?:
           | T
           | {
+              imagekitFileId?: T;
+              imagekitFilePath?: T;
+              imagekitUrl?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1871,6 +1939,9 @@ export interface MediaSelect<T extends boolean = true> {
         large?:
           | T
           | {
+              imagekitFileId?: T;
+              imagekitFilePath?: T;
+              imagekitUrl?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1881,6 +1952,9 @@ export interface MediaSelect<T extends boolean = true> {
         xlarge?:
           | T
           | {
+              imagekitFileId?: T;
+              imagekitFilePath?: T;
+              imagekitUrl?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -1891,6 +1965,9 @@ export interface MediaSelect<T extends boolean = true> {
         og?:
           | T
           | {
+              imagekitFileId?: T;
+              imagekitFilePath?: T;
+              imagekitUrl?: T;
               url?: T;
               width?: T;
               height?: T;
@@ -2577,6 +2654,10 @@ export interface HomepageSetting {
       label?: string | null;
       href?: string | null;
     };
+    /**
+     * Cinematic hero background image (optional). Falls back to gradient.
+     */
+    image?: (number | null) | Media;
   };
   heroEnabled?: boolean | null;
   hero?: {
@@ -2599,6 +2680,10 @@ export interface HomepageSetting {
     reviewRating?: string | null;
     reviewCount?: string | null;
     bottleVariant?: ('sesame' | 'coconut' | 'groundnut' | 'mustard' | 'sunflower' | 'blackSes') | null;
+    /**
+     * Hero side image (optional). Renders alongside the SVG bottle if set.
+     */
+    image?: (number | null) | Media;
     batchCaptionLeft?: string | null;
     batchCaptionRight?: string | null;
     pressWeekKicker?: string | null;
@@ -2656,6 +2741,10 @@ export interface HomepageSetting {
     };
     mediaCaptionLeft?: string | null;
     mediaCaptionRight?: string | null;
+    /**
+     * Tradition section photo (e.g. wood-press in village).
+     */
+    image?: (number | null) | Media;
   };
   processStepsEnabled?: boolean | null;
   processSteps: {
@@ -2668,6 +2757,10 @@ export interface HomepageSetting {
           n: string;
           title: string;
           description: string;
+          /**
+           * Optional photo for this step.
+           */
+          image?: (number | null) | Media;
           id?: string | null;
         }[]
       | null;
@@ -2675,6 +2768,10 @@ export interface HomepageSetting {
       label?: string | null;
       href?: string | null;
     };
+    /**
+     * Optional banner photo above the steps.
+     */
+    bannerImage?: (number | null) | Media;
   };
   processSectionEnabled?: boolean | null;
   processSection?: {
@@ -2691,6 +2788,10 @@ export interface HomepageSetting {
       | null;
     ctaLabel?: string | null;
     ctaHref?: string | null;
+    /**
+     * Optional background photo behind the stats band.
+     */
+    backgroundImage?: (number | null) | Media;
   };
   poeticEnabled?: boolean | null;
   poetic: {
@@ -2698,6 +2799,10 @@ export interface HomepageSetting {
     headline1?: string | null;
     headline2?: string | null;
     body: string;
+    /**
+     * Optional muted background photo behind the poetic interlude.
+     */
+    backgroundImage?: (number | null) | Media;
   };
   whyColdPressedEnabled?: boolean | null;
   whyColdPressed?: {
@@ -2728,6 +2833,10 @@ export interface HomepageSetting {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Optional muted background photo behind the stats band.
+     */
+    backgroundImage?: (number | null) | Media;
   };
   bestSellersEnabled?: boolean | null;
   bestSellers?: {
@@ -2811,6 +2920,10 @@ export interface HomepageSetting {
           id?: string | null;
         }[]
       | null;
+    /**
+     * Optional muted background photo behind the FAQ.
+     */
+    backgroundImage?: (number | null) | Media;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -3279,6 +3392,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
               label?: T;
               href?: T;
             };
+        image?: T;
       };
   heroEnabled?: T;
   hero?:
@@ -3304,6 +3418,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
         reviewRating?: T;
         reviewCount?: T;
         bottleVariant?: T;
+        image?: T;
         batchCaptionLeft?: T;
         batchCaptionRight?: T;
         pressWeekKicker?: T;
@@ -3368,6 +3483,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
             };
         mediaCaptionLeft?: T;
         mediaCaptionRight?: T;
+        image?: T;
       };
   processStepsEnabled?: T;
   processSteps?:
@@ -3383,6 +3499,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
               n?: T;
               title?: T;
               description?: T;
+              image?: T;
               id?: T;
             };
         cta?:
@@ -3391,6 +3508,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
               label?: T;
               href?: T;
             };
+        bannerImage?: T;
       };
   processSectionEnabled?: T;
   processSection?:
@@ -3409,6 +3527,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
             };
         ctaLabel?: T;
         ctaHref?: T;
+        backgroundImage?: T;
       };
   poeticEnabled?: T;
   poetic?:
@@ -3418,6 +3537,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
         headline1?: T;
         headline2?: T;
         body?: T;
+        backgroundImage?: T;
       };
   whyColdPressedEnabled?: T;
   whyColdPressed?:
@@ -3452,6 +3572,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
               sub?: T;
               id?: T;
             };
+        backgroundImage?: T;
       };
   bestSellersEnabled?: T;
   bestSellers?:
@@ -3553,6 +3674,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
               answer?: T;
               id?: T;
             };
+        backgroundImage?: T;
       };
   updatedAt?: T;
   createdAt?: T;
