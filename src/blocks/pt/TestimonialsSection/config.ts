@@ -35,9 +35,10 @@ export const TestimonialsSection: Block = {
         description: 'Only used when source is set to "Manual"',
       },
       fields: [
-        { name: 'customerName',     type: 'text', required: true },
+        { name: 'customerName', type: 'text', required: true },
         { name: 'customerLocation', type: 'text' },
-        { name: 'rating',           type: 'number', min: 1, max: 5, defaultValue: 5 },
+        { name: 'initials', type: 'text', label: 'Avatar initials (e.g. LV)', admin: { description: 'Optional — auto from name if empty' } },
+        { name: 'rating', type: 'number', min: 1, max: 5, defaultValue: 5 },
         { name: 'title',            type: 'text' },
         { name: 'body',             type: 'textarea', required: true },
       ],

@@ -6,7 +6,8 @@ import { runStorefrontGlobalsSeed } from '@/seed/runStorefrontGlobalsSeed'
 import { isSeedApiAuthorized } from '@/seed/seedApiAuth'
 
 /**
- * Seeds storefront globals + homepage-settings (JSON export or code defaults).
+ * Seeds storefront globals + homepage-settings (JSON export or tab defaults).
+ * Homepage-only overwrite: GET /api/seed-homepage (?force=1).
  * Does not touch `pages` or `products`.
  */
 export async function GET(req: NextRequest) {

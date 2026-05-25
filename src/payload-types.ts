@@ -324,6 +324,10 @@ export interface Page {
           | {
               customerName: string;
               customerLocation?: string | null;
+              /**
+               * Optional — auto from name if empty
+               */
+              initials?: string | null;
               rating?: number | null;
               title?: string | null;
               body: string;
@@ -1618,6 +1622,7 @@ export interface PagesSelect<T extends boolean = true> {
                 | {
                     customerName?: T;
                     customerLocation?: T;
+                    initials?: T;
                     rating?: T;
                     title?: T;
                     body?: T;
@@ -2555,17 +2560,31 @@ export interface SiteSetting {
   createdAt?: string | null;
 }
 /**
+ * Each tab controls one homepage band. Uncheck “Show this section” to hide it on the storefront.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "homepage-settings".
  */
 export interface HomepageSetting {
   id: number;
+  cinematicEnabled?: boolean | null;
+  cinematic?: {
+    badge?: string | null;
+    headlineLine1?: string | null;
+    headlineItalic?: string | null;
+    lead?: string | null;
+    cta?: {
+      label?: string | null;
+      href?: string | null;
+    };
+  };
+  heroEnabled?: boolean | null;
   hero?: {
     eyebrow?: string | null;
     headlineLine1?: string | null;
     headlineLine2?: string | null;
     /**
-     * Must match text in line 2 exactly — this word is shown in italic mustard gold
+     * Must match a substring of line 2 exactly
      */
     headlineItalicWord?: string | null;
     body?: string | null;
@@ -2579,29 +2598,85 @@ export interface HomepageSetting {
     };
     reviewRating?: string | null;
     reviewCount?: string | null;
-    featuredBatch?: string | null;
-    featuredYear?: string | null;
-    pressOfWeekName?: string | null;
+    bottleVariant?: ('sesame' | 'coconut' | 'groundnut' | 'mustard' | 'sunflower' | 'blackSes') | null;
+    batchCaptionLeft?: string | null;
+    batchCaptionRight?: string | null;
+    pressWeekKicker?: string | null;
+    pressWeekTitle?: string | null;
+    backgroundStyle?: ('cream' | 'dark-green' | 'warm-white') | null;
   };
+  pressMarqueeEnabled?: boolean | null;
+  pressMarquee?: {
+    items?:
+      | {
+          live?: boolean | null;
+          italic?: boolean | null;
+          text: string;
+          stamp: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  trustStripEnabled?: boolean | null;
   trustStrip?:
     | {
-        icon: 'leaf' | 'drop' | 'truck' | 'shield' | 'star' | 'check';
+        icon: 'leaf' | 'drop' | 'truck' | 'shield' | 'star' | 'check' | 'refresh';
         label: string;
         sub?: string | null;
         id?: string | null;
       }[]
     | null;
+  featuredSectionEnabled?: boolean | null;
   featuredSection?: {
     eyebrow?: string | null;
     headline?: string | null;
     body?: string | null;
     ctaLabel?: string | null;
     ctaHref?: string | null;
+    columns?: ('2' | '3' | '4') | null;
     /**
-     * Select up to 6 products to feature. Only published products appear on the site.
+     * Optional — leave empty to show the first active catalog products.
      */
     products?: (number | Product)[] | null;
   };
+  traditionEnabled?: boolean | null;
+  tradition: {
+    eyebrow?: string | null;
+    headlineLine1?: string | null;
+    headlineItalic?: string | null;
+    paragraph1: string;
+    paragraph2: string;
+    ctaPrimary?: {
+      label?: string | null;
+      href?: string | null;
+    };
+    ctaSecondary?: {
+      label?: string | null;
+      href?: string | null;
+    };
+    mediaCaptionLeft?: string | null;
+    mediaCaptionRight?: string | null;
+  };
+  processStepsEnabled?: boolean | null;
+  processSteps: {
+    eyebrow?: string | null;
+    headlineLine1?: string | null;
+    headlineItalic?: string | null;
+    body: string;
+    steps?:
+      | {
+          n: string;
+          title: string;
+          description: string;
+          id?: string | null;
+        }[]
+      | null;
+    cta?: {
+      label?: string | null;
+      href?: string | null;
+    };
+  };
+  processSectionEnabled?: boolean | null;
   processSection?: {
     eyebrow?: string | null;
     headlineLine1?: string | null;
@@ -2617,34 +2692,126 @@ export interface HomepageSetting {
     ctaLabel?: string | null;
     ctaHref?: string | null;
   };
+  poeticEnabled?: boolean | null;
+  poetic: {
+    eyebrow?: string | null;
+    headline1?: string | null;
+    headline2?: string | null;
+    body: string;
+  };
+  whyColdPressedEnabled?: boolean | null;
   whyColdPressed?: {
     eyebrow?: string | null;
     headline?: string | null;
-    /**
-     * Must be an exact substring of Headline above
-     */
     headlineItalic?: string | null;
+    scienceHref?: string | null;
+    scienceLabel?: string | null;
     cards?:
       | {
-          icon: 'leaf' | 'drop' | 'shield' | 'star';
+          icon: 'leaf' | 'drop' | 'shield' | 'star' | 'check';
           title: string;
           body: string;
           id?: string | null;
         }[]
       | null;
   };
-  newsletter?: {
+  statsBandEnabled?: boolean | null;
+  statsBand?: {
+    eyebrow?: string | null;
+    headlinePrefix?: string | null;
+    headlineItalic?: string | null;
+    stats?:
+      | {
+          value: string;
+          label: string;
+          sub: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  bestSellersEnabled?: boolean | null;
+  bestSellers?: {
+    eyebrow?: string | null;
     headline?: string | null;
+    cta?: {
+      label?: string | null;
+      href?: string | null;
+    };
+    source?: ('auto' | 'manual') | null;
+    products?: (number | Product)[] | null;
+  };
+  bottleRowEnabled?: boolean | null;
+  bottleRow?: {
+    eyebrow?: string | null;
+    headlineBefore?: string | null;
+    headlineItalic?: string | null;
+    cta?: {
+      label?: string | null;
+      href?: string | null;
+    };
+  };
+  testimonialsBandEnabled?: boolean | null;
+  testimonialsBand?: {
+    eyebrow?: string | null;
+    headline?: string | null;
+    source?: ('featured' | 'manual') | null;
+    maxItems?: number | null;
+    manualItems?:
+      | {
+          customerName: string;
+          customerLocation?: string | null;
+          initials?: string | null;
+          rating?: number | null;
+          title?: string | null;
+          body: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  journalEnabled?: boolean | null;
+  journal?: {
+    eyebrow?: string | null;
+    headlineLine1?: string | null;
+    headlineLine2?: string | null;
+    cta?: {
+      label?: string | null;
+      href?: string | null;
+    };
+    posts?:
+      | {
+          tag: string;
+          title: string;
+          read?: string | null;
+          slug: string;
+          toneA?: string | null;
+          toneB?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
+  newsletterEnabled?: boolean | null;
+  newsletter?: {
+    eyebrow?: string | null;
+    headlineLine1?: string | null;
+    headlineLine2Italic?: string | null;
     body?: string | null;
     legalText?: string | null;
+    buttonLabel?: string | null;
   };
-  faq?:
-    | {
-        question: string;
-        answer: string;
-        id?: string | null;
-      }[]
-    | null;
+  faqEnabled?: boolean | null;
+  faq?: {
+    eyebrow?: string | null;
+    headlinePrefix?: string | null;
+    headlineItalic?: string | null;
+    style?: ('light' | 'dark') | null;
+    items?:
+      | {
+          question: string;
+          answer: string;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -3098,6 +3265,22 @@ export interface SiteSettingsSelect<T extends boolean = true> {
  * via the `definition` "homepage-settings_select".
  */
 export interface HomepageSettingsSelect<T extends boolean = true> {
+  cinematicEnabled?: T;
+  cinematic?:
+    | T
+    | {
+        badge?: T;
+        headlineLine1?: T;
+        headlineItalic?: T;
+        lead?: T;
+        cta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+      };
+  heroEnabled?: T;
   hero?:
     | T
     | {
@@ -3120,10 +3303,28 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
             };
         reviewRating?: T;
         reviewCount?: T;
-        featuredBatch?: T;
-        featuredYear?: T;
-        pressOfWeekName?: T;
+        bottleVariant?: T;
+        batchCaptionLeft?: T;
+        batchCaptionRight?: T;
+        pressWeekKicker?: T;
+        pressWeekTitle?: T;
+        backgroundStyle?: T;
       };
+  pressMarqueeEnabled?: T;
+  pressMarquee?:
+    | T
+    | {
+        items?:
+          | T
+          | {
+              live?: T;
+              italic?: T;
+              text?: T;
+              stamp?: T;
+              id?: T;
+            };
+      };
+  trustStripEnabled?: T;
   trustStrip?:
     | T
     | {
@@ -3132,6 +3333,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
         sub?: T;
         id?: T;
       };
+  featuredSectionEnabled?: T;
   featuredSection?:
     | T
     | {
@@ -3140,8 +3342,57 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
         body?: T;
         ctaLabel?: T;
         ctaHref?: T;
+        columns?: T;
         products?: T;
       };
+  traditionEnabled?: T;
+  tradition?:
+    | T
+    | {
+        eyebrow?: T;
+        headlineLine1?: T;
+        headlineItalic?: T;
+        paragraph1?: T;
+        paragraph2?: T;
+        ctaPrimary?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        ctaSecondary?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        mediaCaptionLeft?: T;
+        mediaCaptionRight?: T;
+      };
+  processStepsEnabled?: T;
+  processSteps?:
+    | T
+    | {
+        eyebrow?: T;
+        headlineLine1?: T;
+        headlineItalic?: T;
+        body?: T;
+        steps?:
+          | T
+          | {
+              n?: T;
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+        cta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+      };
+  processSectionEnabled?: T;
   processSection?:
     | T
     | {
@@ -3159,12 +3410,24 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
         ctaLabel?: T;
         ctaHref?: T;
       };
+  poeticEnabled?: T;
+  poetic?:
+    | T
+    | {
+        eyebrow?: T;
+        headline1?: T;
+        headline2?: T;
+        body?: T;
+      };
+  whyColdPressedEnabled?: T;
   whyColdPressed?:
     | T
     | {
         eyebrow?: T;
         headline?: T;
         headlineItalic?: T;
+        scienceHref?: T;
+        scienceLabel?: T;
         cards?:
           | T
           | {
@@ -3174,19 +3437,122 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
               id?: T;
             };
       };
+  statsBandEnabled?: T;
+  statsBand?:
+    | T
+    | {
+        eyebrow?: T;
+        headlinePrefix?: T;
+        headlineItalic?: T;
+        stats?:
+          | T
+          | {
+              value?: T;
+              label?: T;
+              sub?: T;
+              id?: T;
+            };
+      };
+  bestSellersEnabled?: T;
+  bestSellers?:
+    | T
+    | {
+        eyebrow?: T;
+        headline?: T;
+        cta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        source?: T;
+        products?: T;
+      };
+  bottleRowEnabled?: T;
+  bottleRow?:
+    | T
+    | {
+        eyebrow?: T;
+        headlineBefore?: T;
+        headlineItalic?: T;
+        cta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+      };
+  testimonialsBandEnabled?: T;
+  testimonialsBand?:
+    | T
+    | {
+        eyebrow?: T;
+        headline?: T;
+        source?: T;
+        maxItems?: T;
+        manualItems?:
+          | T
+          | {
+              customerName?: T;
+              customerLocation?: T;
+              initials?: T;
+              rating?: T;
+              title?: T;
+              body?: T;
+              id?: T;
+            };
+      };
+  journalEnabled?: T;
+  journal?:
+    | T
+    | {
+        eyebrow?: T;
+        headlineLine1?: T;
+        headlineLine2?: T;
+        cta?:
+          | T
+          | {
+              label?: T;
+              href?: T;
+            };
+        posts?:
+          | T
+          | {
+              tag?: T;
+              title?: T;
+              read?: T;
+              slug?: T;
+              toneA?: T;
+              toneB?: T;
+              id?: T;
+            };
+      };
+  newsletterEnabled?: T;
   newsletter?:
     | T
     | {
-        headline?: T;
+        eyebrow?: T;
+        headlineLine1?: T;
+        headlineLine2Italic?: T;
         body?: T;
         legalText?: T;
+        buttonLabel?: T;
       };
+  faqEnabled?: T;
   faq?:
     | T
     | {
-        question?: T;
-        answer?: T;
-        id?: T;
+        eyebrow?: T;
+        headlinePrefix?: T;
+        headlineItalic?: T;
+        style?: T;
+        items?:
+          | T
+          | {
+              question?: T;
+              answer?: T;
+              id?: T;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
