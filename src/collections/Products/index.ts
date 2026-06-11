@@ -41,12 +41,6 @@ export const Products: CollectionConfig = {
       ],
     },
     {
-      name: 'region',
-      type: 'text',
-      label: 'Origin region',
-      admin: { description: 'e.g. "Erode · Tamil Nadu"' },
-    },
-    {
       name: 'tag',
       type: 'text',
       label: 'Product tag / badge',
@@ -64,6 +58,33 @@ export const Products: CollectionConfig = {
         { label: 'Cooking', value: 'cooking' },
         { label: 'Wellness', value: 'wellness' },
         { label: 'Gift Sets', value: 'gift-sets' },
+        { label: 'Subscription', value: 'subscription' },
+      ],
+    },
+    {
+      name: 'useCases',
+      type: 'select',
+      hasMany: true,
+      label: 'Use cases',
+      admin: { description: 'Powers the PLP "Use" filter.' },
+      options: [
+        { label: 'Daily cooking', value: 'daily-cooking' },
+        { label: 'Tempering', value: 'tempering' },
+        { label: 'Salad', value: 'salad' },
+        { label: 'Hair & body', value: 'hair-body' },
+        { label: 'Ayurvedic', value: 'ayurvedic' },
+      ],
+    },
+    {
+      name: 'certifications',
+      type: 'select',
+      hasMany: true,
+      label: 'Certifications',
+      admin: { description: 'Powers the PLP "Certifications" filter.' },
+      options: [
+        { label: 'USDA Organic', value: 'usda-organic' },
+        { label: 'India Organic', value: 'india-organic' },
+        { label: 'Single-origin', value: 'single-origin' },
       ],
     },
     {

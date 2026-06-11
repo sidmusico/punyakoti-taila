@@ -1,10 +1,13 @@
 import type { Payload } from 'payload'
 
-import { homepageTabDefaults, isHomepageGlobalUnset } from '@/seed/homepageTabDefaults'
+import { homepageTabDefaults } from '@/seed/homepageTabDefaults'
+import { mergeMissing } from '@/seed/incrementalMerge'
 
 export type HomepageTabSeedResult = {
   slug: 'homepage-settings'
-  status: 'created' | 'skipped'
+  status: 'created' | 'updated' | 'skipped' | 'forced'
+  filledPaths: string[]
+  force: boolean
 }
 
 async function mediaIdByAlt(payload: Payload, alt: string): Promise<string | number | null> {
@@ -24,7 +27,11 @@ async function mediaIdByAlt(payload: Payload, alt: string): Promise<string | num
 
 /**
  * Writes tab-based homepage defaults into Globals → Homepage.
- * Skips when the global already looks configured unless `force` is true.
+ *
+ * Default (no `force`): **incremental** — only newly-added fields / empty
+ *   slots in the existing global are filled. Edits the admin made survive.
+ *
+ * `force=true`: overwrites the entire global with the defaults document.
  *
  * Media wiring: image slots default to known ImageKit assets (matched by `alt`,
  * set during `runImageKitMediaSeed`). Missing media is silently skipped so the
@@ -34,15 +41,13 @@ export async function runHomepageTabSeed(
   payload: Payload,
   opts?: { force?: boolean },
 ): Promise<HomepageTabSeedResult> {
+  const force = opts?.force === true
+
   const existing = await payload.findGlobal({
     slug: 'homepage-settings',
     depth: 0,
     overrideAccess: true,
   })
-
-  if (!opts?.force && !isHomepageGlobalUnset(existing)) {
-    return { slug: 'homepage-settings', status: 'skipped' }
-  }
 
   const [
     cinematicImg,
@@ -65,22 +70,58 @@ export async function runHomepageTabSeed(
   ])
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data: any = JSON.parse(JSON.stringify(homepageTabDefaults))
-  if (cinematicImg) data.cinematic.image = cinematicImg
-  if (heroImg) data.hero.image = heroImg
-  if (traditionImg) data.tradition.image = traditionImg
-  if (processBanner) data.processSteps.bannerImage = processBanner
-  if (processBg) data.processSection.backgroundImage = processBg
-  if (poeticBg) data.poetic.backgroundImage = poeticBg
-  if (statsBg) data.statsBand.backgroundImage = statsBg
-  if (faqBg) data.faq.backgroundImage = faqBg
+  const defaults: any = JSON.parse(JSON.stringify(homepageTabDefaults))
+  if (cinematicImg) defaults.cinematic.image = cinematicImg
+  if (heroImg) defaults.hero.image = heroImg
+  if (traditionImg) defaults.tradition.image = traditionImg
+  if (processBanner) defaults.processSteps.bannerImage = processBanner
+  if (processBg) defaults.processSection.backgroundImage = processBg
+  if (poeticBg) defaults.poetic.backgroundImage = poeticBg
+  if (statsBg) defaults.statsBand.backgroundImage = statsBg
+  if (faqBg) defaults.faq.backgroundImage = faqBg
+
+  // Force path — overwrite wholesale.
+  if (force) {
+    await payload.updateGlobal({
+      slug: 'homepage-settings',
+      overrideAccess: true,
+      context: { disableRevalidate: true },
+      data: defaults,
+    })
+    return {
+      slug: 'homepage-settings',
+      status: 'forced',
+      filledPaths: ['<root>'],
+      force: true,
+    }
+  }
+
+  // Incremental path — fill only missing fields.
+  const { merged, filledPaths } = mergeMissing(existing as Record<string, unknown>, defaults)
+
+  if (filledPaths.length === 0) {
+    return {
+      slug: 'homepage-settings',
+      status: 'skipped',
+      filledPaths: [],
+      force: false,
+    }
+  }
+
+  const looksEmpty =
+    !existing || typeof existing !== 'object' || !('cinematicEnabled' in (existing as object))
 
   await payload.updateGlobal({
     slug: 'homepage-settings',
     overrideAccess: true,
     context: { disableRevalidate: true },
-    data,
+    data: merged,
   })
 
-  return { slug: 'homepage-settings', status: 'created' }
+  return {
+    slug: 'homepage-settings',
+    status: looksEmpty ? 'created' : 'updated',
+    filledPaths,
+    force: false,
+  }
 }

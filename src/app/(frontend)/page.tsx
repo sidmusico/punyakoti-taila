@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import React from 'react'
 
 import { HomePageView } from '@/components/home/HomePageView'
-import { getHomepageData } from '@/lib/homepage-data'
+import { getHomepageData, type ServiceLocationCity } from '@/lib/homepage-data'
 import type { HomepageSetting, Product, Testimonial } from '@/payload-types'
 
 import '@/styles/homepage.css'
@@ -26,6 +26,7 @@ export default async function HomePage() {
   let featuredProducts: Product[] = []
   let bestSellers: Product[] = []
   let testimonials: Testimonial[] = []
+  let serviceLocations: ServiceLocationCity[] = []
 
   try {
     const data = await getHomepageData()
@@ -33,6 +34,7 @@ export default async function HomePage() {
     featuredProducts = data.featuredProducts
     bestSellers = data.bestSellers
     testimonials = data.testimonials
+    serviceLocations = data.serviceLocations
   } catch (err) {
     console.error('[HomePage] getHomepageData failed:', err)
   }
@@ -43,6 +45,7 @@ export default async function HomePage() {
       featuredProducts={featuredProducts}
       bestSellers={bestSellers}
       testimonials={testimonials}
+      serviceLocations={serviceLocations}
     />
   )
 }

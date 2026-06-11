@@ -18,6 +18,8 @@ export const SHOP_PRODUCT_BADGE_TONES: Record<string, PtPillTone> = {
   'Cold-pressed': 'green',
   Pungent: 'terra',
   'Daily cook': 'green',
+  'Save 8%': 'mustard',
+  Gift: 'cream',
 }
 
 export function ShopProductCard({
@@ -28,7 +30,10 @@ export function ShopProductCard({
   mode: 'featured' | 'compact'
 }) {
   const isDb = 'variants' in product && Array.isArray((product as Product).variants)
-  const variant = isDb ? ((product as Product).variants?.[0] as { price?: number; size?: string; sku?: string } | undefined) : undefined
+  const dbVariants = isDb ? ((product as Product).variants ?? []) : []
+  const variant = isDb
+    ? ((dbVariants.find((v) => v.isDefault) ?? dbVariants[0]) as { price?: number; size?: string; sku?: string } | undefined)
+    : undefined
   const price = variant?.price ?? (product as FallbackProduct).price ?? 0
   const size = variant?.size ?? (product as FallbackProduct).size ?? '500 ml'
   const slug = product.slug
@@ -37,9 +42,9 @@ export function ShopProductCard({
   const tag = isDb
     ? ((product as Product).tag ?? undefined)
     : ((product as FallbackProduct).badge ?? undefined)
-  const stampLine = isDb
-    ? ((product as Product).region ?? variant?.sku ?? '')
-    : (product as FallbackProduct).origin
+  const description = isDb
+    ? ((product as Product).description ?? (product as Product).tagline ?? undefined)
+    : undefined
 
   const pileTone = tag ? (SHOP_PRODUCT_BADGE_TONES[tag] ?? 'green') : 'green'
 
@@ -60,8 +65,10 @@ export function ShopProductCard({
           </div>
         </Link>
         <div className="hp-product-card__meta">
-          <div className="pt-mono-stamp">{stampLine || 'Single-origin'}</div>
           <div className="hp-product-card__title hp-product-card__title--featured">{name}</div>
+          {description ? (
+            <p className="hp-product-card__description">{description}</p>
+          ) : null}
         </div>
         <div className="hp-product-card__row hp-product-card__row--featured">
           <div>
@@ -99,8 +106,12 @@ export function ShopProductCard({
         </div>
       </Link>
       <div className="hp-product-card__meta hp-product-card__meta--compact">
-        <div className="pt-mono-stamp">{stampLine || ''}</div>
         <div className="hp-product-card__title hp-product-card__title--compact">{name}</div>
+        {description ? (
+          <p className="hp-product-card__description hp-product-card__description--compact">
+            {description}
+          </p>
+        ) : null}
       </div>
       <div className="hp-product-card__row hp-product-card__row--compact">
         <div>

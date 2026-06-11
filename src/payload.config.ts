@@ -11,6 +11,7 @@ import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Products } from './collections/Products'
 import { Reviews } from './collections/Reviews'
+import { ServiceLocations } from './collections/ServiceLocations'
 import { Testimonials } from './collections/Testimonials'
 import { Users } from './collections/Users'
 import { Footer } from './Footer/config'
@@ -79,7 +80,18 @@ export default buildConfig({
       process.env.NODE_ENV !== 'production' &&
       process.env.PAYLOAD_DISABLE_DB_PUSH !== 'true',
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Products, Orders, Reviews, Testimonials],
+  collections: [
+    Pages,
+    Posts,
+    Media,
+    Categories,
+    Users,
+    Products,
+    Orders,
+    Reviews,
+    Testimonials,
+    ServiceLocations,
+  ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [
     Header,

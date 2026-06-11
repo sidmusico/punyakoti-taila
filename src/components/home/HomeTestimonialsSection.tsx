@@ -109,15 +109,15 @@ export function HomeTestimonialsSection({
         <div className="testimonials-grid hp-testimonials-grid">
           {rows.map((t) => (
             <figure key={t.id} className="hp-testimonial">
+              <div className="hp-testimonial__thumb">
+                <PtAvatarInitials initials={t.initials} tone={t.avatarTone} size={160} />
+              </div>
+              <figcaption className="hp-testimonial__cap">
+                <div className="hp-testimonial__name">{t.customerName}</div>
+                <div className="pt-mono-stamp hp-testimonial__loc">{t.customerLocation}</div>
+              </figcaption>
               <PtStars value={t.rating} size={12} />
               <blockquote className="hp-testimonial__quote">&ldquo;{t.body}&rdquo;</blockquote>
-              <figcaption className="hp-testimonial__cap">
-                <PtAvatarInitials initials={t.initials} tone={t.avatarTone} size={84} />
-                <div>
-                  <div className="hp-testimonial__name">{t.customerName}</div>
-                  <div className="pt-mono-stamp hp-testimonial__loc">{t.customerLocation}</div>
-                </div>
-              </figcaption>
             </figure>
           ))}
         </div>

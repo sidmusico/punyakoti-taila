@@ -36,6 +36,10 @@ export const IMAGEKIT_FOLDERS: ReadonlyArray<{ folderPath: string; name: string 
     "name": "ingredients"
   },
   {
+    "folderPath": "/punyakoti-taila/others",
+    "name": "others"
+  },
+  {
     "folderPath": "/punyakoti-taila/process",
     "name": "process"
   },
@@ -46,6 +50,10 @@ export const IMAGEKIT_FOLDERS: ReadonlyArray<{ folderPath: string; name: string 
   {
     "folderPath": "/punyakoti-taila/products/achaar-pickles",
     "name": "achaar-pickles"
+  },
+  {
+    "folderPath": "/punyakoti-taila/products/all-oils",
+    "name": "all-oils"
   },
   {
     "folderPath": "/punyakoti-taila/products/almond-oil",
@@ -76,6 +84,10 @@ export const IMAGEKIT_FOLDERS: ReadonlyArray<{ folderPath: string; name: string 
     "name": "groundnut-oil"
   },
   {
+    "folderPath": "/punyakoti-taila/products/real-photos",
+    "name": "real-photos"
+  },
+  {
     "folderPath": "/punyakoti-taila/products/safflower-oil",
     "name": "safflower-oil"
   },
@@ -90,12 +102,30 @@ export const IMAGEKIT_FOLDERS: ReadonlyArray<{ folderPath: string; name: string 
   {
     "folderPath": "/punyakoti-taila/ui-mockups",
     "name": "ui-mockups"
+  },
+  {
+    "folderPath": "/punyakoti-taila/ui-mockups/claude",
+    "name": "claude"
+  },
+  {
+    "folderPath": "/punyakoti-taila/ui-mockups/stitch",
+    "name": "stitch"
   }
 ] as const
 
 export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
   {
-    "fileId": "6a140f025c7cd75eb8c315f1",
+    "fileId": "6a153c985c7cd75eb82d0eb7",
+    "name": "logo_only_with_bg.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/logo_only_with_bg.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/logo_only_with_bg.png",
+    "width": 1402,
+    "height": 768,
+    "alt": "brand/logo_only_with_bg"
+  },
+  {
+    "fileId": "6a142c1e5c7cd75eb8920630",
     "name": "logo-brand-sheet.png",
     "folder": "/punyakoti-taila/brand",
     "filePath": "/punyakoti-taila/brand/logo-brand-sheet.png",
@@ -113,6 +143,56 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1024,
     "height": 1024,
     "alt": "brand/logo-on-wood-press"
+  },
+  {
+    "fileId": "6a1539f95c7cd75eb8188bcc",
+    "name": "logo-opttions.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/logo-opttions.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/logo-opttions.png",
+    "width": 1402,
+    "height": 768,
+    "alt": "brand/logo-opttions"
+  },
+  {
+    "fileId": "6a1539fb5c7cd75eb8189b97",
+    "name": "logo-with-bg.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/logo-with-bg.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/logo-with-bg.png",
+    "width": 1402,
+    "height": 768,
+    "alt": "brand/logo-with-bg"
+  },
+  {
+    "fileId": "6a153c9a5c7cd75eb82d250b",
+    "name": "only_logo_image_no_bg.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/only_logo_image_no_bg.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/only_logo_image_no_bg.png",
+    "width": 1402,
+    "height": 768,
+    "alt": "brand/only_logo_image_no_bg"
+  },
+  {
+    "fileId": "6a1427e75c7cd75eb8789efa",
+    "name": "punyakoti_logo.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/punyakoti_logo.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/punyakoti_logo.png",
+    "width": 1693,
+    "height": 929,
+    "alt": "brand/punyakoti_logo"
+  },
+  {
+    "fileId": "6a1539fd5c7cd75eb818a9b7",
+    "name": "punyakoti-logo-no-bg.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/punyakoti-logo-no-bg.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/punyakoti-logo-no-bg.png",
+    "width": 2804,
+    "height": 1536,
+    "alt": "brand/punyakoti-logo-no-bg"
   },
   {
     "fileId": "6a140f025c7cd75eb8c317bc",
@@ -153,6 +233,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1693,
     "height": 929,
     "alt": "collections/full-range-large-bottles"
+  },
+  {
+    "fileId": "6a142ceb5c7cd75eb897439a",
+    "name": "hero_image_half_multi.png",
+    "folder": "/punyakoti-taila/collections",
+    "filePath": "/punyakoti-taila/collections/hero_image_half_multi.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/collections/hero_image_half_multi.png",
+    "width": 1536,
+    "height": 1024,
+    "alt": "collections/hero_image_half_multi"
   },
   {
     "fileId": "6a140f025c7cd75eb8c317c8",
@@ -335,6 +425,66 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "alt": "ingredients/spoon-oil-over-peanuts"
   },
   {
+    "fileId": "6a143dcf5c7cd75eb816f26e",
+    "name": "Lap-Twilights-1200x630.png",
+    "folder": "/punyakoti-taila/others",
+    "filePath": "/punyakoti-taila/others/Lap-Twilights-1200x630.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/others/Lap-Twilights-1200x630.png",
+    "width": 1200,
+    "height": 630,
+    "alt": "others/Lap-Twilights-1200x630"
+  },
+  {
+    "fileId": "6a143dcf5c7cd75eb816f1ed",
+    "name": "Lap-Twilights-300x350.png",
+    "folder": "/punyakoti-taila/others",
+    "filePath": "/punyakoti-taila/others/Lap-Twilights-300x350.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/others/Lap-Twilights-300x350.png",
+    "width": 300,
+    "height": 350,
+    "alt": "others/Lap-Twilights-300x350"
+  },
+  {
+    "fileId": "6a143dcf5c7cd75eb816f353",
+    "name": "Lap-Twilights-500x500.png",
+    "folder": "/punyakoti-taila/others",
+    "filePath": "/punyakoti-taila/others/Lap-Twilights-500x500.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/others/Lap-Twilights-500x500.png",
+    "width": 500,
+    "height": 500,
+    "alt": "others/Lap-Twilights-500x500"
+  },
+  {
+    "fileId": "6a143dcf5c7cd75eb816f369",
+    "name": "Lap-Twilights-600x700.png",
+    "folder": "/punyakoti-taila/others",
+    "filePath": "/punyakoti-taila/others/Lap-Twilights-600x700.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/others/Lap-Twilights-600x700.png",
+    "width": 600,
+    "height": 700,
+    "alt": "others/Lap-Twilights-600x700"
+  },
+  {
+    "fileId": "6a143dcf5c7cd75eb816f3b8",
+    "name": "Lap-Twilights-900x1050.png",
+    "folder": "/punyakoti-taila/others",
+    "filePath": "/punyakoti-taila/others/Lap-Twilights-900x1050.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/others/Lap-Twilights-900x1050.png",
+    "width": 900,
+    "height": 1050,
+    "alt": "others/Lap-Twilights-900x1050"
+  },
+  {
+    "fileId": "6a143dcf5c7cd75eb816f334",
+    "name": "Lap-Twilights.png",
+    "folder": "/punyakoti-taila/others",
+    "filePath": "/punyakoti-taila/others/Lap-Twilights.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/others/Lap-Twilights.png",
+    "width": 1342,
+    "height": 1566,
+    "alt": "others/Lap-Twilights"
+  },
+  {
     "fileId": "6a140f065c7cd75eb8c325a9",
     "name": "ghana-press-oil-flowing.png",
     "folder": "/punyakoti-taila/process",
@@ -413,6 +563,66 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1024,
     "height": 1024,
     "alt": "achaar-pickles/rustic-yellow-cap-jars"
+  },
+  {
+    "fileId": "6a153a015c7cd75eb818bf92",
+    "name": "coconut-oil.png",
+    "folder": "/punyakoti-taila/products/all-oils",
+    "filePath": "/punyakoti-taila/products/all-oils/coconut-oil.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/all-oils/coconut-oil.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "all-oils/coconut-oil"
+  },
+  {
+    "fileId": "6a153a035c7cd75eb818d816",
+    "name": "groundnut-oil.png",
+    "folder": "/punyakoti-taila/products/all-oils",
+    "filePath": "/punyakoti-taila/products/all-oils/groundnut-oil.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/all-oils/groundnut-oil.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "all-oils/groundnut-oil"
+  },
+  {
+    "fileId": "6a153a055c7cd75eb818e91d",
+    "name": "mustard-oil.png",
+    "folder": "/punyakoti-taila/products/all-oils",
+    "filePath": "/punyakoti-taila/products/all-oils/mustard-oil.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/all-oils/mustard-oil.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "all-oils/mustard-oil"
+  },
+  {
+    "fileId": "6a153a075c7cd75eb818f203",
+    "name": "seffalower-oil.png",
+    "folder": "/punyakoti-taila/products/all-oils",
+    "filePath": "/punyakoti-taila/products/all-oils/seffalower-oil.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/all-oils/seffalower-oil.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "all-oils/seffalower-oil"
+  },
+  {
+    "fileId": "6a153a095c7cd75eb818ff74",
+    "name": "sesame-oil.png",
+    "folder": "/punyakoti-taila/products/all-oils",
+    "filePath": "/punyakoti-taila/products/all-oils/sesame-oil.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/all-oils/sesame-oil.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "all-oils/sesame-oil"
+  },
+  {
+    "fileId": "6a153a0a5c7cd75eb8190b53",
+    "name": "sunflower-oil.png",
+    "folder": "/punyakoti-taila/products/all-oils",
+    "filePath": "/punyakoti-taila/products/all-oils/sunflower-oil.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/all-oils/sunflower-oil.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "all-oils/sunflower-oil"
   },
   {
     "fileId": "6a140f025c7cd75eb8c3145d",
@@ -615,6 +825,136 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "alt": "groundnut-oil/lifestyle-kitchen"
   },
   {
+    "fileId": "6a143bf55c7cd75eb802f044",
+    "name": "ads.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/ads.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/ads.png",
+    "width": 736,
+    "height": 1062,
+    "alt": "real-photos/ads"
+  },
+  {
+    "fileId": "6a143bf75c7cd75eb8030967",
+    "name": "amrut-drops.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/amrut-drops.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/amrut-drops.png",
+    "width": 2060,
+    "height": 1054,
+    "alt": "real-photos/amrut-drops"
+  },
+  {
+    "fileId": "6a143bf95c7cd75eb80325ff",
+    "name": "dant-manjan.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/dant-manjan.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/dant-manjan.png",
+    "width": 2056,
+    "height": 932,
+    "alt": "real-photos/dant-manjan"
+  },
+  {
+    "fileId": "6a143bfb5c7cd75eb8034549",
+    "name": "dhoops.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/dhoops.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/dhoops.png",
+    "width": 2068,
+    "height": 1028,
+    "alt": "real-photos/dhoops"
+  },
+  {
+    "fileId": "6a143bfd5c7cd75eb803640c",
+    "name": "gomurtra-ark.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/gomurtra-ark.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/gomurtra-ark.png",
+    "width": 1040,
+    "height": 1134,
+    "alt": "real-photos/gomurtra-ark"
+  },
+  {
+    "fileId": "6a143bff5c7cd75eb8037ec0",
+    "name": "machine-real.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/machine-real.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/machine-real.png",
+    "width": 924,
+    "height": 796,
+    "alt": "real-photos/machine-real"
+  },
+  {
+    "fileId": "6a143c015c7cd75eb8039c4f",
+    "name": "mix-oil.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/mix-oil.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/mix-oil.png",
+    "width": 1944,
+    "height": 954,
+    "alt": "real-photos/mix-oil"
+  },
+  {
+    "fileId": "6a143c035c7cd75eb803bf7f",
+    "name": "packed-boxes.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/packed-boxes.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/packed-boxes.png",
+    "width": 2062,
+    "height": 1004,
+    "alt": "real-photos/packed-boxes"
+  },
+  {
+    "fileId": "6a143c055c7cd75eb803e834",
+    "name": "pickels.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/pickels.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/pickels.png",
+    "width": 2072,
+    "height": 998,
+    "alt": "real-photos/pickels"
+  },
+  {
+    "fileId": "6a143c075c7cd75eb804078f",
+    "name": "shop-store.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/shop-store.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/shop-store.png",
+    "width": 2028,
+    "height": 966,
+    "alt": "real-photos/shop-store"
+  },
+  {
+    "fileId": "6a143c0a5c7cd75eb8042b42",
+    "name": "shop.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/shop.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/shop.png",
+    "width": 1832,
+    "height": 896,
+    "alt": "real-photos/shop"
+  },
+  {
+    "fileId": "6a143c0c5c7cd75eb8044c98",
+    "name": "small-packs.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/small-packs.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/small-packs.png",
+    "width": 2080,
+    "height": 940,
+    "alt": "real-photos/small-packs"
+  },
+  {
+    "fileId": "6a143c0e5c7cd75eb8046922",
+    "name": "stores.png",
+    "folder": "/punyakoti-taila/products/real-photos",
+    "filePath": "/punyakoti-taila/products/real-photos/stores.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/real-photos/stores.png",
+    "width": 1236,
+    "height": 1182,
+    "alt": "real-photos/stores"
+  },
+  {
     "fileId": "6a140f065c7cd75eb8c32324",
     "name": "cinematic-drop-flower.png",
     "folder": "/punyakoti-taila/products/safflower-oil",
@@ -695,6 +1035,306 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "alt": "sesame-oil/pour-closeup"
   },
   {
+    "fileId": "6a1578cb5c7cd75eb801fc9e",
+    "name": "seed-catalog-5-1200x630.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-5-1200x630.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-5-1200x630.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": "punyakoti-taila/seed-catalog-5-1200x630"
+  },
+  {
+    "fileId": "6a1578cb5c7cd75eb801fb82",
+    "name": "seed-catalog-5-300x416.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-5-300x416.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-5-300x416.jpg",
+    "width": 300,
+    "height": 416,
+    "alt": "punyakoti-taila/seed-catalog-5-300x416"
+  },
+  {
+    "fileId": "6a1578cb5c7cd75eb801faa9",
+    "name": "seed-catalog-5-500x500.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-5-500x500.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-5-500x500.jpg",
+    "width": 500,
+    "height": 500,
+    "alt": "punyakoti-taila/seed-catalog-5-500x500"
+  },
+  {
+    "fileId": "6a1578cb5c7cd75eb801fcd0",
+    "name": "seed-catalog-5-600x833.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-5-600x833.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-5-600x833.jpg",
+    "width": 600,
+    "height": 833,
+    "alt": "punyakoti-taila/seed-catalog-5-600x833"
+  },
+  {
+    "fileId": "6a1578cb5c7cd75eb801fe1f",
+    "name": "seed-catalog-5-900x1249.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-5-900x1249.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-5-900x1249.jpg",
+    "width": 900,
+    "height": 1249,
+    "alt": "punyakoti-taila/seed-catalog-5-900x1249"
+  },
+  {
+    "fileId": "6a1578cb5c7cd75eb801fff6",
+    "name": "seed-catalog-5.jpeg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-5.jpeg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-5.jpeg",
+    "width": 1200,
+    "height": 1665,
+    "alt": "punyakoti-taila/seed-catalog-5"
+  },
+  {
+    "fileId": "6a1578cd5c7cd75eb80212f8",
+    "name": "seed-catalog-6-1200x630.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-6-1200x630.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-6-1200x630.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": "punyakoti-taila/seed-catalog-6-1200x630"
+  },
+  {
+    "fileId": "6a1578cd5c7cd75eb802119e",
+    "name": "seed-catalog-6-300x200.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-6-300x200.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-6-300x200.jpg",
+    "width": 300,
+    "height": 200,
+    "alt": "punyakoti-taila/seed-catalog-6-300x200"
+  },
+  {
+    "fileId": "6a1578cd5c7cd75eb8021210",
+    "name": "seed-catalog-6-500x500.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-6-500x500.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-6-500x500.jpg",
+    "width": 500,
+    "height": 500,
+    "alt": "punyakoti-taila/seed-catalog-6-500x500"
+  },
+  {
+    "fileId": "6a1578cd5c7cd75eb802120f",
+    "name": "seed-catalog-6-600x400.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-6-600x400.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-6-600x400.jpg",
+    "width": 600,
+    "height": 400,
+    "alt": "punyakoti-taila/seed-catalog-6-600x400"
+  },
+  {
+    "fileId": "6a1578cd5c7cd75eb8021305",
+    "name": "seed-catalog-6-900x600.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-6-900x600.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-6-900x600.jpg",
+    "width": 900,
+    "height": 600,
+    "alt": "punyakoti-taila/seed-catalog-6-900x600"
+  },
+  {
+    "fileId": "6a1578cd5c7cd75eb802121d",
+    "name": "seed-catalog-6.jpeg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-6.jpeg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-6.jpeg",
+    "width": 1200,
+    "height": 800,
+    "alt": "punyakoti-taila/seed-catalog-6"
+  },
+  {
+    "fileId": "6a1578cf5c7cd75eb8021e30",
+    "name": "seed-catalog-7-1200x630.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-7-1200x630.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-7-1200x630.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": "punyakoti-taila/seed-catalog-7-1200x630"
+  },
+  {
+    "fileId": "6a1578cf5c7cd75eb8021ddc",
+    "name": "seed-catalog-7-300x225.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-7-300x225.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-7-300x225.jpg",
+    "width": 300,
+    "height": 225,
+    "alt": "punyakoti-taila/seed-catalog-7-300x225"
+  },
+  {
+    "fileId": "6a1578d05c7cd75eb80220ab",
+    "name": "seed-catalog-7-500x500.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-7-500x500.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-7-500x500.jpg",
+    "width": 500,
+    "height": 500,
+    "alt": "punyakoti-taila/seed-catalog-7-500x500"
+  },
+  {
+    "fileId": "6a1578cf5c7cd75eb8021e2b",
+    "name": "seed-catalog-7-600x450.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-7-600x450.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-7-600x450.jpg",
+    "width": 600,
+    "height": 450,
+    "alt": "punyakoti-taila/seed-catalog-7-600x450"
+  },
+  {
+    "fileId": "6a1578cf5c7cd75eb8021dd8",
+    "name": "seed-catalog-7-900x675.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-7-900x675.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-7-900x675.jpg",
+    "width": 900,
+    "height": 675,
+    "alt": "punyakoti-taila/seed-catalog-7-900x675"
+  },
+  {
+    "fileId": "6a1578cf5c7cd75eb8021e35",
+    "name": "seed-catalog-7.jpeg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-7.jpeg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-7.jpeg",
+    "width": 1200,
+    "height": 900,
+    "alt": "punyakoti-taila/seed-catalog-7"
+  },
+  {
+    "fileId": "6a1578d15c7cd75eb80229c3",
+    "name": "seed-catalog-8-1200x630.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-8-1200x630.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-8-1200x630.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": "punyakoti-taila/seed-catalog-8-1200x630"
+  },
+  {
+    "fileId": "6a1578d25c7cd75eb80229e5",
+    "name": "seed-catalog-8-300x200.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-8-300x200.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-8-300x200.jpg",
+    "width": 300,
+    "height": 200,
+    "alt": "punyakoti-taila/seed-catalog-8-300x200"
+  },
+  {
+    "fileId": "6a1578d25c7cd75eb8022b24",
+    "name": "seed-catalog-8-500x500.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-8-500x500.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-8-500x500.jpg",
+    "width": 500,
+    "height": 500,
+    "alt": "punyakoti-taila/seed-catalog-8-500x500"
+  },
+  {
+    "fileId": "6a1578d25c7cd75eb8022bce",
+    "name": "seed-catalog-8-600x400.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-8-600x400.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-8-600x400.jpg",
+    "width": 600,
+    "height": 400,
+    "alt": "punyakoti-taila/seed-catalog-8-600x400"
+  },
+  {
+    "fileId": "6a1578d25c7cd75eb8022a5f",
+    "name": "seed-catalog-8-900x600.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-8-900x600.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-8-900x600.jpg",
+    "width": 900,
+    "height": 600,
+    "alt": "punyakoti-taila/seed-catalog-8-900x600"
+  },
+  {
+    "fileId": "6a1578d25c7cd75eb8022d1f",
+    "name": "seed-catalog-8.jpeg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-8.jpeg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-8.jpeg",
+    "width": 1200,
+    "height": 800,
+    "alt": "punyakoti-taila/seed-catalog-8"
+  },
+  {
+    "fileId": "6a1578d45c7cd75eb80234ba",
+    "name": "seed-catalog-9-1200x630.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-9-1200x630.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-9-1200x630.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": "punyakoti-taila/seed-catalog-9-1200x630"
+  },
+  {
+    "fileId": "6a1578d45c7cd75eb8023485",
+    "name": "seed-catalog-9-300x155.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-9-300x155.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-9-300x155.jpg",
+    "width": 300,
+    "height": 155,
+    "alt": "punyakoti-taila/seed-catalog-9-300x155"
+  },
+  {
+    "fileId": "6a1578d45c7cd75eb8023496",
+    "name": "seed-catalog-9-500x500.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-9-500x500.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-9-500x500.jpg",
+    "width": 500,
+    "height": 500,
+    "alt": "punyakoti-taila/seed-catalog-9-500x500"
+  },
+  {
+    "fileId": "6a1578d45c7cd75eb80234f1",
+    "name": "seed-catalog-9-600x310.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-9-600x310.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-9-600x310.jpg",
+    "width": 600,
+    "height": 310,
+    "alt": "punyakoti-taila/seed-catalog-9-600x310"
+  },
+  {
+    "fileId": "6a1578d45c7cd75eb80234c9",
+    "name": "seed-catalog-9-900x465.jpg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-9-900x465.jpg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-9-900x465.jpg",
+    "width": 900,
+    "height": 465,
+    "alt": "punyakoti-taila/seed-catalog-9-900x465"
+  },
+  {
+    "fileId": "6a1578d45c7cd75eb8023516",
+    "name": "seed-catalog-9.jpeg",
+    "folder": "/punyakoti-taila",
+    "filePath": "/punyakoti-taila/seed-catalog-9.jpeg",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/seed-catalog-9.jpeg",
+    "width": 1200,
+    "height": 620,
+    "alt": "punyakoti-taila/seed-catalog-9"
+  },
+  {
     "fileId": "6a140f025c7cd75eb8c317d3",
     "name": "boutique-dark-wood.png",
     "folder": "/punyakoti-taila/store",
@@ -763,6 +1403,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1057,
     "height": 1600,
     "alt": "ui-mockups/checkout"
+  },
+  {
+    "fileId": "6a157adf5c7cd75eb80ffc14",
+    "name": "plp_page.png",
+    "folder": "/punyakoti-taila/ui-mockups/claude",
+    "filePath": "/punyakoti-taila/ui-mockups/claude/plp_page.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/claude/plp_page.png",
+    "width": 3024,
+    "height": 5818,
+    "alt": "claude/plp_page"
   },
   {
     "fileId": "6a140f015c7cd75eb8c31339",
@@ -863,5 +1513,145 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 689,
     "height": 1600,
     "alt": "ui-mockups/shop-all"
+  },
+  {
+    "fileId": "6a157ae25c7cd75eb8101a7d",
+    "name": "account-dashboard.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/account-dashboard.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/account-dashboard.png",
+    "width": 2560,
+    "height": 3402,
+    "alt": "stitch/account-dashboard"
+  },
+  {
+    "fileId": "6a157ae55c7cd75eb8103d2e",
+    "name": "account-details.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/account-details.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/account-details.png",
+    "width": 1320,
+    "height": 1600,
+    "alt": "stitch/account-details"
+  },
+  {
+    "fileId": "6a157ae75c7cd75eb8104a36",
+    "name": "cart.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/cart.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/cart.png",
+    "width": 1008,
+    "height": 1600,
+    "alt": "stitch/cart"
+  },
+  {
+    "fileId": "6a157ae95c7cd75eb81056cd",
+    "name": "checkout.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/checkout.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/checkout.png",
+    "width": 1057,
+    "height": 1600,
+    "alt": "stitch/checkout"
+  },
+  {
+    "fileId": "6a157aea5c7cd75eb8105e2a",
+    "name": "create-account.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/create-account.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/create-account.png",
+    "width": 1600,
+    "height": 1280,
+    "alt": "stitch/create-account"
+  },
+  {
+    "fileId": "6a157aec5c7cd75eb810664e",
+    "name": "homepage.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/homepage.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/homepage.png",
+    "width": 578,
+    "height": 1600,
+    "alt": "stitch/homepage"
+  },
+  {
+    "fileId": "6a157aee5c7cd75eb8106e2f",
+    "name": "login.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/login.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/login.png",
+    "width": 1600,
+    "height": 1280,
+    "alt": "stitch/login"
+  },
+  {
+    "fileId": "6a157aef5c7cd75eb8107558",
+    "name": "manage-addresses.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/manage-addresses.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/manage-addresses.png",
+    "width": 1347,
+    "height": 1600,
+    "alt": "stitch/manage-addresses"
+  },
+  {
+    "fileId": "6a157af15c7cd75eb8107da3",
+    "name": "my-account.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/my-account.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/my-account.png",
+    "width": 1457,
+    "height": 1600,
+    "alt": "stitch/my-account"
+  },
+  {
+    "fileId": "6a157af35c7cd75eb81085a1",
+    "name": "order-confirmed.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/order-confirmed.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/order-confirmed.png",
+    "width": 988,
+    "height": 1600,
+    "alt": "stitch/order-confirmed"
+  },
+  {
+    "fileId": "6a157af65c7cd75eb810a722",
+    "name": "product-detail-groundnut.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/product-detail-groundnut.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/product-detail-groundnut.png",
+    "width": 1299,
+    "height": 1600,
+    "alt": "stitch/product-detail-groundnut"
+  },
+  {
+    "fileId": "6a157af85c7cd75eb810b098",
+    "name": "product-gallery.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/product-gallery.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/product-gallery.png",
+    "width": 1144,
+    "height": 1600,
+    "alt": "stitch/product-gallery"
+  },
+  {
+    "fileId": "6a157afa5c7cd75eb810b8c5",
+    "name": "search.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/search.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/search.png",
+    "width": 1390,
+    "height": 1600,
+    "alt": "stitch/search"
+  },
+  {
+    "fileId": "6a157afc5c7cd75eb810c56d",
+    "name": "shop-all.png",
+    "folder": "/punyakoti-taila/ui-mockups/stitch",
+    "filePath": "/punyakoti-taila/ui-mockups/stitch/shop-all.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ui-mockups/stitch/shop-all.png",
+    "width": 689,
+    "height": 1600,
+    "alt": "stitch/shop-all"
   }
 ] as const

@@ -5,19 +5,18 @@ export type FallbackProduct = {
   slug: string
   name: string
   oilVariant: OilVariant
-  origin: string
   badge: string | null
   price: number
   size: string
 }
 
 export const FALLBACK_PRODUCTS: FallbackProduct[] = [
-  { id: 1, slug: 'sesame-oil', name: 'Sesame · Til', oilVariant: 'sesame', origin: 'Erode · Tamil Nadu', badge: 'Best seller', price: 420, size: '500 ml' },
-  { id: 2, slug: 'coconut-oil', name: 'Virgin Coconut', oilVariant: 'coconut', origin: 'Kollam · Kerala', badge: 'Cold-pressed', price: 480, size: '500 ml' },
-  { id: 3, slug: 'groundnut-oil', name: 'Groundnut', oilVariant: 'groundnut', origin: 'Kadapa · Andhra Pradesh', badge: null, price: 380, size: '500 ml' },
-  { id: 4, slug: 'mustard-oil', name: 'Mustard · Sarson', oilVariant: 'mustard', origin: 'Alwar · Rajasthan', badge: 'Pungent', price: 360, size: '500 ml' },
-  { id: 5, slug: 'sunflower-oil', name: 'Sunflower', oilVariant: 'sunflower', origin: 'Hassan · Karnataka', badge: 'Daily cook', price: 320, size: '1 litre' },
-  { id: 6, slug: 'black-sesame', name: 'Black Sesame', oilVariant: 'blackSes', origin: 'Ceremonial · Limited', badge: 'Limited', price: 680, size: '250 ml' },
+  { id: 1, slug: 'sesame-oil', name: 'Sesame · Til', oilVariant: 'sesame', badge: 'Best seller', price: 420, size: '500 ml' },
+  { id: 2, slug: 'coconut-oil', name: 'Virgin Coconut', oilVariant: 'coconut', badge: 'Cold-pressed', price: 480, size: '500 ml' },
+  { id: 3, slug: 'groundnut-oil', name: 'Groundnut', oilVariant: 'groundnut', badge: null, price: 380, size: '500 ml' },
+  { id: 4, slug: 'mustard-oil', name: 'Mustard · Sarson', oilVariant: 'mustard', badge: 'Pungent', price: 360, size: '500 ml' },
+  { id: 5, slug: 'sunflower-oil', name: 'Sunflower', oilVariant: 'sunflower', badge: 'Daily cook', price: 320, size: '1 litre' },
+  { id: 6, slug: 'black-sesame', name: 'Black Sesame', oilVariant: 'blackSes', badge: 'Limited', price: 680, size: '250 ml' },
 ]
 
 export type FallbackTestimonial = {

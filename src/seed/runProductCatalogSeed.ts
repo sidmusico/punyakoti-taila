@@ -72,7 +72,6 @@ export async function runProductCatalogSeed(
           name: row.name,
           slug: row.slug,
           oilVariant: row.oilVariant,
-          region: row.region,
           tag: row.tag ?? undefined,
           categoryType: row.categoryType,
           category: categoryId,

@@ -1,408 +1,324 @@
 import type { Metadata } from 'next'
+import { connection } from 'next/server'
 import React from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import config from '@payload-config'
-
-import { Bottle } from '@/components/ui/pt/Bottle'
-import type { OilVariant } from '@/components/ui/pt/Bottle'
-import { AddToCartButton } from '@/components/shop/AddToCartButton'
-import { Icons } from '@/components/ui/pt/Icons'
 import type { Where } from 'payload'
-import type { Category, Media, Product } from '@/payload-types'
-import { getStorefrontBundle } from '@/utilities/getStorefrontBundle'
-import { getMediaUrl } from '@/utilities/getMediaUrl'
-import { labelForVariantSize } from '@/utilities/variantSizeLabel'
+
+import { ShopProductCard } from '@/components/shop/ShopProductCard'
+import { PlpCategoryChips } from '@/components/shop/PlpCategoryChips'
+import { PlpLoadMore } from '@/components/shop/PlpLoadMore'
+import { PlpFilterSidebar, type PlpFacetItem, type PlpFacets } from '@/components/shop/PlpFilterSidebar'
+import { PlpSortMenu } from '@/components/shop/PlpSortMenu'
+import { PlpFiltersDrawer } from '@/components/shop/PlpFiltersDrawer'
+import { PlpAppliedFilters } from '@/components/shop/PlpAppliedFilters'
+import {
+  PLP_PAGE_SIZE,
+  buildHref,
+  parseFilters,
+  type PlpFilters,
+} from '@/lib/plp/filters'
+import type { Category, Product } from '@/payload-types'
+
+import '@/styles/plp.css'
+import '@/styles/homepage.css'
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
-interface PLPPageProps {
-  searchParams: Promise<{ cat?: string; category?: string; sort?: string }>
+export const metadata: Metadata = {
+  title: 'All oils — every press',
+  description: 'Single-origin wood-pressed oils. Every press, every batch.',
 }
 
-function shopHref(opts: { cat?: string; category?: string; sort?: string }): string {
-  const p = new URLSearchParams()
-  if (opts.cat) p.set('cat', opts.cat)
-  if (opts.category) p.set('category', opts.category)
-  if (opts.sort && opts.sort !== 'default') p.set('sort', opts.sort)
-  const q = p.toString()
-  return q ? `/shop?${q}` : '/shop'
+// ── Label maps (mirror Products collection options) ─────────────────────
+const SIZE_LABELS: Record<string, string> = {
+  '250ml': '250 ml',
+  '500ml': '500 ml',
+  '1L': '1 litre',
+  '5L': '5 litre',
+}
+const USE_LABELS: Record<string, string> = {
+  'daily-cooking': 'Daily cooking',
+  tempering: 'Tempering',
+  salad: 'Salad',
+  'hair-body': 'Hair & body',
+  ayurvedic: 'Ayurvedic',
 }
 
-function applyPlaceholders(
-  template: string,
-  vars: { count: number; oilWord: string; category: string },
-): string {
-  return template
-    .replace(/\{count\}/g, String(vars.count))
-    .replace(/\{oilWord\}/g, vars.oilWord)
-    .replace(/\{category\}/g, vars.category)
+// ── Where-clause builder ────────────────────────────────────────────────
+// We deliberately only filter by `status` + `category` at the Payload layer.
+// Size / use / price are applied in-memory against the *default variant* so
+// the filter outcome matches the price shown on each card (Payload's
+// `variants.*` filters use a JOIN that matches if ANY variant satisfies the
+// predicate, which causes products to slip through even though the price the
+// shopper sees is outside the range).
+function buildWhere(categoryId: number | null): Where {
+  const and: Where[] = [{ status: { equals: 'published' } }]
+  if (categoryId != null) and.push({ category: { equals: categoryId } })
+  return and.length === 1 ? and[0]! : { and }
 }
 
-export async function generateMetadata(): Promise<Metadata> {
-  const { storefront } = await getStorefrontBundle()
-  const plp = storefront.plp
-  return {
-    title: plp?.metaTitle ?? 'Shop',
-    description: plp?.metaDescription ?? undefined,
+/** First `isDefault` variant, else the first variant. */
+function pickDisplayVariant(p: Product): NonNullable<Product['variants']>[number] | undefined {
+  const variants = p.variants ?? []
+  return variants.find((v) => v.isDefault) ?? variants[0]
+}
+
+function displayPrice(p: Product): number {
+  return pickDisplayVariant(p)?.price ?? 0
+}
+
+function hasAnyVariantSize(p: Product, sizes: string[]): boolean {
+  if (sizes.length === 0) return true
+  return (p.variants ?? []).some((v) => v.size && sizes.includes(v.size))
+}
+
+function hasAnyUseCase(p: Product, uses: string[]): boolean {
+  if (uses.length === 0) return true
+  const got = (p.useCases ?? []) as string[]
+  return uses.some((u) => got.includes(u))
+}
+
+function inPriceRange(p: Product, lo: number | null, hi: number | null): boolean {
+  const price = displayPrice(p)
+  if (lo != null && price < lo) return false
+  if (hi != null && price > hi) return false
+  return true
+}
+
+function sortProducts(arr: Product[], sort: PlpFilters['sort']): Product[] {
+  const list = [...arr]
+  switch (sort) {
+    case 'price-asc':
+      list.sort((a, b) => displayPrice(a) - displayPrice(b))
+      return list
+    case 'price-desc':
+      list.sort((a, b) => displayPrice(b) - displayPrice(a))
+      return list
+    case 'newest':
+      list.sort((a, b) => {
+        const at = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        const bt = b.createdAt ? new Date(b.createdAt).getTime() : 0
+        return bt - at
+      })
+      return list
+    default:
+      // featured: featured-first, then newest
+      list.sort((a, b) => {
+        const af = a.featured ? 1 : 0
+        const bf = b.featured ? 1 : 0
+        if (af !== bf) return bf - af
+        const at = a.createdAt ? new Date(a.createdAt).getTime() : 0
+        const bt = b.createdAt ? new Date(b.createdAt).getTime() : 0
+        return bt - at
+      })
+      return list
   }
 }
 
-function cardImage(product: Product): { src: string; alt: string } | null {
-  const row = product.images?.[0]
-  const img = row?.image
-  if (typeof img === 'object' && img && 'url' in img && img.url) {
-    const m = img as Media
-    return {
-      src: getMediaUrl(m.url, m.updatedAt ?? null),
-      alt: (row.alt && row.alt.trim()) || m.alt || product.name,
-    }
+// ── Facet count helper ──────────────────────────────────────────────────
+function tally<T extends string>(
+  products: Product[],
+  pick: (p: Product) => T | T[] | undefined | null,
+  labels: Record<string, string>,
+): PlpFacetItem[] {
+  const counts = new Map<string, number>()
+  for (const p of products) {
+    const v = pick(p)
+    const list: string[] = Array.isArray(v) ? v : v ? [v] : []
+    for (const val of list) counts.set(val, (counts.get(val) ?? 0) + 1)
   }
-  return null
+  return Object.keys(labels)
+    .map((value) => ({ value, label: labels[value]!, count: counts.get(value) ?? 0 }))
+    .filter((row) => row.count > 0)
 }
 
-export default async function ShopPage({ searchParams }: PLPPageProps) {
-  const { cat = '', category = '', sort = 'default' } = await searchParams
-  const { storefront } = await getStorefrontBundle()
-  const plp = storefront.plp
-  const sizeRows = storefront.pdp?.variantSizeLabels
+// ── Page ────────────────────────────────────────────────────────────────
+type PageProps = { searchParams: Promise<Record<string, string | string[] | undefined>> }
 
+export default async function ShopPage({ searchParams }: PageProps) {
+  await connection()
+  const sp = await searchParams
+  const filters = parseFilters(sp)
   const payload = await getPayload({ config })
 
+  // Categories (top chips)
   const { docs: categoryDocs } = await payload.find({
     collection: 'categories',
     sort: 'title',
-    limit: 100,
+    limit: 50,
     depth: 0,
+    overrideAccess: true,
   })
 
   let activeCategory: Category | null = null
-  if (cat) {
+  if (filters.cat) {
     const hit = await payload.find({
       collection: 'categories',
-      where: { slug: { equals: cat } },
+      where: { slug: { equals: filters.cat } },
       limit: 1,
       depth: 0,
+      overrideAccess: true,
     })
     activeCategory = (hit.docs[0] as Category) ?? null
   }
 
-  const conditions: Where[] = [{ status: { equals: 'published' } }]
-
-  if (activeCategory) {
-    conditions.push({ category: { equals: activeCategory.id } })
-  } else if (category) {
-    conditions.push({ categoryType: { equals: category } })
-  }
-
-  const whereClause: Where = conditions.length > 1 ? { and: conditions } : conditions[0]!
-
-  const { docs: products } = await payload.find({
+  // Fetch every published product in the active category (or all). All
+  // size/use/price filtering and sorting happens below in JS so we can match
+  // the *displayed* default-variant price instead of "any variant in range".
+  const where = buildWhere(activeCategory?.id ?? null)
+  const { docs: allDocs } = await payload.find({
     collection: 'products',
-    where: whereClause,
+    where,
     depth: 2,
-    limit: 48,
-    sort: sort === 'price-asc' ? 'variants.price' : sort === 'price-desc' ? '-variants.price' : '-featured',
+    limit: 500,
+    overrideAccess: true,
   })
+  const allProducts = allDocs as Product[]
 
-  const typeFilters =
-    plp?.categoryFilters?.filter((c) => c?.label) ?? [
-      { label: 'All', value: '' },
-      { label: 'Cooking Oils', value: 'cooking' },
-      { label: 'Wellness', value: 'wellness' },
-    ]
-
-  const sortOpts =
-    plp?.sortOptions?.filter((s) => s?.label && s?.value) ?? [
-      { label: 'Featured', value: 'default' },
-      { label: 'Price: Low → High', value: 'price-asc' },
-      { label: 'Price: High → Low', value: 'price-desc' },
-    ]
-
-  const oilWord = products.length === 1 ? 'oil' : 'oils'
-  const categoryTitle = activeCategory?.title ?? ''
-
-  const introDefaults = {
-    count: products.length,
-    oilWord,
-    category: categoryTitle,
+  // Facet counts: based on the category-scoped set, ignoring size/use/price
+  // selections so the user sees how many oils each remaining option would
+  // surface. Price range labels also use this set.
+  const displayPrices = allProducts.map(displayPrice).filter((n) => n > 0)
+  const facets: PlpFacets = {
+    sizes: tally(
+      allProducts,
+      (p) => ((p.variants ?? []).map((v) => v.size) as string[]),
+      SIZE_LABELS,
+    ),
+    uses: tally(allProducts, (p) => (p.useCases as string[] | undefined) ?? [], USE_LABELS),
+    priceMin: displayPrices.length ? Math.floor(Math.min(...displayPrices)) : 0,
+    priceMax: displayPrices.length ? Math.ceil(Math.max(...displayPrices)) : 1000,
   }
 
-  const eyebrow =
-    activeCategory && plp?.eyebrowWhenCategory
-      ? applyPlaceholders(plp.eyebrowWhenCategory, introDefaults)
-      : (plp?.eyebrow ?? 'The collection')
+  // Apply size, use, and price-range filters in JS — against the default
+  // variant's price so the filter outcome lines up with what's shown.
+  const filteredProducts = allProducts.filter(
+    (p) =>
+      hasAnyVariantSize(p, filters.sizes) &&
+      hasAnyUseCase(p, filters.uses) &&
+      inPriceRange(p, filters.priceMin, filters.priceMax),
+  )
 
-  const headline =
-    activeCategory && plp?.headlineWhenCategory
-      ? applyPlaceholders(plp.headlineWhenCategory, introDefaults)
-      : (plp?.headline ?? 'All oils')
+  // Sort, then paginate.
+  const sortedProducts = sortProducts(filteredProducts, filters.sort)
+  const totalCount = sortedProducts.length
+  const limit = PLP_PAGE_SIZE * filters.page
+  const products = sortedProducts.slice(0, limit)
+  const activeFilterCount =
+    filters.sizes.length +
+    filters.uses.length +
+    (filters.priceMin != null || filters.priceMax != null ? 1 : 0)
 
-  const introLine =
-    activeCategory && plp?.introWhenCategory
-      ? applyPlaceholders(plp.introWhenCategory, introDefaults)
-      : (plp?.introWithCount ?? '{count} single-origin wood-pressed {oilWord}')
-          .replace(/\{count\}/g, String(products.length))
-          .replace(/\{oilWord\}/g, oilWord)
+  const oilWord = totalCount === 1 ? 'oil' : 'oils'
+
+  // Chips ordered: All + Edible · daily, Edible · ceremonial, Wellness, Gift sets, Subscriptions
+  const chipOrder = [
+    'edible-daily',
+    'edible-ceremonial',
+    'wellness',
+    'gift-sets',
+    'subscriptions',
+  ]
+  const chipCategories = (categoryDocs as Category[])
+    .slice()
+    .sort((a, b) => {
+      const ai = chipOrder.indexOf(a.slug ?? '')
+      const bi = chipOrder.indexOf(b.slug ?? '')
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi)
+    })
 
   return (
-    <div className="max-w-[1440px] mx-auto px-8 md:px-16 py-12">
-      <div className="mb-10">
-        <div
-          className="flex items-center gap-2.5 mb-3"
-          style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 500, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--mustard-600)' }}
-        >
-          <span style={{ display: 'inline-block', width: 24, height: 1, background: 'var(--mustard-500)' }} />
-          {eyebrow}
+    <div className="plp-page">
+      <div className="plp-head">
+        <nav className="plp-breadcrumb" aria-label="Breadcrumb">
+          <Link href="/">Home</Link>
+          <span className="plp-breadcrumb__sep"> / </span>
+          <span className="plp-breadcrumb__active">
+            {activeCategory ? activeCategory.title : 'All oils'}
+          </span>
+        </nav>
+
+        <div className="plp-hero">
+          <div>
+            <div className="pt-eyebrow">
+              {activeCategory ? 'Browsing' : 'The full collection'}
+            </div>
+            <h1 className="plp-hero__title">
+              {activeCategory ? (
+                <>
+                  {activeCategory.title},{' '}
+                  <em className="pt-display-italic">every press.</em>
+                </>
+              ) : (
+                <>
+                  Every oil, <em className="pt-display-italic">every press.</em>
+                </>
+              )}
+            </h1>
+          </div>
+          <div className="plp-hero__meta">
+            <span className="plp-hero__meta-count">{totalCount}</span> {oilWord}
+            {' · '}
+            <span className="plp-hero__meta-stamp">Updated Mon</span>
+          </div>
         </div>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(2.5rem, 5vw, 4rem)', lineHeight: 1.0, letterSpacing: '-0.025em', color: 'var(--green-900)', margin: 0 }}>
-          {headline}
-        </h1>
-        <p className="mt-3 text-lg" style={{ color: 'var(--ink-500)' }}>
-          {introLine}
-        </p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-10">
-        <aside className="shrink-0 md:w-52">
-          <div className="sticky top-28 flex flex-col gap-7">
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--ink-400)' }}>
-                {plp?.filterCategoryLabel ?? 'Category'}
-              </h3>
-              <div className="flex flex-col gap-1.5">
-                <Link
-                  href={shopHref({ sort, category })}
-                  className="text-sm py-1.5 px-3 rounded-lg transition-colors"
-                  style={{
-                    background: !cat ? 'var(--green-900)' : 'transparent',
-                    color: !cat ? 'var(--cream-100)' : 'var(--ink-700)',
-                    fontWeight: !cat ? 600 : 400,
-                  }}
-                >
-                  All
-                </Link>
-                {(categoryDocs as Category[]).map((c) => {
-                  const slug = c.slug ?? ''
-                  const isActive = cat === slug
-                  return (
-                    <Link
-                      key={c.id}
-                      href={shopHref({ cat: slug, category, sort })}
-                      className="text-sm py-1.5 px-3 rounded-lg transition-colors"
-                      style={{
-                        background: isActive ? 'var(--green-900)' : 'transparent',
-                        color: isActive ? 'var(--cream-100)' : 'var(--ink-700)',
-                        fontWeight: isActive ? 600 : 400,
-                      }}
-                    >
-                      {c.title}
-                    </Link>
-                  )
-                })}
-              </div>
+      <PlpCategoryChips filters={filters} chipCategories={chipCategories} />
+
+      <div className="plp-body">
+        <PlpFilterSidebar filters={filters} facets={facets} />
+
+        <div className="plp-main">
+          <div className="plp-toolbar">
+            <div className="plp-toolbar__count">
+              {totalCount} {oilWord}
+              {activeFilterCount > 0 ? ` · ${activeFilterCount} active filter${activeFilterCount === 1 ? '' : 's'}` : ''}
             </div>
-
-            {typeFilters.some((t) => (t.value ?? '') !== '') && (
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--ink-400)' }}>
-                  Type
-                </h3>
-                <div className="flex flex-col gap-1.5">
-                  {typeFilters.map((row) => {
-                    const value = row.value ?? ''
-                    const isActive = category === value
-                    return (
-                      <Link
-                        key={`type-${row.label}-${value}`}
-                        href={shopHref({ cat, category: value, sort })}
-                        className="text-sm py-1.5 px-3 rounded-lg transition-colors"
-                        style={{
-                          background: isActive ? 'var(--green-900)' : 'transparent',
-                          color: isActive ? 'var(--cream-100)' : 'var(--ink-700)',
-                          fontWeight: isActive ? 600 : 400,
-                        }}
-                      >
-                        {row.label}
-                      </Link>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-
-            <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider mb-3" style={{ color: 'var(--ink-400)' }}>
-                {plp?.filterSortLabel ?? 'Sort by'}
-              </h3>
-              <div className="flex flex-col gap-1.5">
-                {sortOpts.map((row) => {
-                  const v = row.value
-                  const isActive = sort === v
-                  return (
-                    <Link
-                      key={v}
-                      href={shopHref({ cat, category, sort: v })}
-                      className="text-sm py-1.5 px-3 rounded-lg transition-colors"
-                      style={{
-                        background: isActive ? 'var(--green-900)' : 'transparent',
-                        color: isActive ? 'var(--cream-100)' : 'var(--ink-700)',
-                        fontWeight: isActive ? 600 : 400,
-                      }}
-                    >
-                      {row.label}
-                    </Link>
-                  )
-                })}
-              </div>
+            <div className="plp-toolbar__sort">
+              <span className="plp-toolbar__sort-label">Sort by</span>
+              <PlpSortMenu filters={filters} variant="inline" />
             </div>
           </div>
-        </aside>
 
-        <div className="flex-1">
-          <div className="flex gap-2 flex-wrap mb-6 md:hidden">
-            <Link
-              href={shopHref({ sort, category })}
-              className="px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors"
-              style={
-                !cat
-                  ? { background: 'var(--green-900)', color: 'var(--cream-100)', borderColor: 'var(--green-900)' }
-                  : { background: 'var(--cream-100)', color: 'var(--green-900)', borderColor: 'var(--cream-400)' }
-              }
-            >
-              All
-            </Link>
-            {(categoryDocs as Category[]).map((c) => {
-              const slug = c.slug ?? ''
-              const isActive = cat === slug
-              return (
-                <Link
-                  key={`m-cat-${c.id}`}
-                  href={shopHref({ cat: slug, category, sort })}
-                  className="px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors"
-                  style={
-                    isActive
-                      ? { background: 'var(--green-900)', color: 'var(--cream-100)', borderColor: 'var(--green-900)' }
-                      : { background: 'var(--cream-100)', color: 'var(--green-900)', borderColor: 'var(--cream-400)' }
-                  }
-                >
-                  {c.title}
-                </Link>
-              )
-            })}
+          <div className="plp-mobile-bar">
+            <PlpFiltersDrawer filters={filters}>
+              <PlpFilterSidebar filters={filters} facets={facets} />
+            </PlpFiltersDrawer>
+            <PlpSortMenu filters={filters} variant="button" />
           </div>
 
-          <div className="flex gap-2 flex-wrap mb-4 md:hidden">
-            {typeFilters.map((row) => {
-              const value = row.value ?? ''
-              const isActive = category === value
-              return (
-                <Link
-                  key={`m-type-${row.label}-${value}`}
-                  href={shopHref({ cat, category: value, sort })}
-                  className="px-3.5 py-1.5 rounded-full text-xs font-medium border transition-colors"
-                  style={
-                    isActive
-                      ? { background: 'var(--green-900)', color: 'var(--cream-100)', borderColor: 'var(--green-900)' }
-                      : { background: 'var(--cream-100)', color: 'var(--green-900)', borderColor: 'var(--cream-400)' }
-                  }
-                >
-                  {row.label}
-                </Link>
-              )
-            })}
-          </div>
+          <PlpAppliedFilters
+            filters={filters}
+            categoryLabel={activeCategory?.title}
+            sizeLabels={SIZE_LABELS}
+            useLabels={USE_LABELS}
+          />
 
-          {products.length === 0 && (
-            <div className="py-20 text-center" style={{ color: 'var(--ink-400)' }}>
-              <p className="text-lg">{plp?.emptyTitle ?? 'No products found in this category.'}</p>
-              <Link
-                href={plp?.emptyCtaHref ?? '/shop'}
-                className="mt-4 inline-block text-sm underline"
-                style={{ color: 'var(--green-800)' }}
-              >
-                {plp?.emptyCtaLabel ?? 'View all oils'}
+          {products.length === 0 ? (
+            <div className="plp-empty">
+              <p>No oils match these filters.</p>
+              <Link href="/shop" className="pt-btn pt-btn--ghost pt-btn--sm">
+                Clear filters
               </Link>
+            </div>
+          ) : (
+            <div
+              className="plp-grid"
+              key={`${filters.sort}-${filters.cat}-${filters.sizes.join(',')}-${filters.uses.join(',')}-${filters.priceMin ?? ''}-${filters.priceMax ?? ''}-${filters.page}`}
+            >
+              {(products as Product[]).map((p) => (
+                <ShopProductCard key={p.id} product={p} mode="featured" />
+              ))}
             </div>
           )}
 
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">
-            {(products as Product[]).map((p) => {
-              const variantsSorted = [...(p.variants ?? [])].sort((a, b) => {
-                if (a.isDefault === b.isDefault) return 0
-                return a.isDefault ? -1 : 1
-              })
-              const defaultVariant = variantsSorted[0] ?? p.variants?.[0]
-              const price = defaultVariant?.price ?? 0
-              const size = defaultVariant?.size ?? ''
-              const sku = defaultVariant?.sku ?? `${p.slug}-default`
-              const variantLabel = labelForVariantSize(size, sizeRows)
-              const oilVariant = (p.oilVariant as OilVariant | null) ?? 'sesame'
-              const photo = cardImage(p)
-
-              return (
-                <div key={p.id} className="group">
-                  <Link href={`/shop/${p.slug}`}>
-                    <div
-                      className="rounded-2xl p-5 flex flex-col transition-all duration-[240ms] hover:-translate-y-1 hover:shadow-md"
-                      style={{ background: 'var(--cream-100)', boxShadow: 'var(--sh-sm)', position: 'relative' }}
-                    >
-                      {p.tag && (
-                        <div className="absolute top-3 left-3 z-10">
-                          <span className="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ background: 'var(--mustard-100)', color: 'var(--mustard-700)' }}>
-                            {p.tag}
-                          </span>
-                        </div>
-                      )}
-
-                      <div className="rounded-xl flex items-center justify-center relative overflow-hidden" style={{ background: 'var(--cream-200)', padding: '28px 12px 12px', aspectRatio: '1/1.1' }}>
-                        {photo ? (
-                          <Image
-                            src={photo.src}
-                            alt={photo.alt}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 50vw, 33vw"
-                          />
-                        ) : (
-                          <Bottle variant={oilVariant} size={140} />
-                        )}
-                      </div>
-
-                      <div className="mt-3">
-                        <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.04em', color: 'var(--wood-600)', textTransform: 'uppercase' }}>
-                          {p.region}
-                        </div>
-                        <div style={{ fontFamily: 'var(--font-display)', fontWeight: 500, fontSize: 20, color: 'var(--green-900)', marginTop: 3 }}>
-                          {p.name}
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between mt-3 gap-2">
-                        <div>
-                          <span className="font-semibold text-base" style={{ color: 'var(--green-900)' }}>₹{price}</span>
-                          <span className="text-xs ml-1.5" style={{ color: 'var(--ink-400)' }}>· {variantLabel}</span>
-                        </div>
-                        <Icons.heart size={16} style={{ color: 'var(--ink-300)' }} />
-                      </div>
-                    </div>
-                  </Link>
-                  <div className="mt-2">
-                    <AddToCartButton
-                      productId={String(p.id)}
-                      slug={p.slug}
-                      name={p.name}
-                      variantSize={variantLabel}
-                      sku={sku}
-                      price={price}
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+          {products.length < totalCount ? (
+            <PlpLoadMore href={buildHref(filters, { page: filters.page + 1 })} />
+          ) : null}
         </div>
       </div>
     </div>

@@ -157,7 +157,10 @@ export const homepageTabsField: Field = {
     },
     {
       label: 'Press marquee',
-      description: 'Dark ticker band under heroes',
+      description:
+        'Dark scrolling band listing the cities where products are available. ' +
+        'City list comes from the "Service locations" collection — manage it there. ' +
+        'Toggle this section off to hide the band entirely.',
       fields: [
         { name: 'pressMarqueeEnabled', type: 'checkbox', defaultValue: true, label: 'Show this section' },
         {
@@ -165,9 +168,23 @@ export const homepageTabsField: Field = {
           type: 'group',
           fields: [
             {
+              name: 'introLabel',
+              type: 'text',
+              defaultValue: 'Now available in these cities',
+              label: 'Intro label',
+              admin: {
+                description:
+                  'Small uppercase label shown above the scrolling band. Leave blank to hide.',
+              },
+            },
+            {
               name: 'items',
               type: 'array',
-              minRows: 1,
+              minRows: 0,
+              admin: {
+                description:
+                  'Legacy custom items. Leave empty to use the Service locations collection instead.',
+              },
               fields: [
                 { name: 'live', type: 'checkbox', defaultValue: false },
                 { name: 'italic', type: 'checkbox', defaultValue: false },

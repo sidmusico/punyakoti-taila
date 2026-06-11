@@ -1,0 +1,778 @@
+/* =============================================================================
+   PLP — Punyakoti Taila Product Listing Page
+   Class prefix: plp-
+   ============================================================================= */
+
+.plp-page {
+  background: var(--cream-200);
+  min-height: 100vh;
+}
+
+/* ── Breadcrumb + hero ────────────────────────────────────────────────── */
+.plp-head {
+  padding: 40px 80px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.plp-breadcrumb {
+  font-size: 12px;
+  color: var(--ink-500);
+  letter-spacing: 0.04em;
+}
+
+.plp-breadcrumb__sep {
+  opacity: 0.4;
+}
+
+.plp-breadcrumb__active {
+  color: var(--green-900);
+}
+
+.plp-hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+}
+
+.plp-hero__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  color: var(--green-900);
+  margin: 12px 0 0;
+}
+
+.plp-hero__title em {
+  font-style: italic;
+  color: var(--mustard-600);
+}
+
+.plp-hero__meta {
+  font-size: 14px;
+  color: var(--ink-500);
+  white-space: nowrap;
+}
+
+.plp-hero__meta-count {
+  font-weight: 600;
+  color: var(--green-900);
+}
+
+.plp-hero__meta-stamp {
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+/* ── Category chips bar ───────────────────────────────────────────────── */
+.plp-chips {
+  padding: 32px 80px 0;
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+/* ── Layout: rail + grid ──────────────────────────────────────────────── */
+.plp-body {
+  padding: 32px 80px 80px;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 56px;
+}
+
+.plp-rail {
+  min-width: 0;
+}
+
+.plp-rail__sticky {
+  position: sticky;
+  top: 80px;
+}
+
+.plp-filter-group {
+  padding-bottom: 26px;
+  margin-bottom: 26px;
+  border-bottom: 1px solid var(--cream-400);
+}
+
+.plp-filter-group__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.plp-filter-group__title {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green-900);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.plp-filter-group__title::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--mustard-500);
+}
+
+.plp-filter-group__toggle {
+  background: transparent;
+  border: 0;
+  color: var(--ink-500);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plp-filter-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.plp-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink-700);
+  cursor: pointer;
+}
+
+.plp-check__box {
+  width: 18px;
+  height: 18px;
+  border: 1.4px solid var(--wood-300);
+  border-radius: 4px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: var(--cream-100);
+  flex-shrink: 0;
+}
+
+.plp-check--on .plp-check__box {
+  background: var(--green-800);
+  border-color: var(--green-800);
+}
+
+.plp-check__label {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.plp-check__count {
+  color: var(--ink-400);
+  font-size: 12px;
+}
+
+.plp-clear-link {
+  display: inline-block;
+  font-size: 12px;
+  color: var(--ink-500);
+  text-decoration: underline;
+  padding: 4px 0;
+}
+.plp-clear-link:hover {
+  color: var(--green-900);
+}
+
+/* ── Sort dropdown ────────────────────────────────────────────────────── */
+.plp-sort {
+  position: relative;
+}
+
+.plp-sort__menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 20;
+  min-width: 200px;
+  background: var(--cream-100);
+  border: 1px solid var(--cream-400);
+  border-radius: 12px;
+  box-shadow: var(--sh-md);
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.plp-sort__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ink-700);
+  cursor: pointer;
+}
+.plp-sort__item:hover { background: var(--cream-200); }
+.plp-sort__item--active {
+  color: var(--green-900);
+  font-weight: 600;
+  background: var(--cream-200);
+}
+
+/* ── Mobile filters drawer ────────────────────────────────────────────── */
+.plp-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+}
+.plp-drawer__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 26, 22, 0.4);
+  backdrop-filter: blur(2px);
+}
+.plp-drawer__sheet {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(360px, 100%);
+  background: var(--cream-200);
+  display: flex;
+  flex-direction: column;
+  animation: plp-slide-in 220ms ease;
+}
+@keyframes plp-slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
+}
+.plp-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--cream-400);
+}
+.plp-drawer__title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  color: var(--green-900);
+}
+.plp-drawer__close {
+  background: transparent;
+  border: 0;
+  color: var(--ink-700);
+  width: 36px;
+  height: 36px;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.plp-drawer__close:hover { background: var(--cream-300); }
+.plp-drawer__body {
+  padding: 16px 20px 80px;
+  overflow-y: auto;
+  flex: 1;
+}
+.plp-drawer__body .plp-rail__sticky { position: static; }
+.plp-drawer__body .plp-rail { display: block; }
+
+/* ── Price slider (visual only) ───────────────────────────────────────── */
+.plp-price {
+  margin-bottom: 26px;
+}
+
+.plp-price__title {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--green-900);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.plp-price__title::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--mustard-500);
+}
+
+.plp-price__track {
+  position: relative;
+  height: 36px;
+}
+
+.plp-price__track-bg {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--cream-300);
+  border-radius: 3px;
+}
+
+.plp-price__track-fill {
+  position: absolute;
+  top: 16px;
+  height: 3px;
+  background: var(--green-800);
+  border-radius: 3px;
+}
+
+.plp-price__thumb {
+  position: absolute;
+  top: 10px;
+  width: 14px;
+  height: 14px;
+  background: var(--cream-100);
+  border: 2px solid var(--green-800);
+  border-radius: 14px;
+}
+
+.plp-price__labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--ink-500);
+  margin-top: 8px;
+  font-family: var(--font-mono);
+}
+
+/* ── Functional dual-thumb slider ─────────────────────────────────────── */
+/* Two stacked <input type="range"> elements lay on top of the visual track.
+   Both their backgrounds are transparent so .plp-price__track-bg/fill show
+   through, and only the thumbs render. */
+.plp-price__input {
+  position: absolute;
+  top: 7px;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  pointer-events: none; /* enable per-thumb below */
+  -webkit-appearance: none;
+  appearance: none;
+  z-index: 2;
+}
+
+.plp-price__input::-webkit-slider-runnable-track {
+  background: transparent;
+  height: 20px;
+  border: 0;
+}
+.plp-price__input::-moz-range-track {
+  background: transparent;
+  height: 20px;
+  border: 0;
+}
+
+.plp-price__input::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--cream-100);
+  border: 2px solid var(--green-800);
+  cursor: grab;
+  margin-top: 2px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+.plp-price__input::-webkit-slider-thumb:active { cursor: grabbing; }
+
+.plp-price__input::-moz-range-thumb {
+  pointer-events: auto;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--cream-100);
+  border: 2px solid var(--green-800);
+  cursor: grab;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+.plp-price__input::-moz-range-thumb:active { cursor: grabbing; }
+
+.plp-price__input:focus-visible::-webkit-slider-thumb {
+  outline: 2px solid var(--mustard-500);
+  outline-offset: 1px;
+}
+.plp-price__input:focus-visible::-moz-range-thumb {
+  outline: 2px solid var(--mustard-500);
+  outline-offset: 1px;
+}
+
+/* When two range inputs stack, the upper one (in DOM order) catches all
+   pointer events for its thumb. We need both thumbs interactive; rely on
+   the `pointer-events: auto` rule above which targets only the thumbs. */
+.plp-price__input--lo { z-index: 3; }
+.plp-price__input--hi { z-index: 4; }
+
+/* ── Applied filter chips (above grid) ────────────────────────────────── */
+.plp-applied {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0 18px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--cream-400);
+}
+
+.plp-applied__label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-500);
+  margin-right: 4px;
+}
+
+.plp-applied__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.plp-applied__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--cream-100);
+  border: 1px solid var(--cream-400);
+  color: var(--green-900);
+  padding: 5px 10px 5px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 150ms;
+}
+.plp-applied__chip:hover {
+  background: var(--cream-300);
+  border-color: var(--wood-500);
+}
+.plp-applied__chip svg { color: var(--ink-500); }
+
+.plp-applied__reset {
+  margin-left: auto;
+  font-size: 12px;
+  color: var(--green-800);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  font-weight: 500;
+}
+.plp-applied__reset:hover { color: var(--green-900); }
+
+@media (max-width: 640px) {
+  .plp-applied {
+    padding: 10px 0 12px;
+  }
+  .plp-applied__reset {
+    margin-left: 0;
+  }
+}
+
+/* ── Toolbar (count + sort) ───────────────────────────────────────────── */
+.plp-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--cream-400);
+}
+
+.plp-toolbar__count {
+  font-size: 14px;
+  color: var(--ink-500);
+}
+
+.plp-toolbar__sort {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+}
+
+.plp-toolbar__sort-label {
+  color: var(--ink-500);
+}
+
+.plp-toolbar__sort-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: 0;
+  color: var(--green-900);
+  font-weight: 600;
+  padding: 6px 4px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* ── Main column (right of rail) ──────────────────────────────────────── */
+.plp-main {
+  min-width: 0;
+}
+
+/* ── Grid ─────────────────────────────────────────────────────────────── */
+.plp-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  min-width: 0;
+}
+
+.plp-grid > * {
+  min-width: 0;
+}
+
+.plp-load-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+.plp-empty {
+  padding: 64px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  color: var(--ink-500);
+  font-size: 16px;
+}
+
+/* ── Mobile-only filter/sort bar (hidden on desktop) ───────────────────── */
+.plp-mobile-bar {
+  display: none;
+}
+
+/* ── Responsive: tablet ──────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .plp-head,
+  .plp-chips,
+  .plp-body {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .plp-body {
+    grid-template-columns: 220px 1fr;
+    gap: 36px;
+  }
+  .plp-hero__title {
+    font-size: 52px;
+  }
+}
+
+@media (max-width: 960px) {
+  .plp-head,
+  .plp-chips,
+  .plp-body {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+  .plp-body {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding-top: 24px;
+    padding-bottom: 64px;
+  }
+  .plp-rail {
+    display: none;
+  }
+  .plp-hero {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .plp-hero__title {
+    font-size: 44px;
+  }
+  .plp-toolbar {
+    display: none;
+  }
+  .plp-mobile-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .plp-mobile-bar__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px;
+    min-height: 44px;
+    border-radius: 9999px;
+    background: var(--cream-100);
+    border: 1px solid var(--cream-400);
+    color: var(--green-900);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .plp-mobile-bar__btn-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .plp-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .plp-grid .hp-product-card--featured {
+    padding: 14px;
+  }
+  .plp-grid .hp-product-card__image-wrap--featured {
+    padding: 12px 8px;
+    aspect-ratio: 1 / 0.85;
+  }
+  .plp-grid .hp-product-card__image-wrap--featured svg {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  .plp-grid .hp-product-card__meta {
+    margin-top: 12px;
+  }
+  .plp-grid .hp-product-card__title--featured {
+    font-size: 18px;
+  }
+  .plp-grid .hp-product-card__price--featured {
+    font-size: 16px;
+  }
+}
+
+/* ── Responsive: mobile ──────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .plp-head {
+    padding: 24px 16px 0;
+    gap: 12px;
+  }
+  .plp-chips {
+    padding: 16px 16px 0;
+  }
+  .plp-body {
+    padding: 16px 16px 56px;
+  }
+  .plp-hero__title {
+    font-size: 34px;
+    margin-top: 8px;
+  }
+  .plp-hero__meta {
+    font-size: 13px;
+  }
+  .plp-grid {
+    gap: 12px;
+  }
+  .plp-grid .hp-product-card--featured {
+    padding: 10px;
+  }
+  .plp-grid .hp-product-card__image-wrap--featured {
+    padding: 8px 6px;
+    aspect-ratio: 1 / 0.85;
+  }
+  .plp-grid .hp-product-card__image-wrap--featured svg {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+  }
+  .plp-grid .hp-product-card__badge-slot {
+    top: 8px;
+    left: 8px;
+  }
+  .plp-grid .hp-product-card__wish {
+    top: 8px;
+    right: 8px;
+  }
+  .plp-grid .hp-product-card__meta {
+    margin-top: 8px;
+  }
+  .plp-grid .hp-product-card__title--featured {
+    font-size: 16px;
+    margin-top: 2px;
+  }
+  .plp-grid .hp-product-card__row--featured {
+    padding-top: 8px;
+  }
+  .plp-grid .hp-product-card__price--featured {
+    font-size: 14px;
+  }
+  .plp-grid .hp-product-card__size--featured {
+    font-size: 11px;
+    margin-left: 4px;
+  }
+  .plp-grid .pt-btn--sm {
+    padding: 6px 10px;
+    font-size: 11px;
+    min-height: 30px;
+  }
+  .plp-grid .pt-mono-stamp {
+    font-size: 9px;
+    letter-spacing: 0.04em;
+  }
+  .plp-grid .pt-pill {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+}
+
+/* ── Very narrow: 1-column grid ─────────────────────────────────────── */
+@media (max-width: 420px) {
+  .plp-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .plp-grid .hp-product-card--featured {
+    padding: 14px;
+  }
+  .plp-grid .hp-product-card__image-wrap--featured {
+    aspect-ratio: 1 / 0.6;
+    padding: 8px;
+  }
+  .plp-grid .hp-product-card__title--featured {
+    font-size: 19px;
+  }
+  .plp-grid .hp-product-card__price--featured {
+    font-size: 16px;
+  }
+  .plp-grid .pt-btn--sm {
+    padding: 8px 14px;
+    font-size: 12px;
+    min-height: 34px;
+  }
+  .plp-mobile-bar__btn {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}

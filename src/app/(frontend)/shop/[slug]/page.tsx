@@ -152,11 +152,6 @@ export default async function ProductPage({ params }: PDPProps) {
             {product.tagline && (
               <p className="mt-2 text-base" style={{ color: 'var(--ink-500)' }}>{product.tagline}</p>
             )}
-            {product.region && (
-              <div className="mt-2" style={{ fontFamily: 'var(--font-mono)', fontSize: 11, color: 'var(--wood-600)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
-                {product.region}
-              </div>
-            )}
           </div>
 
           {/* ratings */}
@@ -209,7 +204,6 @@ export default async function ProductPage({ params }: PDPProps) {
                   { label: pdp?.labelPressDate ?? 'Press date', value: pressDate },
                   { label: pdp?.labelTemperature ?? 'Temperature', value: batch.pressTemperature },
                   { label: pdp?.labelYield ?? 'Yield', value: batch.yield },
-                  { label: pdp?.labelOrigin ?? 'Origin', value: batch.farmLocation },
                 ].filter(row => row.value).map(({ label, value }) => (
                   <div key={label}>
                     <div style={{ color: 'var(--ink-400)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</div>

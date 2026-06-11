@@ -14,11 +14,17 @@ import { isSeedApiAuthorized } from '@/seed/seedApiAuth'
  *
  * Idempotent: rows are matched by `alt`. Existing rows are patched with
  * ImageKit metadata; matching rows are skipped.
+ *
+ * `?force=1` is accepted for API parity with the homepage seed but is
+ * currently a no-op here.
  */
 export async function GET(req: NextRequest) {
   if (!isSeedApiAuthorized(req)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
+
+  const forceParam = req.nextUrl.searchParams.get('force')
+  const force = forceParam === '1' || forceParam === 'true'
 
   const payload = await getPayload({ config })
   const { results } = await runImageKitMediaSeed(payload)
@@ -31,5 +37,5 @@ export async function GET(req: NextRequest) {
     errors: results.filter((r) => r.status === 'error').length,
   }
 
-  return NextResponse.json({ summary, results }, { status: 200 })
+  return NextResponse.json({ summary, results, force }, { status: 200 })
 }

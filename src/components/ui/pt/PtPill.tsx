@@ -1,7 +1,7 @@
 import React from 'react'
 import { cn } from '@/utilities/ui'
 
-const tones = ['green', 'mustard', 'dark', 'terra'] as const
+const tones = ['green', 'mustard', 'dark', 'terra', 'cream'] as const
 export type PtPillTone = (typeof tones)[number]
 
 export function PtPill({

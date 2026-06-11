@@ -8,11 +8,18 @@ function relationshipProducts(val: unknown): Product[] {
   return val.filter((x): x is Product => typeof x === 'object' && x !== null && 'slug' in x)
 }
 
+export type ServiceLocationCity = {
+  id: string | number
+  cityName: string
+  state?: string | null
+}
+
 export type HomepageStorefrontData = {
   homepage: Partial<HomepageSetting> | null
   featuredProducts: Product[]
   bestSellers: Product[]
   testimonials: Testimonial[]
+  serviceLocations: ServiceLocationCity[]
 }
 
 /**
@@ -34,24 +41,36 @@ export async function getHomepageData(): Promise<HomepageStorefrontData> {
     console.error('[getHomepageData] findGlobal("homepage-settings") failed:', err)
   }
 
-  const [catalogOutcome, testimonialsOutcome] = await Promise.allSettled([
-    payload.find({
-      collection: 'products',
-      where: { status: { equals: 'published' } },
-      limit: 12,
-      sort: 'displayOrder',
-      depth: 1,
-    }),
-    payload.find({
-      collection: 'testimonials',
-      where: {
-        and: [{ status: { equals: 'approved' } }, { featuredOnHome: { equals: true } }],
-      },
-      limit: 12,
-      sort: '-createdAt',
-      depth: 0,
-    }),
-  ])
+  const [catalogOutcome, testimonialsOutcome, serviceLocationsOutcome] =
+    await Promise.allSettled([
+      payload.find({
+        collection: 'products',
+        where: { status: { equals: 'published' } },
+        limit: 12,
+        sort: 'displayOrder',
+        depth: 1,
+      }),
+      payload.find({
+        collection: 'testimonials',
+        where: {
+          and: [{ status: { equals: 'approved' } }, { featuredOnHome: { equals: true } }],
+        },
+        limit: 12,
+        sort: '-createdAt',
+        depth: 0,
+      }),
+      // Marquee source — only enabled rows, sorted by displayOrder then name.
+      // The `service-locations` collection may not exist yet on a brand-new DB
+      // (before `pnpm cms:sync`), in which case this Promise rejects and we
+      // gracefully fall back to the band's built-in city list.
+      payload.find({
+        collection: 'service-locations',
+        where: { enabled: { not_equals: false } },
+        limit: 50,
+        sort: 'displayOrder',
+        depth: 0,
+      }),
+    ])
 
   const docs: Product[] =
     catalogOutcome.status === 'fulfilled' ? (catalogOutcome.value.docs as Product[]) : []
@@ -83,5 +102,23 @@ export async function getHomepageData(): Promise<HomepageStorefrontData> {
   const maxT = Math.min(Math.max(hp?.testimonialsBand?.maxItems ?? 3, 1), 12)
   const testimonials = testimonialDocs.slice(0, maxT)
 
-  return { homepage: hp, featuredProducts, bestSellers, testimonials }
+  let serviceLocations: ServiceLocationCity[] = []
+  if (serviceLocationsOutcome.status === 'fulfilled') {
+    serviceLocations = (serviceLocationsOutcome.value.docs as Array<{
+      id: string | number
+      cityName?: string | null
+      state?: string | null
+    }>)
+      .filter((d) => typeof d.cityName === 'string' && d.cityName.trim().length > 0)
+      .map((d) => ({ id: d.id, cityName: d.cityName as string, state: d.state ?? null }))
+  } else {
+    // First boot before `cms:sync` (table doesn't exist) — log once and
+    // continue. The PressBand will use its built-in fallback cities.
+    console.warn(
+      '[getHomepageData] service-locations find failed (run `pnpm cms:sync` after adding the collection):',
+      serviceLocationsOutcome.reason,
+    )
+  }
+
+  return { homepage: hp, featuredProducts, bestSellers, testimonials, serviceLocations }
 }

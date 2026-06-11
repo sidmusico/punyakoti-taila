@@ -76,6 +76,7 @@ export interface Config {
     orders: Order;
     reviews: Review;
     testimonials: Testimonial;
+    'service-locations': ServiceLocation;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -102,6 +103,7 @@ export interface Config {
     orders: OrdersSelect<false> | OrdersSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
     testimonials: TestimonialsSelect<false> | TestimonialsSelect<true>;
+    'service-locations': ServiceLocationsSelect<false> | ServiceLocationsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -460,7 +462,7 @@ export interface Media {
   id: number;
   alt?: string | null;
   /**
-   * Sub-folder under /punyakoti-taila. Type a new name to create it on upload. Existing: brand, collections, gifting, home, ingredients, process, products, products/achaar-pickles, products/almond-oil, products/castor-oil, products/coconut-oil, products/dant-manjan, products/dhoop-batti, products/gomutra-ark, products/groundnut-oil, products/safflower-oil, products/sesame-oil, store, ui-mockups
+   * Sub-folder under /punyakoti-taila. Type a new name to create it on upload. Existing: brand, collections, gifting, home, ingredients, others, process, products, products/achaar-pickles, products/all-oils, products/almond-oil, products/castor-oil, products/coconut-oil, products/dant-manjan, products/dhoop-batti, products/gomutra-ark, products/groundnut-oil, products/real-photos, products/safflower-oil, products/sesame-oil, store, ui-mockups, ui-mockups/claude, ui-mockups/stitch
    */
   imagekitFolder?: string | null;
   caption?: {
@@ -685,14 +687,18 @@ export interface Product {
    */
   oilVariant?: ('sesame' | 'coconut' | 'groundnut' | 'mustard' | 'sunflower' | 'blackSes' | 'castor') | null;
   /**
-   * e.g. "Erode · Tamil Nadu"
-   */
-  region?: string | null;
-  /**
    * Optional badge shown on card (e.g. "Best seller", "Limited")
    */
   tag?: string | null;
-  categoryType?: ('cooking' | 'wellness' | 'gift-sets') | null;
+  categoryType?: ('cooking' | 'wellness' | 'gift-sets' | 'subscription') | null;
+  /**
+   * Powers the PLP "Use" filter.
+   */
+  useCases?: ('daily-cooking' | 'tempering' | 'salad' | 'hair-body' | 'ayurvedic')[] | null;
+  /**
+   * Powers the PLP "Certifications" filter.
+   */
+  certifications?: ('usda-organic' | 'india-organic' | 'single-origin')[] | null;
   /**
    * URL-friendly identifier (auto-fill from name)
    */
@@ -1256,6 +1262,43 @@ export interface Testimonial {
   createdAt: string;
 }
 /**
+ * Cities / dealers where products are currently available. Drives the homepage scrolling marquee and (future) shipping-address checks.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-locations".
+ */
+export interface ServiceLocation {
+  id: number;
+  /**
+   * Shown in the homepage marquee — e.g. Bengaluru, Mysuru.
+   */
+  cityName: string;
+  /**
+   * Street / area / landmark for the dealer or pickup point.
+   */
+  addressDetails?: string | null;
+  dealerName?: string | null;
+  /**
+   * Contact number for the dealer / outlet.
+   */
+  phoneNumber?: string | null;
+  /**
+   * Indian 6-digit postal code. Used later for delivery checks.
+   */
+  pinCode?: string | null;
+  state?: string | null;
+  /**
+   * Uncheck to hide this location from the homepage marquee without deleting the record.
+   */
+  enabled?: boolean | null;
+  /**
+   * Lower numbers appear first in the marquee.
+   */
+  displayOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects".
  */
@@ -1480,6 +1523,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'testimonials';
         value: number | Testimonial;
+      } | null)
+    | ({
+        relationTo: 'service-locations';
+        value: number | ServiceLocation;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -2027,9 +2074,10 @@ export interface UsersSelect<T extends boolean = true> {
 export interface ProductsSelect<T extends boolean = true> {
   name?: T;
   oilVariant?: T;
-  region?: T;
   tag?: T;
   categoryType?: T;
+  useCases?: T;
+  certifications?: T;
   slug?: T;
   tagline?: T;
   ratingDisplay?: T;
@@ -2185,6 +2233,22 @@ export interface TestimonialsSelect<T extends boolean = true> {
   verifiedPurchase?: T;
   featuredOnHome?: T;
   status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service-locations_select".
+ */
+export interface ServiceLocationsSelect<T extends boolean = true> {
+  cityName?: T;
+  addressDetails?: T;
+  dealerName?: T;
+  phoneNumber?: T;
+  pinCode?: T;
+  state?: T;
+  enabled?: T;
+  displayOrder?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2692,6 +2756,13 @@ export interface HomepageSetting {
   };
   pressMarqueeEnabled?: boolean | null;
   pressMarquee?: {
+    /**
+     * Small uppercase label shown above the scrolling band. Leave blank to hide.
+     */
+    introLabel?: string | null;
+    /**
+     * Legacy custom items. Leave empty to use the Service locations collection instead.
+     */
     items?:
       | {
           live?: boolean | null;
@@ -3429,6 +3500,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
   pressMarquee?:
     | T
     | {
+        introLabel?: T;
         items?:
           | T
           | {

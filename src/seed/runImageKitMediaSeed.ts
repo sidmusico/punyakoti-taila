@@ -1,5 +1,7 @@
 import type { Payload } from 'payload'
 
+import { getImageKitRoot } from '@/lib/imagekit/client'
+import { listAllImageKitAssets, type ImageKitFile } from '@/lib/imagekit/listAll'
 import { IMAGEKIT_CATALOG, IMAGEKIT_ROOT, type ImageKitCatalogEntry } from './imagekitCatalog.generated'
 import { fetchRemoteFilePayloadShape } from './seedMediaUpload'
 
@@ -19,10 +21,32 @@ function relFolder(entry: ImageKitCatalogEntry): string {
   return entry.folder.replace(/^\/+/, '')
 }
 
+/** Derive the `alt` used to key Payload Media docs from the ImageKit file path. */
+function altForImageKitFile(file: ImageKitFile): string {
+  const stem = file.name.replace(/\.[a-z0-9]+$/i, '')
+  const folderRel = relFolderFromPath(file.folder)
+  const folderLeaf = folderRel.split('/').filter(Boolean).pop() || 'root'
+  return `${folderLeaf}/${stem}`
+}
+
+function relFolderFromPath(folder: string): string {
+  const root = getImageKitRoot()
+  if (folder === root) return ''
+  if (folder.startsWith(`${root}/`)) return folder.slice(root.length + 1)
+  return folder.replace(/^\/+/, '')
+}
+
 /**
- * Pull each file in the generated ImageKit catalog into the Payload `media`
- * collection. Idempotent on the catalog's `alt` value:
+ * Pull every ImageKit file under the project root into the Payload `media`
+ * collection.
  *
+ * We fetch the **live** ImageKit listing (not the static
+ * `imagekitCatalog.generated.ts`) so that files uploaded via the ImageKit
+ * dashboard between catalog refreshes are not silently dropped. The static
+ * catalog is still imported as a fallback so the seed step never crashes if
+ * the live ImageKit API is unreachable during a CI run.
+ *
+ * Idempotent on the `alt` derived from the file path:
  * - **No row for this alt** → fetches the file from ImageKit (so Payload can
  *   generate image sizes) and creates the doc with ImageKit metadata already
  *   set, so the cloud-storage adapter doesn't re-upload it.
@@ -34,7 +58,31 @@ export async function runImageKitMediaSeed(
 ): Promise<{ results: ImageKitMediaSeedResult[] }> {
   const results: ImageKitMediaSeedResult[] = []
 
-  for (const entry of IMAGEKIT_CATALOG) {
+  // Build entries from the live ImageKit listing. Fall back to the cached
+  // catalog if the API call fails (e.g. offline dev).
+  let entries: ImageKitCatalogEntry[] = []
+  try {
+    const { files } = await listAllImageKitAssets()
+    entries = files.map<ImageKitCatalogEntry>((f) => ({
+      fileId: f.fileId,
+      name: f.name,
+      folder: f.folder,
+      filePath: f.filePath,
+      url: f.url,
+      width: f.width,
+      height: f.height,
+      alt: altForImageKitFile(f),
+    }))
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      '[runImageKitMediaSeed] live ImageKit fetch failed, falling back to generated catalog:',
+      err instanceof Error ? err.message : String(err),
+    )
+    entries = [...IMAGEKIT_CATALOG]
+  }
+
+  for (const entry of entries) {
     try {
       const existing = await payload.find({
         collection: 'media',

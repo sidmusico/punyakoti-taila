@@ -92,6 +92,70 @@ function Wordmark({ size = 20, color = 'var(--green-900)', showTagline = true, l
   )
 }
 
+/* ── BrandLock ─────────────────────────────────────────────
+ * Logo image rendered with an explicit intrinsic aspect ratio and a CSS
+ * `height` that scales by breakpoint via the `.pt-header-brand` class
+ * (see SiteHeader.module — defined in `globals.css`). Falls back to the
+ * Wordmark text when no image URL is supplied.
+ * ──────────────────────────────────────────────────────── */
+type BrandLockVariant = 'desktop' | 'mobile' | 'drawer'
+
+function BrandLock({
+  variant,
+  logoImageUrl,
+  logoText,
+  logoTagline,
+}: {
+  variant: BrandLockVariant
+  logoImageUrl?: string | null
+  logoText: string
+  logoTagline: string
+}) {
+  if (!logoImageUrl) {
+    const wordmarkSize = variant === 'desktop' ? 20 : 18
+    return (
+      <Wordmark
+        size={wordmarkSize}
+        showTagline={false}
+        logoText={logoText}
+        logoTagline={logoTagline}
+      />
+    )
+  }
+
+  // Intrinsic aspect ratio of the source asset (≈ 1.83:1). Keeping these
+  // numbers in sync with the real image dimensions stops Next/Image from
+  // distorting the lockup and avoids CLS while the image is loading.
+  const intrinsicWidth = 366
+  const intrinsicHeight = 200
+
+  return (
+    <span
+      className={cn(
+        'pt-header-brand',
+        variant === 'desktop' && 'pt-header-brand--desktop',
+        variant === 'mobile' && 'pt-header-brand--mobile',
+        variant === 'drawer' && 'pt-header-brand--drawer',
+      )}
+    >
+      <Image
+        src={logoImageUrl}
+        alt="Punyakoti Taila"
+        width={intrinsicWidth}
+        height={intrinsicHeight}
+        priority={variant !== 'drawer'}
+        sizes="(min-width: 1024px) 200px, (min-width: 768px) 180px, 140px"
+        style={{
+          height: '100%',
+          width: 'auto',
+          objectFit: 'contain',
+          display: 'block',
+        }}
+      />
+    </span>
+  )
+}
+
 /* ── Default nav ─────────────────────────────────────────── */
 const DEFAULT_NAV: NavLink[] = [
   { label: 'Oils',      href: '/shop' },
@@ -223,16 +287,21 @@ export function SiteHeader({
         {/* ── Desktop nav ─────────────────────────────────── */}
         <div
           className="hidden md:flex items-center justify-between"
-          style={{ padding: '18px 48px', maxWidth: 'var(--container-wide)', margin: '0 auto' }}
+          style={{ padding: '0 48px', maxWidth: 'var(--container-wide)', margin: '0 auto' }}
         >
           {/* Left: Logo + nav */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
-            <Link href="/" aria-label="Punyakoti Taila home">
-              {logoImageUrl ? (
-                <Image src={logoImageUrl} alt={logoText} width={120} height={40} style={{ height: 40, width: 'auto' }} />
-              ) : (
-                <Wordmark size={20} showTagline={false} logoText={logoText} logoTagline={logoTagline} />
-              )}
+            <Link
+              href="/"
+              aria-label="Punyakoti Taila — home"
+              className="pt-header-brand-link"
+            >
+              <BrandLock
+                variant="desktop"
+                logoImageUrl={logoImageUrl}
+                logoText={logoText}
+                logoTagline={logoTagline}
+              />
             </Link>
 
             <nav
@@ -311,14 +380,19 @@ export function SiteHeader({
         {/* ── Mobile nav bar ──────────────────────────────── */}
         <div
           className="flex md:hidden items-center justify-between"
-          style={{ padding: '16px 20px' }}
+          style={{ padding: '0 20px' }}
         >
-          <Link href="/" aria-label="Home">
-            {logoImageUrl ? (
-              <Image src={logoImageUrl} alt={logoText} width={100} height={32} style={{ height: 32, width: 'auto' }} />
-            ) : (
-              <Wordmark size={18} showTagline={false} logoText={logoText} logoTagline={logoTagline} />
-            )}
+          <Link
+            href="/"
+            aria-label="Punyakoti Taila — home"
+            className="pt-header-brand-link"
+          >
+            <BrandLock
+              variant="mobile"
+              logoImageUrl={logoImageUrl}
+              logoText={logoText}
+              logoTagline={logoTagline}
+            />
           </Link>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, color: 'var(--green-900)' }}>
@@ -373,10 +447,15 @@ export function SiteHeader({
           padding: '20px 24px',
           borderBottom: '1px solid var(--cream-400)',
         }}>
-          <Wordmark size={18} showTagline={false} logoText={logoText} logoTagline={logoTagline} />
+          <BrandLock
+            variant="drawer"
+            logoImageUrl={logoImageUrl}
+            logoText={logoText}
+            logoTagline={logoTagline}
+          />
           <button
             onClick={() => setMobileOpen(false)}
-            style={{ color: 'var(--ink-500)', padding: 4 }}
+            style={{ color: 'var(--ink-500)', padding: 4, cursor: 'pointer' }}
             aria-label="Close menu"
           >
             <CloseIcon />

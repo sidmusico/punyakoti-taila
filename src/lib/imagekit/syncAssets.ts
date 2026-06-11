@@ -80,6 +80,28 @@ function targetFilePath(root: string, relPath: string): string {
 }
 
 /**
+ * Mirror ImageKit's server-side filename normalization. ImageKit allows only
+ * alphanumerics + `.`, `-`, `_`; anything else (spaces, &, parens, …) is
+ * replaced by `_`. We apply the same rule client-side so that:
+ *   - the remote-lookup key matches what ImageKit actually stored
+ *   - a re-uploaded file keeps the same canonical name
+ *   - the Payload Media doc has a stable alt
+ *
+ * Without this, a local "foo bar.png" uploaded once as "foo_bar.png" looks
+ * "missing" on every subsequent sync, the code attempts to re-upload, and
+ * ImageKit refuses with a 400 (file exists, overwrite=false).
+ */
+export function normalizeImageKitName(name: string): string {
+  return name.replace(/[^a-zA-Z0-9._-]/g, '_')
+}
+
+function canonicalRelPath(relPath: string): string {
+  // Normalize each path segment independently — folder names can contain
+  // unsafe chars too (e.g. "ui-mockups/claude folder/foo.png").
+  return relPath.split('/').map(normalizeImageKitName).join('/')
+}
+
+/**
  * Walk the local `assets/` folder, push any new/changed file up to ImageKit
  * (preserving the relative folder layout), then upsert a matching Payload
  * Media doc for every touched file.
@@ -123,15 +145,17 @@ export async function syncAssetsToImageKit(args: {
   for (let i = 0; i < local.length; i++) {
     const file = local[i]!
     const index = i + 1
-    const folderRel = file.subfolder
-    const targetPath = targetFilePath(root, file.relPath)
+    const folderRel = canonicalRelPath(file.subfolder)
+    const canonicalFilename = normalizeImageKitName(file.filename)
+    const canonicalRel = canonicalRelPath(file.relPath)
+    const targetPath = targetFilePath(root, canonicalRel)
     const existing = remoteByPath.get(targetPath)
 
     await emit({ type: 'file-start', index, total, relPath: file.relPath, size: file.size })
 
     const base: AssetSyncFileResult = {
       relPath: file.relPath,
-      filename: file.filename,
+      filename: canonicalFilename,
       folder: folderRel,
       size: file.size,
       upload: 'skipped',
@@ -162,7 +186,7 @@ export async function syncAssetsToImageKit(args: {
         const buffer = await fs.readFile(file.absPath)
         const uploaded: ImageKitUploadResult = await uploadBufferToImageKit({
           buffer,
-          filename: file.filename,
+          filename: canonicalFilename,
           mimeType: file.mimeType,
           subfolder: folderRel,
           useUniqueFileName: false,
@@ -176,7 +200,7 @@ export async function syncAssetsToImageKit(args: {
       base.url = ikInfo.url
 
       // ── Phase 3: upsert Payload Media doc ────────────────────────────────
-      const alt = altFor(folderRel, file.filename)
+      const alt = altFor(folderRel, canonicalFilename)
       const seedResult = await upsertMediaDoc({
         payload,
         alt,

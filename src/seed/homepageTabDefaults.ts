@@ -31,14 +31,11 @@ export const homepageTabDefaults = {
   },
   pressMarqueeEnabled: true,
   pressMarquee: {
-    items: [
-      { live: true, italic: false, text: 'Pressing now · Sesame', stamp: 'Erode · NOV 14' },
-      { live: false, italic: true, text: 'Bottled this week · Coconut', stamp: 'Kollam · NOV 12' },
-      { live: false, italic: false, text: 'Settling · Mustard', stamp: 'Alwar · NOV 11' },
-      { live: false, italic: true, text: 'Harvest in · Black sesame', stamp: 'Salem · NOV 09' },
-      { live: false, italic: false, text: 'Lab cleared · Groundnut', stamp: 'Kadapa · NOV 08' },
-      { live: true, italic: false, text: 'Press of the week · Sesame', stamp: 'Batch #047' },
-    ],
+    introLabel: 'Now available in these cities',
+    // No legacy items — the band now reads cities from the
+    // `service-locations` collection. Admins can still add custom items
+    // via Homepage settings if they ever want to override the list.
+    items: [],
   },
   trustStripEnabled: true,
   trustStrip: [

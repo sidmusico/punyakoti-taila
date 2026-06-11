@@ -1,6 +1,10 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+/* Tool output dirs — never contain Tailwind classes; sockets here crash Turbopack */
+@source not "../../../.codegraph";
+@source not "../../../graphify-out";
+
 @config '../../../tailwind.config.mjs';
 
 @custom-variant dark (&:is([data-theme='dark'] *));
@@ -433,6 +437,96 @@ html {
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
 }
 
+/* ── Header brand lock-up ─────────────────────────────────────
+ * Fixed HEIGHT, capped WIDTH. The image fills the height fully and
+ * is allowed to take whatever natural width the source asset has,
+ * up to the max-width. This keeps the header height stable while
+ * letting the logo read clearly (no extra letterbox space).
+ *
+ *   - Mobile  (<380px):  h 40, max-w 140
+ *   - Mobile  (≥380px):  h 48, max-w 160
+ *   - Desktop (<1024px): h 52, max-w 180
+ *   - Desktop (≥1024px): h 60, max-w 200
+ *   - Drawer header   :  h 40, max-w 140
+ * ──────────────────────────────────────────────────────────── */
+.pt-header-brand-link {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  outline: none;
+  border-radius: 8px;
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+.pt-header-brand-link:hover {
+  opacity: 0.85;
+}
+.pt-header-brand-link:active {
+  transform: translateY(1px);
+}
+.pt-header-brand-link:focus-visible {
+  outline: 2px solid var(--mustard-500);
+  outline-offset: 4px;
+}
+
+.pt-header-brand {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+/* Image fills the slot height; width is intrinsic-to-aspect, capped by
+   the slot's `max-width`. */
+.pt-header-brand > img,
+.pt-header-brand :where(span, picture) > img {
+  height: 100% !important;
+  width: auto !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+/* Mobile bar */
+.pt-header-brand--mobile {
+  height: 40px;
+  max-width: 140px;
+}
+@media (min-width: 380px) {
+  .pt-header-brand--mobile {
+    height: 48px;
+    max-width: 160px;
+  }
+}
+
+/* Desktop nav row */
+.pt-header-brand--desktop {
+  height: 52px;
+  max-width: 180px;
+}
+@media (min-width: 1024px) {
+  .pt-header-brand--desktop {
+    height: 60px;
+    max-width: 200px;
+  }
+}
+
+/* Mobile drawer header — compact, leaves room for the close icon */
+.pt-header-brand--drawer {
+  height: 40px;
+  max-width: 140px;
+}
+
+/* Respect users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  .pt-header-brand-link {
+    transition: none;
+  }
+  .pt-header-brand-link:active {
+    transform: none;
+  }
+}
+
 /* Scrollbar hide */
 .pt-noscroll::-webkit-scrollbar { display: none; }
 .pt-noscroll { scrollbar-width: none; }
@@ -613,6 +707,32 @@ html {
 .pt-pill--mustard { background: var(--mustard-100); color: var(--mustard-700); }
 .pt-pill--dark    { background: var(--green-900);   color: var(--mustard-200); }
 .pt-pill--terra   { background: var(--terra-100);   color: var(--terra-700); }
+.pt-pill--cream   { background: var(--cream-300);   color: var(--wood-700); }
+
+/* ── Chip ────────────────────────────────────────────────── */
+.pt-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 9999px;
+  background: var(--cream-100);
+  border: 1px solid var(--cream-400);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--green-900);
+  letter-spacing: 0;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 200ms ease;
+}
+.pt-chip:hover { border-color: var(--wood-500); }
+.pt-chip--active {
+  background: var(--green-900);
+  color: var(--cream-100);
+  border-color: var(--green-900);
+}
 
 /* ── Stars ────────────────────────────────────────────────── */
 .pt-stars { display: inline-flex; gap: 2px; color: var(--mustard-500); }

@@ -2,6 +2,7 @@ import type { Payload } from 'payload'
 
 import { runImageKitMediaSeed } from '@/seed/runImageKitMediaSeed'
 import { runMediaCatalogSeed } from '@/seed/runMediaCatalogSeed'
+import { runPlpCatalogSeed } from '@/seed/runPlpCatalogSeed'
 import { runProductCatalogSeed } from '@/seed/runProductCatalogSeed'
 import { runSitePagesSeed } from '@/seed/runSitePagesSeed'
 import { runStorefrontGlobalsSeed } from '@/seed/runStorefrontGlobalsSeed'
@@ -50,6 +51,13 @@ export async function runFullSiteSeed(payload: Payload): Promise<{ steps: FullSe
     step: 'products',
     summary: summarize(products.results),
     results: products.results,
+  })
+
+  const plp = await runPlpCatalogSeed(payload)
+  steps.push({
+    step: 'plp',
+    summary: summarize(plp.results),
+    results: plp.results,
   })
 
   const pages = await runSitePagesSeed(payload)

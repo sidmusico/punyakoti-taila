@@ -128,15 +128,44 @@
   }
 }
 
+/* Horizontally scrollable testimonial rail — scrolls when more cards are
+   added than fit in the viewport. Centers when content fits. */
 .testimonials-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  display: flex;
   gap: 32px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 8px;
+  padding-bottom: 12px;
+  /* Center cards horizontally when they fit; fall back to start when
+     overflowing so the first card stays reachable. */
+  justify-content: safe center;
+  /* Avoid clipping focus rings / shadows vertically */
+  margin-inline: calc(-1 * clamp(20px, 6vw, 80px));
+  padding-inline: clamp(20px, 6vw, 80px);
+  scrollbar-width: thin;
+  scrollbar-color: var(--cream-400) transparent;
 }
+
+.testimonials-grid::-webkit-scrollbar {
+  height: 8px;
+}
+.testimonials-grid::-webkit-scrollbar-thumb {
+  background: var(--cream-400);
+  border-radius: 999px;
+}
+.testimonials-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.testimonials-grid > .hp-testimonial {
+  flex: 0 0 clamp(260px, 30vw, 360px);
+  scroll-snap-align: start;
+}
+
 @media (max-width: 900px) {
-  .testimonials-grid {
-    grid-template-columns: 1fr !important;
-    gap: 48px !important;
+  .testimonials-grid > .hp-testimonial {
+    flex-basis: 78vw;
   }
 }
 
@@ -348,10 +377,20 @@
   font-weight: 400;
   font-style: italic;
   font-size: clamp(48px, 7vw, 96px);
-  line-height: 1.02;
+  /* Italic descenders ('p', 'y') need extra leading so they don't crash
+     into the body paragraph below. */
+  line-height: 1.18;
   letter-spacing: -0.025em;
   color: var(--mustard-600);
   margin: 8px 0 0;
+}
+
+.hp-poetic .hp-prose-poetic,
+.hp-poetic .pt-dropcap {
+  margin-top: clamp(28px, 3vw, 44px);
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--ink-700);
 }
 
 .hp-heading-why {
@@ -402,7 +441,11 @@
   letter-spacing: -0.025em;
   color: var(--cream-100);
   margin: 28px 0 0;
-  text-shadow: 0 6px 30px rgba(0, 0, 0, 0.5);
+  /* Layered shadows so light text stays readable on any background image. */
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.75),
+    0 6px 24px rgba(0, 0, 0, 0.55),
+    0 0 1px rgba(0, 0, 0, 0.6);
   max-width: min(1100px, 92vw);
 }
 
@@ -468,8 +511,10 @@
 /* ── Hero cinematic ───────────────────────────────────────────────────── */
 .hp-hero-cinematic {
   position: relative;
-  height: 100vh;
-  min-height: 640px;
+  /* Subtract approximate announcement bar (~34px) + sticky header (~76px) so
+     the scroll cue stays inside the initial viewport. */
+  height: calc(100svh - 110px);
+  min-height: 540px;
   max-height: 900px;
   width: 100%;
   overflow: hidden;
@@ -481,14 +526,29 @@
   inset: 0;
 }
 
+.hp-hero-cinematic__bg::after {
+  /* Very soft radial focus behind the headline — keep the image clearly
+     visible while giving text a tiny bit of contrast support. */
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at 50% 55%,
+    rgba(15, 9, 4, 0.28) 0%,
+    rgba(15, 9, 4, 0.14) 45%,
+    rgba(15, 9, 4, 0) 80%
+  );
+  pointer-events: none;
+}
+
 .hp-hero-cinematic__scrim {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     180deg,
-    rgba(15, 9, 4, 0.35) 0%,
-    rgba(15, 9, 4, 0.15) 35%,
-    rgba(15, 9, 4, 0.6) 100%
+    rgba(15, 9, 4, 0.18) 0%,
+    rgba(15, 9, 4, 0.05) 35%,
+    rgba(15, 9, 4, 0.4) 100%
   );
 }
 
@@ -532,8 +592,10 @@
   margin-top: 22px;
   font-size: 17px;
   line-height: 1.7;
-  color: rgba(245, 239, 224, 0.85);
-  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.45);
+  color: rgba(245, 239, 224, 0.95);
+  text-shadow:
+    0 1px 4px rgba(0, 0, 0, 0.85),
+    0 2px 14px rgba(0, 0, 0, 0.6);
   max-width: min(580px, 92vw);
 }
 
@@ -833,6 +895,22 @@
   margin-top: 4px;
 }
 
+.hp-product-card__description {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-500);
+  margin: 6px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.hp-product-card__description--compact {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
 .hp-product-card__row {
   margin-top: auto;
   display: flex;
@@ -958,6 +1036,57 @@
   padding: clamp(64px, 8vw, 112px) clamp(20px, 6vw, 80px);
   position: relative;
   overflow: hidden;
+}
+
+/* When a banner image is supplied, treat it as the section background and
+   overlay the eyebrow/heading/body/steps on top of it. */
+.hp-process--bg {
+  min-height: clamp(560px, 72vh, 820px);
+}
+
+.hp-process__bg-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hp-process__bg-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 22, 14, 0.7) 0%,
+    rgba(10, 22, 14, 0.55) 45%,
+    rgba(10, 22, 14, 0.82) 100%
+  );
+  pointer-events: none;
+}
+
+.hp-process--bg .hp-process__inner {
+  position: relative;
+  z-index: 2;
+}
+
+.hp-process--bg .hp-process__wm-left,
+.hp-process--bg .hp-process__wm-right {
+  z-index: 1;
+  opacity: 0.04;
+}
+
+.hp-process--bg .hp-heading-process,
+.hp-process--bg .hp-prose--on-dark {
+  text-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.7),
+    0 6px 24px rgba(0, 0, 0, 0.45);
+}
+
+.hp-process--bg .hp-process-step {
+  border-top-color: rgba(245, 239, 224, 0.28);
 }
 
 .hp-process__wm-left {
@@ -1219,6 +1348,27 @@
   padding: 0;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.hp-testimonial__thumb {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.hp-testimonial__thumb .pt-avatar-initials {
+  width: 160px !important;
+  height: 160px !important;
+  border-radius: 12px;
+  font-size: 56px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.hp-testimonial > .pt-stars {
+  align-self: center;
 }
 
 .hp-testimonial__quote {
@@ -1228,25 +1378,37 @@
   font-size: clamp(18px, 1.8vw, 24px);
   line-height: 1.4;
   color: var(--green-900);
-  margin: 20px 0 24px;
+  margin: 14px 0 0;
   letter-spacing: -0.01em;
+  text-align: center;
+  width: 100%;
 }
 
+/* Name + location sit immediately under the photo (no auto margin push). */
 .hp-testimonial__cap {
-  margin-top: auto;
+  margin-top: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 14px;
+  gap: 4px;
+  width: 100%;
+  text-align: center;
 }
 
 .hp-testimonial__name {
   font-weight: 600;
   color: var(--green-900);
-  font-size: 14px;
+  font-size: 16px;
+  line-height: 1.2;
 }
 
 .hp-testimonial__loc {
-  margin-top: 4px;
+  margin-top: 2px;
+}
+
+/* Stars sit between the name/location and the quote. */
+.hp-testimonial > .pt-stars {
+  margin-top: 10px;
 }
 
 /* ── Journal cards ───────────────────────────────────────────────────── */

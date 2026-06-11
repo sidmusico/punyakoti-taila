@@ -2,7 +2,19 @@
 
 import React, { useMemo } from 'react'
 
-// Live press marquee — dark green-950 band with pulsing dots + mono stamps
+/**
+ * Scrolling band under the hero, showing the cities where the product is
+ * currently available — "Now available in <city>".
+ *
+ * Sources, in priority order:
+ *   1. `cities` — list of city names fetched from the `service-locations`
+ *      collection (the canonical source).
+ *   2. `items` — legacy free-form items kept for back-compat with rows that
+ *      were saved into Homepage settings before the locations collection
+ *      existed.
+ *   3. A small hard-coded fallback so the band still renders on a brand-new
+ *      DB with nothing seeded.
+ */
 
 export type PressMarqueeItem = {
   live?: boolean | null
@@ -11,17 +23,50 @@ export type PressMarqueeItem = {
   stamp: string
 }
 
-const DEFAULT_ITEMS: PressMarqueeItem[] = [
-  { live: true, text: 'Pressing now · Sesame', stamp: 'Erode · NOV 14', italic: false },
-  { live: false, text: 'Bottled this week · Coconut', stamp: 'Kollam · NOV 12', italic: true },
-  { live: false, text: 'Settling · Mustard', stamp: 'Alwar · NOV 11', italic: false },
-  { live: false, text: 'Harvest in · Black sesame', stamp: 'Salem · NOV 09', italic: true },
-  { live: false, text: 'Lab cleared · Groundnut', stamp: 'Kadapa · NOV 08', italic: false },
-  { live: true, text: 'Press of the week · Sesame', stamp: 'Batch #047', italic: false },
+export type ServiceLocationCity = {
+  cityName: string
+  state?: string | null
+}
+
+const FALLBACK_CITIES: ServiceLocationCity[] = [
+  { cityName: 'Bengaluru', state: 'Karnataka' },
+  { cityName: 'Mysuru', state: 'Karnataka' },
+  { cityName: 'Mangaluru', state: 'Karnataka' },
+  { cityName: 'Hubballi-Dharwad', state: 'Karnataka' },
+  { cityName: 'Belagavi', state: 'Karnataka' },
+  { cityName: 'Tumakuru', state: 'Karnataka' },
 ]
 
-export function PressBand({ items }: { items?: PressMarqueeItem[] | null }) {
-  const src = items?.length ? items : DEFAULT_ITEMS
+function citiesToItems(cities: ServiceLocationCity[]): PressMarqueeItem[] {
+  return cities.map((c, i) => ({
+    live: false,
+    italic: i % 2 === 1,
+    text: `Now available in ${c.cityName}`,
+    stamp: (c.state || 'KARNATAKA').toUpperCase(),
+  }))
+}
+
+export function PressBand({
+  cities,
+  items,
+  introLabel = 'Now serving in these districts',
+}: {
+  cities?: ServiceLocationCity[] | null
+  items?: PressMarqueeItem[] | null
+  introLabel?: string | null
+}) {
+  const src: PressMarqueeItem[] = useMemo(() => {
+    // Cities (from service-locations collection) are the source of truth.
+    // Falls back to a small built-in Karnataka list so the band still has
+    // content on a fresh DB.
+    if (cities && cities.length > 0) return citiesToItems(cities)
+    // `items` (legacy free-form rows in Homepage settings) are intentionally
+    // ignored — kept on the prop only for type compatibility with older
+    // callers / migrations. Cleared on the next CMS save.
+    void items
+    return citiesToItems(FALLBACK_CITIES)
+  }, [cities, items])
+
   const doubled = useMemo(() => [...src, ...src], [src])
 
   return (
@@ -34,8 +79,23 @@ export function PressBand({ items }: { items?: PressMarqueeItem[] | null }) {
         color: 'var(--cream-100)',
         padding: '14px 0',
       }}
-      aria-label="Live press updates"
+      aria-label="Cities where our product is available"
     >
+      {introLabel ? (
+        <div
+          style={{
+            textAlign: 'center',
+            fontFamily: 'var(--font-mono)',
+            fontSize: 11,
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: 'var(--mustard-400)',
+            padding: '0 16px 10px',
+          }}
+        >
+          {introLabel}
+        </div>
+      ) : null}
       <div className="pt-marquee-track" aria-hidden="true">
         {doubled.map((item, i) => (
           <div

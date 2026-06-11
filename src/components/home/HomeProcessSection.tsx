@@ -35,7 +35,14 @@ export function HomeProcessSection({
   const bannerAlt = resolveMediaAlt(bannerImage, 'Process banner')
 
   return (
-    <section className="hp-process">
+    <section className={`hp-process${bannerUrl ? ' hp-process--bg' : ''}`}>
+      {bannerUrl ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={bannerUrl} alt={bannerAlt} className="hp-process__bg-image" />
+          <div className="hp-process__bg-scrim" aria-hidden="true" />
+        </>
+      ) : null}
       <div className="hp-process__wm-left" aria-hidden="true">
         <CowMark size={420} color="var(--mustard-500)" />
       </div>
@@ -50,10 +57,6 @@ export function HomeProcessSection({
           and <em className="pt-display-italic" style={{ color: 'var(--mustard-400)' }}>{headlineItalic}</em>
         </h2>
         <p className="hp-prose--on-dark">{body}</p>
-        {bannerUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={bannerUrl} alt={bannerAlt} className="hp-process-banner-img" />
-        ) : null}
         <div className="process-steps hp-process-steps">
           {list.map((s) => {
             const stepUrl = resolveMediaUrl((s as { image?: MediaLike }).image)

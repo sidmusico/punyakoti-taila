@@ -27,3 +27,11 @@ __pycache__/
 *.pyc
 .cursor/mcp.json
 _tmp*
+
+
+# Codegraph — daemon.sock is a Unix socket; Turbopack/Tailwind must not scan it
+.codegraph/
+
+# Graphify
+graphify-out/
+.graphifyignore

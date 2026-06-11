@@ -17,7 +17,7 @@ import { HomeTestimonialsSection, mapManualHomeTestimonials } from '@/components
 import { HomeTraditionSection } from '@/components/home/HomeTraditionSection'
 import { HomeTrustStrip } from '@/components/home/HomeTrustStrip'
 import { HomeWhySection } from '@/components/home/HomeWhySection'
-import { PressBand } from '@/components/home/PressBand'
+import { PressBand, type ServiceLocationCity } from '@/components/home/PressBand'
 import type { HomepageSetting, Product, Testimonial } from '@/payload-types'
 
 type HomeGlobal = Partial<HomepageSetting> | null
@@ -27,11 +27,13 @@ export function HomePageView({
   featuredProducts,
   bestSellers,
   testimonials,
+  serviceLocations = [],
 }: {
   homepage: HomeGlobal
   featuredProducts: Product[]
   bestSellers: Product[]
   testimonials: Testimonial[]
+  serviceLocations?: ServiceLocationCity[]
 }) {
   const hp = homepage
 
@@ -84,8 +86,15 @@ export function HomePageView({
         />
       ) : null}
 
+      {/* Scrolling band: "Now available in <city>". Cities come from the
+          ServiceLocations collection; admins can enable/disable the band
+          entirely from Homepage settings → Press marquee. */}
       {hp?.pressMarqueeEnabled !== false ? (
-        <PressBand items={hp?.pressMarquee?.items ?? undefined} />
+        <PressBand
+          cities={serviceLocations}
+          items={hp?.pressMarquee?.items ?? undefined}
+          introLabel={hp?.pressMarquee?.introLabel ?? undefined}
+        />
       ) : null}
 
       {hp?.trustStripEnabled !== false ? <HomeTrustStrip items={hp?.trustStrip ?? undefined} /> : null}
