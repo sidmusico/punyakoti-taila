@@ -137,8 +137,6 @@ export const homepageTabsField: Field = {
               relationTo: 'media',
               admin: { description: 'Hero side image (optional). Renders alongside the SVG bottle if set.' },
             },
-            { name: 'pressWeekKicker', type: 'text', defaultValue: 'Press of the week' },
-            { name: 'pressWeekTitle', type: 'text', defaultValue: 'Sesame · Erode' },
             {
               name: 'backgroundStyle',
               type: 'select',
@@ -147,47 +145,6 @@ export const homepageTabsField: Field = {
                 { label: 'Cream', value: 'cream' },
                 { label: 'Dark green', value: 'dark-green' },
                 { label: 'Warm white', value: 'warm-white' },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      label: 'Press marquee',
-      description:
-        'Dark scrolling band listing the cities where products are available. ' +
-        'City list comes from the "Service locations" collection — manage it there. ' +
-        'Toggle this section off to hide the band entirely.',
-      fields: [
-        { name: 'pressMarqueeEnabled', type: 'checkbox', defaultValue: true, label: 'Show this section' },
-        {
-          name: 'pressMarquee',
-          type: 'group',
-          fields: [
-            {
-              name: 'introLabel',
-              type: 'text',
-              defaultValue: 'Now available in these cities',
-              label: 'Intro label',
-              admin: {
-                description:
-                  'Small uppercase label shown above the scrolling band. Leave blank to hide.',
-              },
-            },
-            {
-              name: 'items',
-              type: 'array',
-              minRows: 0,
-              admin: {
-                description:
-                  'Legacy custom items. Leave empty to use the Service locations collection instead.',
-              },
-              fields: [
-                { name: 'live', type: 'checkbox', defaultValue: false },
-                { name: 'italic', type: 'checkbox', defaultValue: false },
-                { name: 'text', type: 'text', required: true },
-                { name: 'stamp', type: 'text', required: true },
               ],
             },
           ],
@@ -278,15 +235,7 @@ export const homepageTabsField: Field = {
                 { name: 'href', type: 'text', defaultValue: '/about' },
               ],
             },
-            {
-              name: 'ctaSecondary',
-              type: 'group',
-              fields: [
-                { name: 'label', type: 'text', defaultValue: 'Visit the press' },
-                { name: 'href', type: 'text', defaultValue: '/about#press' },
-              ],
-            },
-            { name: 'mediaCaptionLeft', type: 'text', defaultValue: 'Wood-pressed · 9-hour press' },
+            { name: 'mediaCaptionLeft', type: 'text', defaultValue: 'Wood-pressed · single origin' },
             { name: 'mediaCaptionRight', type: 'text', defaultValue: 'Erode · Tamil Nadu' },
             {
               name: 'image',
@@ -393,7 +342,7 @@ export const homepageTabsField: Field = {
           name: 'poetic',
           type: 'group',
           fields: [
-            { name: 'eyebrow', type: 'text', defaultValue: 'An aside · from the Wood-Press Diary' },
+            { name: 'eyebrow', type: 'text', defaultValue: 'An aside' },
             { name: 'headline1', type: 'text', defaultValue: 'Refined oil is a shortcut.' },
             { name: 'headline2', type: 'text', defaultValue: 'We press the long way around.' },
             {
@@ -654,14 +603,14 @@ export const homepageTabsField: Field = {
           name: 'newsletter',
           type: 'group',
           fields: [
-            { name: 'eyebrow', type: 'text', defaultValue: 'The Wood-Press Diary' },
+            { name: 'eyebrow', type: 'text', defaultValue: 'From our kitchen' },
             { name: 'headlineLine1', type: 'text', defaultValue: 'A short letter,' },
             { name: 'headlineLine2Italic', type: 'text', defaultValue: 'once a fortnight.' },
             {
               name: 'body',
               type: 'textarea',
               defaultValue:
-                "Press updates from Erode, the occasional recipe from our test kitchen, and ten percent off your next bottle.",
+                'Seasonal recipes, new batch alerts, and ten percent off your next bottle.',
             },
             { name: 'legalText', type: 'text', defaultValue: 'We will not sell your address. Unsubscribe in one click.' },
             { name: 'buttonLabel', type: 'text', defaultValue: 'Subscribe' },

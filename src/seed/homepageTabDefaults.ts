@@ -23,17 +23,7 @@ export const homepageTabDefaults = {
     reviewRating: '4.9 / 5',
     reviewCount: '2,847 verified kitchens',
     bottleVariant: 'sesame',
-    pressWeekKicker: 'Press of the week',
-    pressWeekTitle: 'Sesame · Erode',
     backgroundStyle: 'cream',
-  },
-  pressMarqueeEnabled: true,
-  pressMarquee: {
-    introLabel: 'Now available in these cities',
-    // No legacy items — the band now reads cities from the
-    // `service-locations` collection. Admins can still add custom items
-    // via Homepage settings if they ever want to override the list.
-    items: [],
   },
   trustStripEnabled: true,
   trustStrip: [
@@ -61,8 +51,7 @@ export const homepageTabDefaults = {
     paragraph2:
       'We source from trusted organic farmers who share our commitment to sustainable, earth-friendly agriculture. Every drop of Punyakoti Taila is a testament to purity.',
     ctaPrimary: { label: 'Discover our story', href: '/about' },
-    ctaSecondary: { label: 'Visit the press', href: '/about#press' },
-    mediaCaptionLeft: 'Wood-pressed · 9-hour press',
+    mediaCaptionLeft: 'Wood-pressed · single origin',
     mediaCaptionRight: 'Erode · Tamil Nadu',
   },
   processStepsEnabled: true,
@@ -96,7 +85,7 @@ export const homepageTabDefaults = {
   },
   poeticEnabled: true,
   poetic: {
-    eyebrow: 'An aside · from the Wood-Press Diary',
+    eyebrow: 'An aside',
     headline1: 'Refined oil is a shortcut.',
     headline2: 'We press the long way around.',
     body: 'The industrial press runs at 240°C with hexane solvent — fast, high-yield, and chemically obedient. The wooden ghani turns at four revolutions per minute, peaks at 38°C, and gives you back exactly half. The other half is what tradition called flavour. We chose half.',
@@ -182,9 +171,9 @@ export const homepageTabDefaults = {
       },
       {
         tag: 'Provenance',
-        title: 'The day we drove to Erode and sat next to the press for 9 hours',
+        title: 'A morning in Erode — where our sesame begins',
         read: '11 min read',
-        slug: 'erode-press-diary',
+        slug: 'erode-origin-story',
         toneA: '#2F4A2A',
         toneB: '#0F1A0E',
       },
@@ -200,10 +189,10 @@ export const homepageTabDefaults = {
   },
   newsletterEnabled: true,
   newsletter: {
-    eyebrow: 'The Wood-Press Diary',
+    eyebrow: 'From our kitchen',
     headlineLine1: 'A short letter,',
     headlineLine2Italic: 'once a fortnight.',
-    body: "Press updates from Erode, the occasional recipe from our test kitchen, and ten percent off your next bottle.",
+    body: 'Seasonal recipes, new batch alerts, and ten percent off your next bottle.',
     legalText: 'We will not sell your address. Unsubscribe in one click.',
     buttonLabel: 'Subscribe',
   },

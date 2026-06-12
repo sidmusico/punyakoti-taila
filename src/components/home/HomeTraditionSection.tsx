@@ -14,8 +14,7 @@ export function HomeTraditionSection({
   paragraph1 = 'For five generations, our family has practised the art of cold-pressing oils using traditional wooden churns — chekku in Tamil, kachi ghani in Hindi. This gentle method preserves the natural aroma, vital nutrients, and pure essence of the seed — uncorrupted by heat or chemical solvents.',
   paragraph2 = 'We source from trusted organic farmers who share our commitment to sustainable, earth-friendly agriculture. Every drop of Punyakoti Taila is a testament to purity.',
   ctaPrimary = { label: 'Discover our story', href: '/about' },
-  ctaSecondary = { label: 'Visit the press', href: '/about#press' },
-  mediaCaptionLeft = 'Wood-pressed · 9-hour press',
+  mediaCaptionLeft = 'Wood-pressed · single origin',
   mediaCaptionRight = 'Erode · Tamil Nadu',
   image,
 }: {
@@ -25,7 +24,6 @@ export function HomeTraditionSection({
   paragraph1?: string | null
   paragraph2?: string | null
   ctaPrimary?: { label?: string | null; href?: string | null } | null
-  ctaSecondary?: { label?: string | null; href?: string | null } | null
   mediaCaptionLeft?: string | null
   mediaCaptionRight?: string | null
   image?: MediaLike
@@ -53,9 +51,6 @@ export function HomeTraditionSection({
             <Link href={ctaPrimary?.href || '/about'} className="pt-link-editorial pt-link-editorial--green">
               {ctaPrimary?.label} <Icons.arrowRight size={14} />
             </Link>
-            <Link href={ctaSecondary?.href || '/about#press'} className="pt-link-editorial pt-link-editorial--mustard">
-              {ctaSecondary?.label}
-            </Link>
           </div>
         </div>
         <div className="hp-tradition__media">
@@ -65,11 +60,6 @@ export function HomeTraditionSection({
           ) : (
             <WoodPressScene />
           )}
-          <div className="hp-tradition__stamp">
-            <CowMark size={36} color="var(--mustard-400)" />
-            <span className="hp-tradition__stamp-word">PUNYAKOTI</span>
-            <span className="hp-tradition__stamp-sub">WOOD · PRESS</span>
-          </div>
           <div className="hp-tradition__caption">
             <span>{mediaCaptionLeft}</span>
             <span className="hp-tradition__caption-accent">{mediaCaptionRight}</span>

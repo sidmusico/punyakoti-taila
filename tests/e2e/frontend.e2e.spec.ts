@@ -31,6 +31,20 @@ test.describe('Storefront — home page', () => {
     await expect(shopCta).toHaveAttribute('href', '/shop')
   })
 
+  test('does not show removed press editorial content', async ({ page }) => {
+    await page.goto(HOME)
+
+    const removedCopy = [
+      /press of the week/i,
+      /wood-press diary/i,
+      /now available in these cities/i,
+      /visit the press/i,
+    ]
+    for (const pattern of removedCopy) {
+      await expect(page.getByText(pattern)).toHaveCount(0)
+    }
+  })
+
   test('renders every major home section', async ({ page }) => {
     await page.goto(HOME)
 

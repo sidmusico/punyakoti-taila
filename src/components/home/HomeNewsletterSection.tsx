@@ -4,10 +4,10 @@ import { NewsletterForm } from '@/components/shop/NewsletterForm'
 import { CowMark } from '@/components/ui/pt/CowMark'
 
 export function HomeNewsletterSection({
-  eyebrow = 'The Wood-Press Diary',
+  eyebrow = 'From our kitchen',
   headlineLine1 = 'A short letter,',
   headlineLine2Italic = 'once a fortnight.',
-  body = 'Press updates from Erode, the occasional recipe from our test kitchen, and ten percent off your next bottle.',
+  body = 'Seasonal recipes, new batch alerts, and ten percent off your next bottle.',
   legalText = "We won't sell your address. Unsubscribe in one click. No emoji.",
   buttonLabel = 'Subscribe',
 }: {

@@ -20,4 +20,14 @@ test.describe('storefront login', () => {
     await page.goto(`${BASE}/auth/callback`)
     await expect(page).toHaveURL(/\/login\?error=auth_callback/)
   })
+
+  test('email tab shows sign-in and register forms', async ({ page }) => {
+    await page.goto(`${BASE}/login`)
+    await page.getByRole('button', { name: /^email$/i }).click()
+    await expect(page.getByPlaceholder('Email')).toBeVisible()
+    await expect(page.getByPlaceholder('Password')).toBeVisible()
+    await page.getByRole('button', { name: 'Create account', exact: true }).first().click()
+    await expect(page.getByPlaceholder('Full name')).toBeVisible()
+    await expect(page.locator('form').getByRole('button', { name: 'Create account' })).toBeVisible()
+  })
 })

@@ -1,4 +1,5 @@
 import { createServerClient } from '@supabase/ssr'
+import type { EmailOtpType } from '@supabase/supabase-js'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
 import { getPayload } from 'payload'
@@ -8,15 +9,34 @@ import { getAuthOrigin } from '@/lib/auth/authUrls'
 import { ensureCustomer } from '@/lib/auth/ensureCustomer'
 import { getSupabaseAnonKey, getSupabaseUrl } from '@/lib/supabase/env'
 
+const EMAIL_OTP_TYPES = new Set<EmailOtpType>([
+  'signup',
+  'invite',
+  'magiclink',
+  'recovery',
+  'email_change',
+  'email',
+])
+
+function parseEmailOtpType(raw: string | null): EmailOtpType | null {
+  if (!raw || !EMAIL_OTP_TYPES.has(raw as EmailOtpType)) return null
+  return raw as EmailOtpType
+}
+
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url)
   const { searchParams } = requestUrl
   const siteOrigin = getAuthOrigin({ requestOrigin: requestUrl.origin })
   const code = searchParams.get('code')
+  const token_hash = searchParams.get('token_hash')
+  const otpType = parseEmailOtpType(searchParams.get('type'))
   let next = searchParams.get('next') ?? '/account'
   if (!next.startsWith('/')) next = '/account'
 
-  if (!code) {
+  const hasCode = Boolean(code)
+  const hasEmailLink = Boolean(token_hash && otpType)
+
+  if (!hasCode && !hasEmailLink) {
     return NextResponse.redirect(`${siteOrigin}/login?error=auth_callback`)
   }
 
@@ -37,10 +57,18 @@ export async function GET(request: Request) {
     },
   })
 
-  const { error } = await supabase.auth.exchangeCodeForSession(code)
-  if (error) {
-    console.error('[auth/callback] exchangeCodeForSession:', error.message)
-    return NextResponse.redirect(`${siteOrigin}/login?error=auth_callback`)
+  if (hasEmailLink && token_hash && otpType) {
+    const { error } = await supabase.auth.verifyOtp({ type: otpType, token_hash })
+    if (error) {
+      console.error('[auth/callback] verifyOtp:', error.message)
+      return NextResponse.redirect(`${siteOrigin}/login?error=auth_callback`)
+    }
+  } else if (code) {
+    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    if (error) {
+      console.error('[auth/callback] exchangeCodeForSession:', error.message)
+      return NextResponse.redirect(`${siteOrigin}/login?error=auth_callback`)
+    }
   }
 
   const {

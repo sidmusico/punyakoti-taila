@@ -2768,28 +2768,7 @@ export interface HomepageSetting {
      * Hero side image (optional). Renders alongside the SVG bottle if set.
      */
     image?: (number | null) | Media;
-    pressWeekKicker?: string | null;
-    pressWeekTitle?: string | null;
     backgroundStyle?: ('cream' | 'dark-green' | 'warm-white') | null;
-  };
-  pressMarqueeEnabled?: boolean | null;
-  pressMarquee?: {
-    /**
-     * Small uppercase label shown above the scrolling band. Leave blank to hide.
-     */
-    introLabel?: string | null;
-    /**
-     * Legacy custom items. Leave empty to use the Service locations collection instead.
-     */
-    items?:
-      | {
-          live?: boolean | null;
-          italic?: boolean | null;
-          text: string;
-          stamp: string;
-          id?: string | null;
-        }[]
-      | null;
   };
   trustStripEnabled?: boolean | null;
   trustStrip?:
@@ -2821,10 +2800,6 @@ export interface HomepageSetting {
     paragraph1: string;
     paragraph2: string;
     ctaPrimary?: {
-      label?: string | null;
-      href?: string | null;
-    };
-    ctaSecondary?: {
       label?: string | null;
       href?: string | null;
     };
@@ -3623,24 +3598,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
         reviewCount?: T;
         bottleVariant?: T;
         image?: T;
-        pressWeekKicker?: T;
-        pressWeekTitle?: T;
         backgroundStyle?: T;
-      };
-  pressMarqueeEnabled?: T;
-  pressMarquee?:
-    | T
-    | {
-        introLabel?: T;
-        items?:
-          | T
-          | {
-              live?: T;
-              italic?: T;
-              text?: T;
-              stamp?: T;
-              id?: T;
-            };
       };
   trustStripEnabled?: T;
   trustStrip?:
@@ -3673,12 +3631,6 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
         paragraph1?: T;
         paragraph2?: T;
         ctaPrimary?:
-          | T
-          | {
-              label?: T;
-              href?: T;
-            };
-        ctaSecondary?:
           | T
           | {
               label?: T;

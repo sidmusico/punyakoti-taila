@@ -18,7 +18,6 @@ import { HomeTestimonialsSection, mapManualHomeTestimonials } from '@/components
 import { HomeTraditionSection } from '@/components/home/HomeTraditionSection'
 import { HomeTrustStrip } from '@/components/home/HomeTrustStrip'
 import { HomeWhySection } from '@/components/home/HomeWhySection'
-import { PressBand, type ServiceLocationCity } from '@/components/home/PressBand'
 import type { HomepageSetting, Product, Testimonial } from '@/payload-types'
 
 type HomeGlobal = Partial<HomepageSetting> | null
@@ -29,14 +28,12 @@ export function HomePageView({
   bestSellers,
   bottleRowProducts,
   testimonials,
-  serviceLocations = [],
 }: {
   homepage: HomeGlobal
   featuredProducts: Product[]
   bestSellers: Product[]
   bottleRowProducts: Product[]
   testimonials: Testimonial[]
-  serviceLocations?: ServiceLocationCity[]
 }) {
   const hp = homepage
 
@@ -80,21 +77,8 @@ export function HomePageView({
           reviewRating={hp?.hero?.reviewRating}
           reviewCount={hp?.hero?.reviewCount}
           bottleVariant={hp?.hero?.bottleVariant}
-          pressWeekKicker={hp?.hero?.pressWeekKicker}
-          pressWeekTitle={hp?.hero?.pressWeekTitle}
           backgroundStyle={hp?.hero?.backgroundStyle}
           image={hp?.hero?.image}
-        />
-      ) : null}
-
-      {/* Scrolling band: "Now available in <city>". Cities come from the
-          ServiceLocations collection; admins can enable/disable the band
-          entirely from Homepage settings → Press marquee. */}
-      {hp?.pressMarqueeEnabled !== false ? (
-        <PressBand
-          cities={serviceLocations}
-          items={hp?.pressMarquee?.items ?? undefined}
-          introLabel={hp?.pressMarquee?.introLabel ?? undefined}
         />
       ) : null}
 
@@ -124,7 +108,6 @@ export function HomePageView({
           paragraph1={hp.tradition.paragraph1}
           paragraph2={hp.tradition.paragraph2}
           ctaPrimary={hp.tradition.ctaPrimary}
-          ctaSecondary={hp.tradition.ctaSecondary}
           mediaCaptionLeft={hp.tradition.mediaCaptionLeft}
           mediaCaptionRight={hp.tradition.mediaCaptionRight}
           image={hp.tradition.image}

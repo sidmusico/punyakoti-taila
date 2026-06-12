@@ -90,7 +90,6 @@ export const Footer: GlobalConfig = {
               label: 'Learn links',
               defaultValue: [
                 { label: 'Our story',      href: '/about' },
-                { label: 'The press',      href: '/about#press' },
                 { label: 'Journal',        href: '/journal' },
                 { label: 'Recipes',        href: '/journal?tag=recipes' },
                 { label: 'Sustainability', href: '/sustainability' },

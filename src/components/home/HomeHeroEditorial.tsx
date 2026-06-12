@@ -46,8 +46,6 @@ export function HomeHeroEditorial({
   bottleVariant = 'sesame',
   originCaptionLeft = 'Single origin',
   originCaptionRight = 'Erode · Tamil Nadu',
-  pressWeekKicker = 'Press of the week',
-  pressWeekTitle = 'Sesame · Erode',
   backgroundStyle = 'cream',
   image,
 }: {
@@ -63,8 +61,6 @@ export function HomeHeroEditorial({
   bottleVariant?: OilVariant | null
   originCaptionLeft?: string | null
   originCaptionRight?: string | null
-  pressWeekKicker?: string | null
-  pressWeekTitle?: string | null
   backgroundStyle?: 'cream' | 'dark-green' | 'warm-white' | null
   image?: MediaLike
 }) {
@@ -126,15 +122,6 @@ export function HomeHeroEditorial({
             <div className="hp-hero-editorial__bottle-caption">
               <span>{originCaptionLeft}</span>
               <span className="hp-hero-editorial__bottle-caption-accent">{originCaptionRight}</span>
-            </div>
-          </div>
-          <div className="hp-hero-editorial__float-card">
-            <div className="hp-hero-editorial__float-icon">
-              <Icons.leaf size={18} />
-            </div>
-            <div>
-              <div className="hp-hero-editorial__float-kicker">{pressWeekKicker}</div>
-              <div className="hp-hero-editorial__float-title">{pressWeekTitle}</div>
             </div>
           </div>
         </div>

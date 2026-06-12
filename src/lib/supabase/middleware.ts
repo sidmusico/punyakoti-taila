@@ -7,9 +7,15 @@ import { getSupabaseAnonKey, getSupabaseUrl } from './env'
  * Supabase may return OAuth codes on Site URL root (`/?code=`) when callback
  * path is not allow-listed. Forward to `/auth/callback` on the same host.
  */
-function redirectOAuthCodeToCallback(request: NextRequest): NextResponse | null {
+/** Forward Supabase auth query params (`code` or email `token_hash`) to `/auth/callback`. */
+function redirectAuthParamsToCallback(request: NextRequest): NextResponse | null {
+  if (request.nextUrl.pathname === '/auth/callback') return null
+
   const code = request.nextUrl.searchParams.get('code')
-  if (!code || request.nextUrl.pathname === '/auth/callback') return null
+  const token_hash = request.nextUrl.searchParams.get('token_hash')
+  const type = request.nextUrl.searchParams.get('type')
+  const hasEmailLink = Boolean(token_hash && type)
+  if (!code && !hasEmailLink) return null
 
   const callback = request.nextUrl.clone()
   callback.pathname = '/auth/callback'
@@ -17,8 +23,8 @@ function redirectOAuthCodeToCallback(request: NextRequest): NextResponse | null 
 }
 
 export async function updateSession(request: NextRequest) {
-  const oauthRedirect = redirectOAuthCodeToCallback(request)
-  if (oauthRedirect) return oauthRedirect
+  const authRedirect = redirectAuthParamsToCallback(request)
+  if (authRedirect) return authRedirect
 
   let supabaseResponse = NextResponse.next({ request })
 

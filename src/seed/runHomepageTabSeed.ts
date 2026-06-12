@@ -16,6 +16,92 @@ export type HomepageTabSeedResult = {
 
 type JournalPostRow = Record<string, unknown> & { slug?: string; image?: unknown }
 
+const LEGACY_PRESS_PHRASES = [
+  'press of the week',
+  'wood-press diary',
+  'press updates from erode',
+  'visit the press',
+  'now available in these cities',
+  'sat next to the press',
+]
+
+function hasLegacyPressCopy(value: unknown): boolean {
+  if (typeof value !== 'string') return false
+  const lower = value.toLowerCase()
+  return LEGACY_PRESS_PHRASES.some((phrase) => lower.includes(phrase))
+}
+
+/** Strip removed CMS fields and refresh copy that still mentions the old press editorial. */
+function applyLegacyPressRemoval(
+  merged: Record<string, unknown>,
+  defaults: Record<string, unknown>,
+  filledPaths: string[],
+): void {
+  for (const key of [
+    'pressMarqueeEnabled',
+    'pressMarquee',
+  ] as const) {
+    if (key in merged) {
+      delete merged[key]
+      filledPaths.push(`<removed>.${key}`)
+    }
+  }
+
+  const hero = merged.hero as Record<string, unknown> | undefined
+  if (hero) {
+    for (const key of ['pressWeekKicker', 'pressWeekTitle'] as const) {
+      if (key in hero) {
+        delete hero[key]
+        filledPaths.push(`hero.<removed>.${key}`)
+      }
+    }
+  }
+
+  const tradition = merged.tradition as Record<string, unknown> | undefined
+  const defaultTradition = defaults.tradition as Record<string, unknown> | undefined
+  if (tradition) {
+    if ('ctaSecondary' in tradition) {
+      delete tradition.ctaSecondary
+      filledPaths.push('tradition.<removed>.ctaSecondary')
+    }
+    if (hasLegacyPressCopy(tradition.mediaCaptionLeft) && defaultTradition?.mediaCaptionLeft) {
+      tradition.mediaCaptionLeft = defaultTradition.mediaCaptionLeft
+      filledPaths.push('tradition.mediaCaptionLeft')
+    }
+  }
+
+  const poetic = merged.poetic as Record<string, unknown> | undefined
+  const defaultPoetic = defaults.poetic as Record<string, unknown> | undefined
+  if (poetic?.eyebrow && hasLegacyPressCopy(poetic.eyebrow) && defaultPoetic?.eyebrow) {
+    poetic.eyebrow = defaultPoetic.eyebrow
+    filledPaths.push('poetic.eyebrow')
+  }
+
+  const newsletter = merged.newsletter as Record<string, unknown> | undefined
+  const defaultNewsletter = defaults.newsletter as Record<string, unknown> | undefined
+  if (
+    newsletter &&
+    defaultNewsletter &&
+    (hasLegacyPressCopy(newsletter.eyebrow) || hasLegacyPressCopy(newsletter.body))
+  ) {
+    Object.assign(newsletter, defaultNewsletter)
+    filledPaths.push('newsletter')
+  }
+
+  const journal = merged.journal as { posts?: JournalPostRow[] } | undefined
+  const defaultPosts = (defaults.journal as { posts?: JournalPostRow[] } | undefined)?.posts
+  if (journal?.posts && defaultPosts) {
+    const replacement = defaultPosts.find((p) => p.slug === 'erode-origin-story') ?? defaultPosts[1]
+    for (let i = 0; i < journal.posts.length; i++) {
+      const post = journal.posts[i]
+      if (post.slug === 'erode-press-diary' || hasLegacyPressCopy(post.title)) {
+        journal.posts[i] = { ...replacement, image: post.image ?? replacement?.image }
+        filledPaths.push(`journal.posts.${String(post.slug ?? i)}`)
+      }
+    }
+  }
+}
+
 async function wireJournalPostImages(
   payload: Payload,
   posts: JournalPostRow[] | undefined,
@@ -147,6 +233,8 @@ export async function runHomepageTabSeed(
     merged.bottleRow = { ...br, products: bottleRowProductIds }
     filledPaths.push('bottleRow.products')
   }
+
+  applyLegacyPressRemoval(merged, defaults, filledPaths)
 
   const mergedJournal = merged.journal as { posts?: JournalPostRow[] } | undefined
   const journalImagePaths = await wireJournalPostImages(payload, mergedJournal?.posts)

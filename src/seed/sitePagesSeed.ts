@@ -70,7 +70,7 @@ export const SITE_PAGES_SEED = [
       },
       {
         blockType: 'ptNewsletterBand',
-        headline: 'The pressing calendar',
+        headline: 'Stay in the loop',
         body: "New batches every week. Subscribe and we'll let you know the moment fresh oil is ready — before it sells out.",
         legalText: 'One email per batch. No spam. Unsubscribe anytime.',
         buttonLabel: 'Subscribe',

@@ -163,7 +163,6 @@ export async function SiteFooter() {
   ]
   const resolvedLearnLinks = learnLinks.length > 0 ? learnLinks : [
     { label: 'Our story',      href: '/about' },
-    { label: 'The press',      href: '/about#press' },
     { label: 'Journal',        href: '/journal' },
     { label: 'Recipes',        href: '/journal?tag=recipes' },
     { label: 'Sustainability', href: '/sustainability' },

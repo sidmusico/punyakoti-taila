@@ -47,7 +47,13 @@ async function main() {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ site_url: siteUrl, uri_allow_list }),
+    body: JSON.stringify({
+      site_url: siteUrl,
+      uri_allow_list,
+      external_email_enabled: true,
+      /** Sign in immediately after register (no inbox confirm). Set false in Dashboard for stricter prod. */
+      mailer_autoconfirm: true,
+    }),
   })
 
   const body = await res.text()

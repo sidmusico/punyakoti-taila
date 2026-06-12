@@ -8,7 +8,7 @@ export const NewsletterBand: Block = {
       name: 'headline',
       type: 'text',
       label: 'Headline',
-      defaultValue: 'The pressing calendar',
+      defaultValue: 'Stay in the loop',
     },
     {
       name: 'body',

@@ -127,13 +127,24 @@ If **Site URL** is still `http://localhost:3000`, Google sign-in from production
 SUPABASE_ACCESS_TOKEN=your_token pnpm auth:configure-urls
 ```
 
-### 2.3 Email provider
+### 2.3 Email sign-up & sign-in
 
 **Authentication → Providers → Email**
 
-- Enable Email provider
-- Confirm email: optional for MVP (disable for faster signup; enable for production trust)
-- Configure SMTP or use Supabase built-in (limits apply)
+- Enable **Email** provider
+- **Confirm email:** for instant login after register, disable confirm (or run `pnpm auth:configure-urls` which sets `mailer_autoconfirm: true`). If confirm is on, users must click the link in email → `/auth/callback` (handled in app).
+- **Redirect URLs** must include `/auth/callback` on prod and localhost (see §2.2)
+- **SMTP:** optional for production deliverability (Resend/SendGrid). Without SMTP, Supabase sends from their domain (rate limits apply).
+
+App behaviour:
+
+| Flow | API |
+|------|-----|
+| Register | `signUp` + `emailRedirectTo: <origin>/auth/callback` |
+| Login | `signInWithPassword` → `/api/auth/sync` → `/account` |
+| Email confirm link | `/auth/callback?code=…` or `?token_hash=…&type=signup` |
+
+Local and prod both use the same cloud Supabase project keys in `.env` / Vercel; only `NEXT_PUBLIC_SERVER_URL` differs (`http://localhost:3000` vs `https://punyakoti-taila.vercel.app`).
 
 ### 2.4 Phone / OTP (India)
 

@@ -45,6 +45,8 @@ export function LoginClient() {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
   const [apiError, setApiError] = useState(authError === 'auth_callback' ? 'Sign-in failed. Try again.' : '')
+  const [infoMessage, setInfoMessage] = useState('')
+  const [needsEmailConfirm, setNeedsEmailConfirm] = useState(false)
 
   const supabase = createClient()
 
@@ -52,6 +54,27 @@ export function LoginClient() {
     getAuthCallbackUrl({
       browserOrigin: typeof window !== 'undefined' ? window.location.origin : undefined,
     })
+
+  const resendConfirmationEmail = async () => {
+    if (!email) {
+      setApiError('Enter your email address first.')
+      return
+    }
+    setLoading(true)
+    setApiError('')
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: { emailRedirectTo: authCallbackUrl() },
+    })
+    setLoading(false)
+    if (error) {
+      setApiError(error.message)
+      return
+    }
+    setInfoMessage('Confirmation email sent. Check your inbox, then sign in.')
+    setNeedsEmailConfirm(false)
+  }
 
   const finishSignIn = async () => {
     await syncCustomer()
@@ -99,6 +122,9 @@ export function LoginClient() {
   const submitEmail = async (e: React.FormEvent) => {
     e.preventDefault()
     setApiError('')
+    setInfoMessage('')
+    setNeedsEmailConfirm(false)
+
     const result = emailSchema.safeParse({ email, password })
     if (!result.success) {
       const fieldErrors: Record<string, string> = {}
@@ -108,36 +134,61 @@ export function LoginClient() {
       setErrors(fieldErrors)
       return
     }
+
+    if (emailTab === 'register' && !name.trim()) {
+      setErrors({ name: 'Name is required' })
+      return
+    }
+
     setLoading(true)
     setErrors({})
-    if (emailTab === 'register') {
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { full_name: name, name },
-          emailRedirectTo: authCallbackUrl(),
-        },
-      })
-      setLoading(false)
-      if (error) {
-        setApiError(error.message)
+
+    try {
+      if (emailTab === 'register') {
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { full_name: name.trim(), name: name.trim() },
+            emailRedirectTo: authCallbackUrl(),
+          },
+        })
+        if (error) {
+          setApiError(error.message)
+          return
+        }
+        if (data.user?.identities?.length === 0) {
+          setApiError('An account with this email already exists. Try signing in.')
+          setEmailTab('login')
+          return
+        }
+        if (data.session) {
+          await finishSignIn()
+          return
+        }
+        setInfoMessage(
+          'Account created. Check your email to confirm your address, then sign in.',
+        )
+        setEmailTab('login')
         return
       }
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password })
-      if (signInError) {
-        setApiError('Account created. Check your email to confirm, then sign in.')
-        return
-      }
-    } else {
+
       const { error } = await supabase.auth.signInWithPassword({ email, password })
-      setLoading(false)
       if (error) {
-        setApiError(error.message)
+        const unconfirmed =
+          /not confirmed|email not confirmed|confirm your email/i.test(error.message)
+        setNeedsEmailConfirm(unconfirmed)
+        setApiError(
+          unconfirmed
+            ? 'Please confirm your email first (check your inbox), or resend the confirmation link below.'
+            : error.message,
+        )
         return
       }
+      await finishSignIn()
+    } finally {
+      setLoading(false)
     }
-    await finishSignIn()
   }
 
   const signInWithGoogle = async () => {
@@ -180,6 +231,8 @@ export function LoginClient() {
               onClick={() => {
                 setMethod(m)
                 setApiError('')
+                setInfoMessage('')
+                setNeedsEmailConfirm(false)
                 setErrors({})
               }}
               className="flex-1 py-2.5 text-sm font-medium transition-all rounded-xl capitalize"
@@ -286,6 +339,8 @@ export function LoginClient() {
                     setEmailTab(t)
                     setErrors({})
                     setApiError('')
+                    setInfoMessage('')
+                    setNeedsEmailConfirm(false)
                   }}
                   className="flex-1 py-2 text-xs font-medium capitalize rounded-xl"
                   style={
@@ -300,14 +355,24 @@ export function LoginClient() {
             </div>
             <form onSubmit={submitEmail} className="flex flex-col gap-4">
               {emailTab === 'register' && (
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  placeholder="Full name"
-                  className="w-full rounded-xl px-4 py-3 text-sm border outline-none"
-                  style={{ background: 'var(--cream-200)', borderColor: 'var(--cream-400)' }}
-                />
+                <div>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Full name"
+                    className="w-full rounded-xl px-4 py-3 text-sm border outline-none"
+                    style={{
+                      background: 'var(--cream-200)',
+                      borderColor: errors.name ? '#A23A1F' : 'var(--cream-400)',
+                    }}
+                  />
+                  {errors.name && (
+                    <p className="mt-1 text-xs" style={{ color: '#A23A1F' }}>
+                      {errors.name}
+                    </p>
+                  )}
+                </div>
               )}
               <input
                 type="email"
@@ -343,12 +408,31 @@ export function LoginClient() {
           </>
         )}
 
+        {infoMessage && (
+          <div
+            className="rounded-lg px-4 py-3 text-sm mt-4"
+            style={{ background: 'var(--cream-300)', color: 'var(--ink-700)' }}
+          >
+            {infoMessage}
+          </div>
+        )}
+
         {apiError && (
           <div
             className="rounded-lg px-4 py-3 text-sm mt-4"
             style={{ background: 'var(--terra-100)', color: 'var(--terra-700)' }}
           >
             {apiError}
+            {needsEmailConfirm && (
+              <button
+                type="button"
+                className="block mt-2 underline font-medium"
+                onClick={resendConfirmationEmail}
+                disabled={loading}
+              >
+                Resend confirmation email
+              </button>
+            )}
           </div>
         )}
 
