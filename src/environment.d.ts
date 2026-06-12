@@ -3,6 +3,9 @@ declare global {
     interface ProcessEnv {
       PAYLOAD_SECRET: string
       DATABASE_URL: string
+      /** Production pooler URI for `pnpm db:sync -- prod` */
+      DATABASE_URL_PROD?: string
+      DATABASE_URL_LOCAL?: string
       /** Set to `true` to skip Drizzle dev push (avoids interactive prompts blocking Next dev). */
       PAYLOAD_DISABLE_DB_PUSH?: string
       NEXT_PUBLIC_SERVER_URL: string

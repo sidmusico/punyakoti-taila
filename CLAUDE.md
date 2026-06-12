@@ -3,9 +3,9 @@
 This project uses the Payload CMS skill at `.claude/skills/payload/`.
 Start with `.claude/skills/payload/SKILL.md` for a quick reference, then see `.claude/skills/payload/reference/` for detailed docs.
 
-**After changing Payload collections/globals/DB schema (dev, keep existing data):** run **`pnpm cms:sync`** — regenerates the admin import map and `payload-types.ts`, then runs Drizzle push via `scripts/payload-db-sync.ts` (not a DB reset). Use a real terminal if Drizzle asks interactive questions; use **`pnpm db:local:fresh`** only when you intentionally want a wiped local DB.
+**After changing Payload collections/globals/DB schema (dev, keep existing data):** run **`pnpm db:sync`** (pick local or prod) or **`pnpm cms:sync`** against current `DATABASE_URL`. — regenerates the admin import map and `payload-types.ts`, then runs Drizzle push via `scripts/payload-db-sync.ts` (not a DB reset). Use a real terminal if Drizzle asks interactive questions; use **`pnpm db:local:fresh`** only when you intentionally want a wiped local DB.
 
-**HTTP seed APIs (demo content / fresh DB):** see **`doc/SEED_APIS.md`** (`GET /api/seed-all`, `seed-categories`, `seed-media`, `seed-products`, `seed-site-pages`, `seed-storefront-globals`, `seed-homepage`, `seed-pages`).
+**HTTP seed APIs (demo content / fresh DB):** see **`doc/SEED_APIS.md`**. CLI: **`pnpm seed`** (interactive local/prod) or **`pnpm seed -- local all`**. HTTP: `GET /api/seed-all`, `seed-categories`, `seed-media`, etc.
 
 **Vercel deploy:** see **`doc/DEPLOY_VERCEL.md`** — env vars, `main` branch auto-deploy, one-time `pnpm cms:sync` on prod Postgres.
 
