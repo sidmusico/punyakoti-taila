@@ -3,7 +3,7 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useCartStore } from '@/store/cart'
+import { useCartHydrated, useCartStore } from '@/store/cart'
 import { Breadcrumb } from '@/components/shop/Breadcrumb'
 import { Icons } from '@/components/ui/pt/Icons'
 import { useStorefrontBundle } from '@/providers/StorefrontCopyProvider'
@@ -28,6 +28,7 @@ export function CartPageView({
   const d = storefront.cartDrawer ?? {}
   const c = cartPage ?? storefront.cartPage ?? {}
   const { items, removeItem, updateQty, total, itemCount, clearCart } = useCartStore()
+  const cartHydrated = useCartHydrated()
   const grandTotal = total()
   const count = itemCount()
   const totalSavings = items.reduce(
@@ -81,7 +82,7 @@ export function CartPageView({
         </div>
       ) : null}
 
-      {items.length === 0 ? (
+      {!cartHydrated ? null : items.length === 0 ? (
         <div className="mt-8 rounded-2xl p-12 text-center max-w-lg mx-auto" style={{ background: 'var(--cream-100)', border: '1px solid var(--cream-400)' }}>
           <Icons.bag size={40} style={{ color: 'var(--ink-300)', margin: '0 auto 16px' }} />
           <p className="font-medium" style={{ color: 'var(--ink-500)' }}>{d?.emptyTitle}</p>
@@ -136,12 +137,12 @@ export function CartPageView({
                 {items.map((item, idx) => (
                   <div
                     key={item.id}
-                    className="grid grid-cols-[72px_1fr_auto] sm:grid-cols-[100px_1fr_auto] gap-4 sm:gap-6 py-6 items-center border-b border-[var(--cream-400)]"
+                    className="grid grid-cols-[64px_1fr_auto] sm:grid-cols-[76px_1fr_auto] gap-3 sm:gap-5 py-3.5 items-center border-b border-[var(--cream-400)]"
                     style={idx === 0 ? { borderTop: '1px solid var(--cream-400)' } : undefined}
                   >
                     <Link
                       href={`/shop/${item.slug}`}
-                      className="rounded-xl grid place-items-center aspect-[5/6] max-h-[120px] overflow-hidden"
+                      className="rounded-xl grid place-items-center aspect-[5/6] max-h-[90px] overflow-hidden"
                       style={{ background: 'var(--cream-100)' }}
                       tabIndex={-1}
                       aria-hidden
@@ -156,11 +157,11 @@ export function CartPageView({
                       <Link
                         href={`/shop/${item.slug}`}
                         className="font-medium leading-snug hover:underline"
-                        style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1rem, 2.5vw, 1.35rem)', color: 'var(--green-900)' }}
+                        style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1rem, 2vw, 1.2rem)', color: 'var(--green-900)' }}
                       >
                         {item.name}
                       </Link>
-                      <div className="mt-1.5 text-[13px] flex flex-wrap items-center gap-2" style={{ color: 'var(--ink-500)' }}>
+                      <div className="mt-0.5 text-[13px] flex flex-wrap items-center gap-2" style={{ color: 'var(--ink-500)' }}>
                         <span>{item.variantSize}</span>
                         {item.isSubscription && d?.subscribePillLabel ? (
                           <span
@@ -173,7 +174,7 @@ export function CartPageView({
                           <span>{d?.subscribeSuffix}</span>
                         ) : null}
                       </div>
-                      <div className="mt-3 flex flex-wrap items-center gap-4 text-[13px]" style={{ color: 'var(--ink-500)' }}>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-4 text-[13px]" style={{ color: 'var(--ink-500)' }}>
                         {c?.saveForLaterLabel?.trim() ? (
                           <Link href={c?.saveForLaterHref ?? '#'} className="border-b border-[var(--ink-400)] pb-px hover:opacity-80">
                             {c.saveForLaterLabel}
@@ -216,13 +217,13 @@ export function CartPageView({
                           <Icons.plus size={12} />
                         </button>
                       </div>
-                      <div className="mt-3">
+                      <div className="mt-1.5">
                         {item.mrp && item.mrp > item.price ? (
                           <div className="text-xs line-through" style={{ color: 'var(--ink-300)' }}>
                             {formatPrice(item.mrp * item.quantity)}
                           </div>
                         ) : null}
-                        <div className="text-lg font-semibold" style={{ color: 'var(--green-900)' }}>
+                        <div className="text-base font-semibold" style={{ color: 'var(--green-900)' }}>
                           {formatPrice(item.price * item.quantity)}
                         </div>
                       </div>

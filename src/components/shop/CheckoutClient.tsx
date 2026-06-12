@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { z } from 'zod'
 
 import { Icons } from '@/components/ui/pt/Icons'
-import { useCartStore } from '@/store/cart'
+import { useCartHydrated, useCartStore } from '@/store/cart'
 
 /* ────────────────────────────────────────────────────────────────────────────
    Schemas — validated per step so users get feedback exactly where they are.
@@ -193,6 +193,7 @@ function Stepper({ current }: { current: StepIndex }) {
 
 export function CheckoutClient() {
   const { items, total, itemCount, clearCart } = useCartStore()
+  const cartHydrated = useCartHydrated()
   const subtotal = total()
   const count = itemCount()
 
@@ -322,6 +323,11 @@ export function CheckoutClient() {
     () => [form.name, form.line1, form.line2, `${form.city} ${form.pincode}`.trim()].filter(Boolean).join(' · '),
     [form.name, form.line1, form.line2, form.city, form.pincode],
   )
+
+  // Wait for the persisted cart to hydrate — SSR/first client render must match.
+  if (!cartHydrated) {
+    return <div className="min-h-[60vh]" aria-busy="true" />
+  }
 
   if (items.length === 0) {
     return (

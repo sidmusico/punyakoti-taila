@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useCartStore } from '@/store/cart'
+import { useCartHydrated, useCartStore } from '@/store/cart'
 import { Icons } from '@/components/ui/pt/Icons'
 import { useStorefrontBundle } from '@/providers/StorefrontCopyProvider'
 
@@ -19,6 +19,7 @@ export function CartDrawer() {
   const { storefront, freeShippingThreshold } = useStorefrontBundle()
   const d = storefront.cartDrawer ?? {}
   const { items, isOpen, closeCart, removeItem, updateQty, total } = useCartStore()
+  const cartHydrated = useCartHydrated()
   const grandTotal = total()
   const totalSavings = items.reduce(
     (sum, i) => sum + (i.mrp && i.mrp > i.price ? (i.mrp - i.price) * i.quantity : 0),
@@ -45,6 +46,10 @@ export function CartDrawer() {
       document.body.style.overflow = prevOverflow
     }
   }, [isOpen, closeCart])
+
+  // Persisted cart items only exist client-side; rendering before hydration
+  // would mismatch the server HTML (the drawer markup includes item rows).
+  if (!cartHydrated) return null
 
   return (
     <>

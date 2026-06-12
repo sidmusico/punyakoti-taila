@@ -1,5 +1,29 @@
+import { useSyncExternalStore } from 'react'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+
+const emptySubscribe = () => () => {}
+
+/**
+ * SSR-safe hydration gate for the persisted cart.
+ *
+ * The server (and the client's FIRST render) must produce identical HTML, but
+ * the persisted store restores items from localStorage on the client. Any
+ * component that *renders* cart state (badge counts, line items, totals) must
+ * wait for this to flip to `true` before showing it — otherwise React logs
+ * "Hydration failed because the server rendered HTML didn't match the client".
+ *
+ * `useSyncExternalStore` returns the server snapshot (false) during SSR and
+ * hydration, then the client snapshot (true) immediately after — without a
+ * setState-in-effect cascade.
+ */
+export function useCartHydrated(): boolean {
+  return useSyncExternalStore(
+    emptySubscribe,
+    () => true, // client snapshot — after hydration
+    () => false, // server snapshot — during SSR + first client render
+  )
+}
 
 export interface CartItem {
   id: string          // productId + variantSize combo

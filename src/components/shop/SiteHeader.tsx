@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useCartStore } from '@/store/cart'
+import { useCartHydrated, useCartStore } from '@/store/cart'
 import { cn } from '@/utilities/ui'
 
 /* ── Types ────────────────────────────────────────────────── */
@@ -182,7 +182,9 @@ export function SiteHeader({
   const searchRef = useRef<HTMLInputElement>(null)
 
   const { items } = useCartStore()
-  const cartCount = items.reduce((a, i) => a + i.quantity, 0)
+  const cartHydrated = useCartHydrated()
+  // 0 until the persisted store hydrates so SSR and first client render match.
+  const cartCount = cartHydrated ? items.reduce((a, i) => a + i.quantity, 0) : 0
 
   const links = navLinks && navLinks.length > 0 ? navLinks : DEFAULT_NAV
 
