@@ -1,4 +1,5 @@
 import type { Product } from '@/payload-types'
+import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 
@@ -7,6 +8,7 @@ import { Bottle } from '@/components/ui/pt/Bottle'
 import type { OilVariant } from '@/components/ui/pt/Bottle'
 import { Icons } from '@/components/ui/pt/Icons'
 import { PtPill, type PtPillTone } from '@/components/ui/pt/PtPill'
+import { firstProductPhoto } from '@/lib/product-media'
 import { cn } from '@/utilities/ui'
 
 import type { FallbackProduct } from '@/components/home/home-constants'
@@ -47,6 +49,7 @@ export function ShopProductCard({
     : undefined
 
   const pileTone = tag ? (SHOP_PRODUCT_BADGE_TONES[tag] ?? 'green') : 'green'
+  const photo = firstProductPhoto(product)
 
   if (mode === 'featured') {
     return (
@@ -60,8 +63,23 @@ export function ShopProductCard({
           <Icons.heart size={18} />
         </div>
         <Link href={`/shop/${slug}`}>
-          <div className="hp-product-card__image-wrap hp-product-card__image-wrap--featured">
-            <Bottle variant={oilVariant} size={180} />
+          <div
+            className={cn(
+              'hp-product-card__image-wrap hp-product-card__image-wrap--featured',
+              photo && 'hp-product-card__image-wrap--photo',
+            )}
+          >
+            {photo ? (
+              <Image
+                src={photo.src}
+                alt={photo.alt}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 50vw, 25vw"
+              />
+            ) : (
+              <Bottle variant={oilVariant} size={180} />
+            )}
           </div>
         </Link>
         <div className="hp-product-card__meta">
@@ -83,6 +101,7 @@ export function ShopProductCard({
               variantSize={variant?.size ?? '500ml'}
               sku={variant?.sku ?? slug}
               price={price}
+              image={photo?.src}
               className="pt-btn pt-btn--ghost pt-btn--sm"
             />
           ) : (
@@ -101,8 +120,23 @@ export function ShopProductCard({
         <Icons.heart size={16} />
       </div>
       <Link href={`/shop/${slug}`}>
-        <div className="hp-product-card__image-wrap hp-product-card__image-wrap--compact">
-          <Bottle variant={oilVariant} size={130} />
+        <div
+          className={cn(
+            'hp-product-card__image-wrap hp-product-card__image-wrap--compact',
+            photo && 'hp-product-card__image-wrap--photo',
+          )}
+        >
+          {photo ? (
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 50vw, 20vw"
+            />
+          ) : (
+            <Bottle variant={oilVariant} size={130} />
+          )}
         </div>
       </Link>
       <div className="hp-product-card__meta hp-product-card__meta--compact">

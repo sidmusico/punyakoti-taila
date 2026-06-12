@@ -25,7 +25,14 @@ export const Testimonials: CollectionConfig = {
       name: 'customerLocation',
       type: 'text',
       label: 'City / Location',
-      admin: { description: 'e.g. "Bangalore" or "Chennai, Tamil Nadu"' },
+      admin: { description: 'e.g. "Bangalore · Sesame · 6 orders"' },
+    },
+    {
+      name: 'photo',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Customer photo',
+      admin: { description: 'Portrait shown on the homepage testimonial card' },
     },
     {
       name: 'rating',

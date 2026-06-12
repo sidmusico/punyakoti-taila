@@ -24,6 +24,10 @@ export const IMAGEKIT_FOLDERS: ReadonlyArray<{ folderPath: string; name: string 
     "name": "collections"
   },
   {
+    "folderPath": "/punyakoti-taila/food",
+    "name": "food"
+  },
+  {
     "folderPath": "/punyakoti-taila/gifting",
     "name": "gifting"
   },
@@ -38,6 +42,10 @@ export const IMAGEKIT_FOLDERS: ReadonlyArray<{ folderPath: string; name: string 
   {
     "folderPath": "/punyakoti-taila/others",
     "name": "others"
+  },
+  {
+    "folderPath": "/punyakoti-taila/people",
+    "name": "people"
   },
   {
     "folderPath": "/punyakoti-taila/process",
@@ -110,10 +118,34 @@ export const IMAGEKIT_FOLDERS: ReadonlyArray<{ folderPath: string; name: string 
   {
     "folderPath": "/punyakoti-taila/ui-mockups/stitch",
     "name": "stitch"
+  },
+  {
+    "folderPath": "/punyakoti-taila/wellness",
+    "name": "wellness"
   }
 ] as const
 
 export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
+  {
+    "fileId": "6a2ae1665c7cd75eb8b3554f",
+    "name": "diya-rangoli-heritage-culture.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/diya-rangoli-heritage-culture.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/diya-rangoli-heritage-culture.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "brand/diya-rangoli-heritage-culture"
+  },
+  {
+    "fileId": "6a2ae16a5c7cd75eb8b37229",
+    "name": "elderly-hands-holding-seeds-heritage.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/elderly-hands-holding-seeds-heritage.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/elderly-hands-holding-seeds-heritage.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "brand/elderly-hands-holding-seeds-heritage"
+  },
   {
     "fileId": "6a153c985c7cd75eb82d0eb7",
     "name": "logo_only_with_bg.png",
@@ -185,6 +217,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "alt": "brand/punyakoti_logo"
   },
   {
+    "fileId": "6a2ae1735c7cd75eb8b3a8d7",
+    "name": "punyakoti-brand-banner-sesame-groundnut.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/punyakoti-brand-banner-sesame-groundnut.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/punyakoti-brand-banner-sesame-groundnut.png",
+    "width": 1402,
+    "height": 768,
+    "alt": "brand/punyakoti-brand-banner-sesame-groundnut"
+  },
+  {
     "fileId": "6a1539fd5c7cd75eb818a9b7",
     "name": "punyakoti-logo-no-bg.png",
     "folder": "/punyakoti-taila/brand",
@@ -193,6 +235,26 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 2804,
     "height": 1536,
     "alt": "brand/punyakoti-logo-no-bg"
+  },
+  {
+    "fileId": "6a2ae1765c7cd75eb8b3cb5b",
+    "name": "punyakoti-taila-logo-transparent.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/punyakoti-taila-logo-transparent.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/punyakoti-taila-logo-transparent.png",
+    "width": 1402,
+    "height": 768,
+    "alt": "brand/punyakoti-taila-logo-transparent"
+  },
+  {
+    "fileId": "6a2ae1785c7cd75eb8b3d648",
+    "name": "punyakoti-taila-logo-white-bg.png",
+    "folder": "/punyakoti-taila/brand",
+    "filePath": "/punyakoti-taila/brand/punyakoti-taila-logo-white-bg.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/brand/punyakoti-taila-logo-white-bg.png",
+    "width": 2804,
+    "height": 1536,
+    "alt": "brand/punyakoti-taila-logo-white-bg"
   },
   {
     "fileId": "6a140f025c7cd75eb8c317bc",
@@ -245,6 +307,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "alt": "collections/hero_image_half_multi"
   },
   {
+    "fileId": "6a2ae17f5c7cd75eb8b4029e",
+    "name": "three-amber-bottles-mustard-safflower-groundnut.png",
+    "folder": "/punyakoti-taila/collections",
+    "filePath": "/punyakoti-taila/collections/three-amber-bottles-mustard-safflower-groundnut.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/collections/three-amber-bottles-mustard-safflower-groundnut.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "collections/three-amber-bottles-mustard-safflower-groundnut"
+  },
+  {
     "fileId": "6a140f025c7cd75eb8c317c8",
     "name": "three-bottles-row.png",
     "folder": "/punyakoti-taila/collections",
@@ -253,6 +325,86 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1024,
     "height": 1024,
     "alt": "collections/three-bottles-row"
+  },
+  {
+    "fileId": "6a2ae1815c7cd75eb8b41518",
+    "name": "artisan-bread-oil-dipping-bowl.png",
+    "folder": "/punyakoti-taila/food",
+    "filePath": "/punyakoti-taila/food/artisan-bread-oil-dipping-bowl.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/food/artisan-bread-oil-dipping-bowl.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "food/artisan-bread-oil-dipping-bowl"
+  },
+  {
+    "fileId": "6a2ae1855c7cd75eb8b4492a",
+    "name": "brass-kadai-oil-pour-sizzling.png",
+    "folder": "/punyakoti-taila/food",
+    "filePath": "/punyakoti-taila/food/brass-kadai-oil-pour-sizzling.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/food/brass-kadai-oil-pour-sizzling.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "food/brass-kadai-oil-pour-sizzling"
+  },
+  {
+    "fileId": "6a2ae1895c7cd75eb8b478a3",
+    "name": "mango-pickle-oil-pour-spices.png",
+    "folder": "/punyakoti-taila/food",
+    "filePath": "/punyakoti-taila/food/mango-pickle-oil-pour-spices.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/food/mango-pickle-oil-pour-spices.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "food/mango-pickle-oil-pour-spices"
+  },
+  {
+    "fileId": "6a2ae18b5c7cd75eb8b48bec",
+    "name": "modern-kitchen-vegetables-punyakoti-bottle.png",
+    "folder": "/punyakoti-taila/food",
+    "filePath": "/punyakoti-taila/food/modern-kitchen-vegetables-punyakoti-bottle.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/food/modern-kitchen-vegetables-punyakoti-bottle.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "food/modern-kitchen-vegetables-punyakoti-bottle"
+  },
+  {
+    "fileId": "6a2ae18c5c7cd75eb8b499e4",
+    "name": "rice-plate-curry-punyakoti-bottle.png",
+    "folder": "/punyakoti-taila/food",
+    "filePath": "/punyakoti-taila/food/rice-plate-curry-punyakoti-bottle.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/food/rice-plate-curry-punyakoti-bottle.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "food/rice-plate-curry-punyakoti-bottle"
+  },
+  {
+    "fileId": "6a2ae18e5c7cd75eb8b4a750",
+    "name": "traditional-breakfast-idli-punyakoti-bottle.png",
+    "folder": "/punyakoti-taila/food",
+    "filePath": "/punyakoti-taila/food/traditional-breakfast-idli-punyakoti-bottle.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/food/traditional-breakfast-idli-punyakoti-bottle.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "food/traditional-breakfast-idli-punyakoti-bottle"
+  },
+  {
+    "fileId": "6a2ae1905c7cd75eb8b4b6fd",
+    "name": "traditional-kitchen-mortar-herbs-bottle.png",
+    "folder": "/punyakoti-taila/food",
+    "filePath": "/punyakoti-taila/food/traditional-kitchen-mortar-herbs-bottle.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/food/traditional-kitchen-mortar-herbs-bottle.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "food/traditional-kitchen-mortar-herbs-bottle"
+  },
+  {
+    "fileId": "6a2ae1925c7cd75eb8b4c788",
+    "name": "eco-kraft-box-wrapping-dried-herbs.png",
+    "folder": "/punyakoti-taila/gifting",
+    "filePath": "/punyakoti-taila/gifting/eco-kraft-box-wrapping-dried-herbs.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/gifting/eco-kraft-box-wrapping-dried-herbs.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "gifting/eco-kraft-box-wrapping-dried-herbs"
   },
   {
     "fileId": "6a140f025c7cd75eb8c31414",
@@ -375,6 +527,56 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "alt": "home/hero-06-branded-box-bottle"
   },
   {
+    "fileId": "6a2ae1975c7cd75eb8b4f4ad",
+    "name": "hero-safflower-bottle-raw-ingredients-sunset.png",
+    "folder": "/punyakoti-taila/home",
+    "filePath": "/punyakoti-taila/home/hero-safflower-bottle-raw-ingredients-sunset.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/home/hero-safflower-bottle-raw-ingredients-sunset.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "home/hero-safflower-bottle-raw-ingredients-sunset"
+  },
+  {
+    "fileId": "6a2ae1995c7cd75eb8b502b8",
+    "name": "hero-three-oils-groundnut-coconut-sesame-sunset.png",
+    "folder": "/punyakoti-taila/home",
+    "filePath": "/punyakoti-taila/home/hero-three-oils-groundnut-coconut-sesame-sunset.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/home/hero-three-oils-groundnut-coconut-sesame-sunset.png",
+    "width": 1376,
+    "height": 768,
+    "alt": "home/hero-three-oils-groundnut-coconut-sesame-sunset"
+  },
+  {
+    "fileId": "6a2ae19b5c7cd75eb8b50e3e",
+    "name": "coconuts-sesame-clay-pots-rustic.png",
+    "folder": "/punyakoti-taila/ingredients",
+    "filePath": "/punyakoti-taila/ingredients/coconuts-sesame-clay-pots-rustic.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ingredients/coconuts-sesame-clay-pots-rustic.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "ingredients/coconuts-sesame-clay-pots-rustic"
+  },
+  {
+    "fileId": "6a2ae19d5c7cd75eb8b51bae",
+    "name": "golden-oil-drop-splash-brass-bowl.png",
+    "folder": "/punyakoti-taila/ingredients",
+    "filePath": "/punyakoti-taila/ingredients/golden-oil-drop-splash-brass-bowl.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ingredients/golden-oil-drop-splash-brass-bowl.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "ingredients/golden-oil-drop-splash-brass-bowl"
+  },
+  {
+    "fileId": "6a2ae19e5c7cd75eb8b5260b",
+    "name": "golden-oil-ripples-brass-bowl.png",
+    "folder": "/punyakoti-taila/ingredients",
+    "filePath": "/punyakoti-taila/ingredients/golden-oil-ripples-brass-bowl.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ingredients/golden-oil-ripples-brass-bowl.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "ingredients/golden-oil-ripples-brass-bowl"
+  },
+  {
     "fileId": "6a140f065c7cd75eb8c32510",
     "name": "mortar-pestle-filling.png",
     "folder": "/punyakoti-taila/ingredients",
@@ -405,6 +607,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "alt": "ingredients/raw-seeds-peanuts-coconut"
   },
   {
+    "fileId": "6a2ae1a25c7cd75eb8b538df",
+    "name": "sesame-oil-pour-brass-vessel-clay-bowl.png",
+    "folder": "/punyakoti-taila/ingredients",
+    "filePath": "/punyakoti-taila/ingredients/sesame-oil-pour-brass-vessel-clay-bowl.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ingredients/sesame-oil-pour-brass-vessel-clay-bowl.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "ingredients/sesame-oil-pour-brass-vessel-clay-bowl"
+  },
+  {
     "fileId": "6a140f065c7cd75eb8c3249c",
     "name": "spoon-oil-logo-closeup.png",
     "folder": "/punyakoti-taila/ingredients",
@@ -423,6 +635,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1024,
     "height": 1024,
     "alt": "ingredients/spoon-oil-over-peanuts"
+  },
+  {
+    "fileId": "6a2ae1a65c7cd75eb8b54bf8",
+    "name": "sun-dried-mustard-seeds-basket.png",
+    "folder": "/punyakoti-taila/ingredients",
+    "filePath": "/punyakoti-taila/ingredients/sun-dried-mustard-seeds-basket.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/ingredients/sun-dried-mustard-seeds-basket.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "ingredients/sun-dried-mustard-seeds-basket"
   },
   {
     "fileId": "6a143dcf5c7cd75eb816f26e",
@@ -485,6 +707,86 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "alt": "others/Lap-Twilights"
   },
   {
+    "fileId": "6a2ae1a85c7cd75eb8b55b6b",
+    "name": "portrait-chef-holding-punyakoti-bottle.png",
+    "folder": "/punyakoti-taila/people",
+    "filePath": "/punyakoti-taila/people/portrait-chef-holding-punyakoti-bottle.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/people/portrait-chef-holding-punyakoti-bottle.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "people/portrait-chef-holding-punyakoti-bottle"
+  },
+  {
+    "fileId": "6a2ae1aa5c7cd75eb8b566ef",
+    "name": "portrait-elderly-man-dignified.png",
+    "folder": "/punyakoti-taila/people",
+    "filePath": "/punyakoti-taila/people/portrait-elderly-man-dignified.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/people/portrait-elderly-man-dignified.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "people/portrait-elderly-man-dignified"
+  },
+  {
+    "fileId": "6a2ae1ab5c7cd75eb8b56eac",
+    "name": "portrait-middle-aged-man-vegetable-basket.png",
+    "folder": "/punyakoti-taila/people",
+    "filePath": "/punyakoti-taila/people/portrait-middle-aged-man-vegetable-basket.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/people/portrait-middle-aged-man-vegetable-basket.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "people/portrait-middle-aged-man-vegetable-basket"
+  },
+  {
+    "fileId": "6a2ae1ad5c7cd75eb8b5764b",
+    "name": "portrait-middle-aged-woman-sophisticated.png",
+    "folder": "/punyakoti-taila/people",
+    "filePath": "/punyakoti-taila/people/portrait-middle-aged-woman-sophisticated.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/people/portrait-middle-aged-woman-sophisticated.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "people/portrait-middle-aged-woman-sophisticated"
+  },
+  {
+    "fileId": "6a2ae1af5c7cd75eb8b57ebe",
+    "name": "portrait-young-mother-gentle-smile.png",
+    "folder": "/punyakoti-taila/people",
+    "filePath": "/punyakoti-taila/people/portrait-young-mother-gentle-smile.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/people/portrait-young-mother-gentle-smile.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "people/portrait-young-mother-gentle-smile"
+  },
+  {
+    "fileId": "6a2ae1b15c7cd75eb8b58631",
+    "name": "portrait-young-professional-man.png",
+    "folder": "/punyakoti-taila/people",
+    "filePath": "/punyakoti-taila/people/portrait-young-professional-man.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/people/portrait-young-professional-man.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "people/portrait-young-professional-man"
+  },
+  {
+    "fileId": "6a2ae1b25c7cd75eb8b58f57",
+    "name": "portrait-young-woman-glowing-skin.png",
+    "folder": "/punyakoti-taila/people",
+    "filePath": "/punyakoti-taila/people/portrait-young-woman-glowing-skin.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/people/portrait-young-woman-glowing-skin.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "people/portrait-young-woman-glowing-skin"
+  },
+  {
+    "fileId": "6a2ae1b45c7cd75eb8b598c1",
+    "name": "coconut-drying-yard-heritage-est-1920.png",
+    "folder": "/punyakoti-taila/process",
+    "filePath": "/punyakoti-taila/process/coconut-drying-yard-heritage-est-1920.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/process/coconut-drying-yard-heritage-est-1920.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "process/coconut-drying-yard-heritage-est-1920"
+  },
+  {
     "fileId": "6a140f065c7cd75eb8c325a9",
     "name": "ghana-press-oil-flowing.png",
     "folder": "/punyakoti-taila/process",
@@ -515,6 +817,36 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "alt": "process/ghana-press-studio"
   },
   {
+    "fileId": "6a2ae1ba5c7cd75eb8b5bbc2",
+    "name": "stone-chakki-mill-oil-flowing-golden.png",
+    "folder": "/punyakoti-taila/process",
+    "filePath": "/punyakoti-taila/process/stone-chakki-mill-oil-flowing-golden.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/process/stone-chakki-mill-oil-flowing-golden.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "process/stone-chakki-mill-oil-flowing-golden"
+  },
+  {
+    "fileId": "6a2ae1bc5c7cd75eb8b5c3ed",
+    "name": "stone-mortar-herbs-nuts-punyakoti-bottle.png",
+    "folder": "/punyakoti-taila/process",
+    "filePath": "/punyakoti-taila/process/stone-mortar-herbs-nuts-punyakoti-bottle.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/process/stone-mortar-herbs-nuts-punyakoti-bottle.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "process/stone-mortar-herbs-nuts-punyakoti-bottle"
+  },
+  {
+    "fileId": "6a2ae1be5c7cd75eb8b5cce1",
+    "name": "traditional-farmer-wooden-oil-press.png",
+    "folder": "/punyakoti-taila/process",
+    "filePath": "/punyakoti-taila/process/traditional-farmer-wooden-oil-press.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/process/traditional-farmer-wooden-oil-press.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "process/traditional-farmer-wooden-oil-press"
+  },
+  {
     "fileId": "6a140f035c7cd75eb8c31877",
     "name": "traditional-ghani-village.png",
     "folder": "/punyakoti-taila/process",
@@ -523,6 +855,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1024,
     "height": 1024,
     "alt": "process/traditional-ghani-village"
+  },
+  {
+    "fileId": "6a2ae1c05c7cd75eb8b5d500",
+    "name": "traditional-press-oil-flowing-steel-vessel.png",
+    "folder": "/punyakoti-taila/process",
+    "filePath": "/punyakoti-taila/process/traditional-press-oil-flowing-steel-vessel.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/process/traditional-press-oil-flowing-steel-vessel.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "process/traditional-press-oil-flowing-steel-vessel"
   },
   {
     "fileId": "6a140f035c7cd75eb8c31bbc",
@@ -553,6 +895,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1200,
     "height": 896,
     "alt": "achaar-pickles/hero-branded-jars"
+  },
+  {
+    "fileId": "6a2ae1c35c7cd75eb8b5e3fb",
+    "name": "mustard-oil-pour-into-achaar-jar.png",
+    "folder": "/punyakoti-taila/products/achaar-pickles",
+    "filePath": "/punyakoti-taila/products/achaar-pickles/mustard-oil-pour-into-achaar-jar.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/achaar-pickles/mustard-oil-pour-into-achaar-jar.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "achaar-pickles/mustard-oil-pour-into-achaar-jar"
   },
   {
     "fileId": "6a140f065c7cd75eb8c323a3",
@@ -703,6 +1055,26 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1024,
     "height": 1024,
     "alt": "coconut-oil/natural-light-window"
+  },
+  {
+    "fileId": "6a2ae1dd5c7cd75eb8b69936",
+    "name": "pour-into-cooking-pot-steaming.png",
+    "folder": "/punyakoti-taila/products/coconut-oil",
+    "filePath": "/punyakoti-taila/products/coconut-oil/pour-into-cooking-pot-steaming.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/coconut-oil/pour-into-cooking-pot-steaming.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "coconut-oil/pour-into-cooking-pot-steaming"
+  },
+  {
+    "fileId": "6a2ae1df5c7cd75eb8b6a010",
+    "name": "provenance-coconut-halves-jute.png",
+    "folder": "/punyakoti-taila/products/coconut-oil",
+    "filePath": "/punyakoti-taila/products/coconut-oil/provenance-coconut-halves-jute.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/coconut-oil/provenance-coconut-halves-jute.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "coconut-oil/provenance-coconut-halves-jute"
   },
   {
     "fileId": "6a140f015c7cd75eb8c313d5",
@@ -975,6 +1347,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "alt": "safflower-oil/hero-copper-drip"
   },
   {
+    "fileId": "6a2ae1f05c7cd75eb8b6fa10",
+    "name": "hero-safflower-field-sunset.png",
+    "folder": "/punyakoti-taila/products/safflower-oil",
+    "filePath": "/punyakoti-taila/products/safflower-oil/hero-safflower-field-sunset.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/safflower-oil/hero-safflower-field-sunset.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "safflower-oil/hero-safflower-field-sunset"
+  },
+  {
     "fileId": "6a140f065c7cd75eb8c3244e",
     "name": "product-with-seeds.png",
     "folder": "/punyakoti-taila/products/safflower-oil",
@@ -983,6 +1365,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1024,
     "height": 1024,
     "alt": "safflower-oil/product-with-seeds"
+  },
+  {
+    "fileId": "6a2ae1f45c7cd75eb8b70b48",
+    "name": "sunflower-field-bottle-sunset.png",
+    "folder": "/punyakoti-taila/products/safflower-oil",
+    "filePath": "/punyakoti-taila/products/safflower-oil/sunflower-field-bottle-sunset.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/safflower-oil/sunflower-field-bottle-sunset.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "safflower-oil/sunflower-field-bottle-sunset"
   },
   {
     "fileId": "6a140f025c7cd75eb8c317d9",
@@ -1013,6 +1405,16 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 1024,
     "height": 1024,
     "alt": "sesame-oil/hero-dark-moody"
+  },
+  {
+    "fileId": "6a2ae1f65c7cd75eb8b711fd",
+    "name": "lifestyle-tray-brass-bell-jasmine.png",
+    "folder": "/punyakoti-taila/products/sesame-oil",
+    "filePath": "/punyakoti-taila/products/sesame-oil/lifestyle-tray-brass-bell-jasmine.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/products/sesame-oil/lifestyle-tray-brass-bell-jasmine.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "sesame-oil/lifestyle-tray-brass-bell-jasmine"
   },
   {
     "fileId": "6a140f065c7cd75eb8c3245d",
@@ -1653,5 +2055,95 @@ export const IMAGEKIT_CATALOG: ReadonlyArray<ImageKitCatalogEntry> = [
     "width": 689,
     "height": 1600,
     "alt": "stitch/shop-all"
+  },
+  {
+    "fileId": "6a2ae2015c7cd75eb8b74c73",
+    "name": "abhyanga-oil-massage-candles.png",
+    "folder": "/punyakoti-taila/wellness",
+    "filePath": "/punyakoti-taila/wellness/abhyanga-oil-massage-candles.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/wellness/abhyanga-oil-massage-candles.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "wellness/abhyanga-oil-massage-candles"
+  },
+  {
+    "fileId": "6a2ae2065c7cd75eb8b768d2",
+    "name": "bathroom-stone-tray-bottle-towel.png",
+    "folder": "/punyakoti-taila/wellness",
+    "filePath": "/punyakoti-taila/wellness/bathroom-stone-tray-bottle-towel.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/wellness/bathroom-stone-tray-bottle-towel.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "wellness/bathroom-stone-tray-bottle-towel"
+  },
+  {
+    "fileId": "6a2ae2085c7cd75eb8b77281",
+    "name": "child-dropper-bottle-herbs.png",
+    "folder": "/punyakoti-taila/wellness",
+    "filePath": "/punyakoti-taila/wellness/child-dropper-bottle-herbs.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/wellness/child-dropper-bottle-herbs.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "wellness/child-dropper-bottle-herbs"
+  },
+  {
+    "fileId": "6a2ae20a5c7cd75eb8b77d4d",
+    "name": "hands-oil-massage-marigold-flowers.png",
+    "folder": "/punyakoti-taila/wellness",
+    "filePath": "/punyakoti-taila/wellness/hands-oil-massage-marigold-flowers.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/wellness/hands-oil-massage-marigold-flowers.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "wellness/hands-oil-massage-marigold-flowers"
+  },
+  {
+    "fileId": "6a2ae20b5c7cd75eb8b78a90",
+    "name": "meditation-woman-punyakoti-bottle.png",
+    "folder": "/punyakoti-taila/wellness",
+    "filePath": "/punyakoti-taila/wellness/meditation-woman-punyakoti-bottle.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/wellness/meditation-woman-punyakoti-bottle.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "wellness/meditation-woman-punyakoti-bottle"
+  },
+  {
+    "fileId": "6a2ae20d5c7cd75eb8b79a81",
+    "name": "nasya-dropper-copper-vessel-rustic-table.png",
+    "folder": "/punyakoti-taila/wellness",
+    "filePath": "/punyakoti-taila/wellness/nasya-dropper-copper-vessel-rustic-table.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/wellness/nasya-dropper-copper-vessel-rustic-table.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "wellness/nasya-dropper-copper-vessel-rustic-table"
+  },
+  {
+    "fileId": "6a2ae20f5c7cd75eb8b7a619",
+    "name": "nasya-dropper-plumeria-handmade-paper.png",
+    "folder": "/punyakoti-taila/wellness",
+    "filePath": "/punyakoti-taila/wellness/nasya-dropper-plumeria-handmade-paper.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/wellness/nasya-dropper-plumeria-handmade-paper.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "wellness/nasya-dropper-plumeria-handmade-paper"
+  },
+  {
+    "fileId": "6a2ae2105c7cd75eb8b7b0a4",
+    "name": "spa-bathroom-bottle-lavender.png",
+    "folder": "/punyakoti-taila/wellness",
+    "filePath": "/punyakoti-taila/wellness/spa-bathroom-bottle-lavender.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/wellness/spa-bathroom-bottle-lavender.png",
+    "width": 1264,
+    "height": 848,
+    "alt": "wellness/spa-bathroom-bottle-lavender"
+  },
+  {
+    "fileId": "6a2ae2125c7cd75eb8b7bbdd",
+    "name": "yoga-space-amber-bottle-incense.png",
+    "folder": "/punyakoti-taila/wellness",
+    "filePath": "/punyakoti-taila/wellness/yoga-space-amber-bottle-incense.png",
+    "url": "https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/wellness/yoga-space-amber-bottle-incense.png",
+    "width": 1024,
+    "height": 1024,
+    "alt": "wellness/yoga-space-amber-bottle-incense"
   }
 ] as const

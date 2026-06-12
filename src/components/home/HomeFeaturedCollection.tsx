@@ -10,7 +10,7 @@ export function HomeFeaturedCollection({
   showFallback,
   eyebrow = 'The collection',
   headline = 'Six oils, one philosophy',
-  body = 'Pressed slowly on wooden ghanis. Bottled within 72 hours. Always single-batch.',
+  body = 'Pressed slowly on wooden ghanis. Bottled within 72 hours of pressing.',
   ctaLabel = 'Shop all',
   ctaHref = '/shop',
   columns = '3',

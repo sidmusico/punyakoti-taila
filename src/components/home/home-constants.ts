@@ -19,6 +19,8 @@ export const FALLBACK_PRODUCTS: FallbackProduct[] = [
   { id: 6, slug: 'black-sesame', name: 'Black Sesame', oilVariant: 'blackSes', badge: 'Limited', price: 680, size: '250 ml' },
 ]
 
+const IK_PEOPLE = 'https://ik.imagekit.io/zx7l7bhei/punyakoti-taila/people'
+
 export type FallbackTestimonial = {
   id: number
   rating: number
@@ -27,6 +29,8 @@ export type FallbackTestimonial = {
   customerLocation: string
   initials: string
   avatarTone: 'warm' | 'deep' | 'sun'
+  photoUrl: string
+  photoAlt: string
 }
 
 export const FALLBACK_TESTIMONIALS: FallbackTestimonial[] = [
@@ -38,15 +42,19 @@ export const FALLBACK_TESTIMONIALS: FallbackTestimonial[] = [
     customerLocation: 'Bangalore · Sesame · 6 orders',
     initials: 'LV',
     avatarTone: 'warm',
+    photoUrl: `${IK_PEOPLE}/portrait-middle-aged-woman-sophisticated.png`,
+    photoAlt: 'Lakshmi V. — Punyakoti Taila customer',
   },
   {
     id: 2,
     rating: 5,
-    body: 'The batch number on the bottle matches the village I lived next to as a kid. That detail did it.',
+    body: 'The origin village printed on the bottle is the one I grew up next to. That detail did it.',
     customerName: 'Karthik R.',
     customerLocation: 'Mumbai · Subscriber · 14 months',
     initials: 'KR',
     avatarTone: 'deep',
+    photoUrl: `${IK_PEOPLE}/portrait-young-professional-man.png`,
+    photoAlt: 'Karthik R. — Punyakoti Taila subscriber',
   },
   {
     id: 3,
@@ -56,5 +64,29 @@ export const FALLBACK_TESTIMONIALS: FallbackTestimonial[] = [
     customerLocation: 'Chennai · Coconut · 9 orders',
     initials: 'AM',
     avatarTone: 'sun',
+    photoUrl: `${IK_PEOPLE}/portrait-young-woman-glowing-skin.png`,
+    photoAlt: 'Anisha M. — Punyakoti Taila customer',
+  },
+  {
+    id: 4,
+    rating: 5,
+    body: 'We switched the groundnut oil for our Sunday pongal. My father said it tastes like the mill near our old house.',
+    customerName: 'Priya S.',
+    customerLocation: 'Hyderabad · Groundnut · 4 orders',
+    initials: 'PS',
+    avatarTone: 'warm',
+    photoUrl: `${IK_PEOPLE}/portrait-young-mother-gentle-smile.png`,
+    photoAlt: 'Priya S. — Punyakoti Taila customer',
+  },
+  {
+    id: 5,
+    rating: 5,
+    body: 'The mustard has a slow heat that builds — not the sharp bite from refined bottles. I use less and taste more.',
+    customerName: 'Ramesh K.',
+    customerLocation: 'Coimbatore · Mustard · 11 orders',
+    initials: 'RK',
+    avatarTone: 'deep',
+    photoUrl: `${IK_PEOPLE}/portrait-elderly-man-dignified.png`,
+    photoAlt: 'Ramesh K. — Punyakoti Taila customer',
   },
 ]

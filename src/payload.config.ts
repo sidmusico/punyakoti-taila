@@ -5,6 +5,7 @@ import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
 
 import { Categories } from './collections/Categories'
+import { Customers } from './collections/Customers'
 import { Media } from './collections/Media'
 import { Orders } from './collections/Orders'
 import { Pages } from './collections/Pages'
@@ -19,6 +20,7 @@ import { Header } from './Header/config'
 import { AccountSettings } from './globals/AccountSettings'
 import { CartSettings } from './globals/CartSettings'
 import { HomepageSettings } from './globals/HomepageSettings'
+import { NewsletterPopup } from './globals/NewsletterPopup'
 import { OrderSuccessSettings } from './globals/OrderSuccessSettings'
 import { ProductDetail } from './globals/ProductDetail'
 import { ShopListing } from './globals/ShopListing'
@@ -86,6 +88,7 @@ export default buildConfig({
     Media,
     Categories,
     Users,
+    Customers,
     Products,
     Orders,
     Reviews,
@@ -103,6 +106,7 @@ export default buildConfig({
     CartSettings,
     AccountSettings,
     OrderSuccessSettings,
+    NewsletterPopup,
   ],
   plugins,
   secret: process.env.PAYLOAD_SECRET,

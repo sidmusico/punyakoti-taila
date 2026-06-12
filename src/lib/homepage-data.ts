@@ -1,6 +1,8 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import { BOTTLE_ROW_PRODUCT_SLUGS } from '@/seed/bottleRowProductSlugs'
+
 import type { HomepageSetting, Product, Testimonial } from '@/payload-types'
 
 function relationshipProducts(val: unknown): Product[] {
@@ -18,8 +20,27 @@ export type HomepageStorefrontData = {
   homepage: Partial<HomepageSetting> | null
   featuredProducts: Product[]
   bestSellers: Product[]
+  bottleRowProducts: Product[]
   testimonials: Testimonial[]
   serviceLocations: ServiceLocationCity[]
+}
+
+async function productsBySlugs(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  slugs: readonly string[],
+): Promise<Product[]> {
+  const out: Product[] = []
+  for (const slug of slugs) {
+    const hit = await payload.find({
+      collection: 'products',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      depth: 1,
+      overrideAccess: true,
+    })
+    if (hit.docs[0]) out.push(hit.docs[0] as Product)
+  }
+  return out
 }
 
 /**
@@ -57,7 +78,7 @@ export async function getHomepageData(): Promise<HomepageStorefrontData> {
         },
         limit: 12,
         sort: '-createdAt',
-        depth: 0,
+        depth: 1,
       }),
       // Marquee source — only enabled rows, sorted by displayOrder then name.
       // The `service-locations` collection may not exist yet on a brand-new DB
@@ -99,6 +120,12 @@ export async function getHomepageData(): Promise<HomepageStorefrontData> {
     if (manual.length > 0) bestSellers = manual.slice(0, 4)
   }
 
+  const bottleRel = relationshipProducts(hp?.bottleRow?.products)
+  const bottleRowProducts =
+    bottleRel.length > 0
+      ? bottleRel.slice(0, 6)
+      : await productsBySlugs(payload, BOTTLE_ROW_PRODUCT_SLUGS)
+
   const maxT = Math.min(Math.max(hp?.testimonialsBand?.maxItems ?? 3, 1), 12)
   const testimonials = testimonialDocs.slice(0, maxT)
 
@@ -120,5 +147,12 @@ export async function getHomepageData(): Promise<HomepageStorefrontData> {
     )
   }
 
-  return { homepage: hp, featuredProducts, bestSellers, testimonials, serviceLocations }
+  return {
+    homepage: hp,
+    featuredProducts,
+    bestSellers,
+    bottleRowProducts,
+    testimonials,
+    serviceLocations,
+  }
 }

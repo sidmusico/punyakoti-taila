@@ -9,16 +9,31 @@ import { draftMode } from 'next/headers'
 import { SiteHeaderWrapper } from '@/components/shop/SiteHeaderWrapper'
 import { SiteFooter } from '@/components/shop/SiteFooter'
 import { CartDrawer } from '@/components/shop/CartDrawer'
+import { NewsletterPopup, type NewsletterPopupData } from '@/components/shop/NewsletterPopup'
+import { getPayload } from 'payload'
+import config from '@payload-config'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
 import { getStorefrontBundle } from '@/utilities/getStorefrontBundle'
+
+/** Crash-safe: the global's table may not exist until `pnpm cms:sync` runs. */
+async function getNewsletterPopupData(): Promise<NewsletterPopupData> {
+  try {
+    const payload = await getPayload({ config })
+    const doc = await payload.findGlobal({ slug: 'newsletter-popup' as never, depth: 1 })
+    return JSON.parse(JSON.stringify(doc)) as NewsletterPopupData
+  } catch {
+    return null // component falls back to its code defaults
+  }
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
   const storefrontBundle = JSON.parse(JSON.stringify(await getStorefrontBundle())) as Awaited<
     ReturnType<typeof getStorefrontBundle>
   >
+  const newsletterPopup = await getNewsletterPopupData()
 
   return (
     <html lang="en" suppressHydrationWarning>
@@ -41,6 +56,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <main>{children}</main>
           <SiteFooter />
           <CartDrawer />
+          <NewsletterPopup data={newsletterPopup} />
         </Providers>
       </body>
     </html>

@@ -1,9 +1,10 @@
 'use client'
 
-import React from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useCartStore } from '@/store/cart'
+import { Breadcrumb } from '@/components/shop/Breadcrumb'
 import { Icons } from '@/components/ui/pt/Icons'
 import { useStorefrontBundle } from '@/providers/StorefrontCopyProvider'
 import type { StorefrontMerged } from '@/utilities/getStorefrontBundle'
@@ -26,9 +27,15 @@ export function CartPageView({
   const { storefront, freeShippingThreshold } = useStorefrontBundle()
   const d = storefront.cartDrawer ?? {}
   const c = cartPage ?? storefront.cartPage ?? {}
-  const { items, removeItem, updateQty, total, itemCount } = useCartStore()
+  const { items, removeItem, updateQty, total, itemCount, clearCart } = useCartStore()
   const grandTotal = total()
   const count = itemCount()
+  const totalSavings = items.reduce(
+    (sum, i) => sum + (i.mrp && i.mrp > i.price ? (i.mrp - i.price) * i.quantity : 0),
+    0,
+  )
+  const [promoCode, setPromoCode] = useState('')
+  const [promoMessage, setPromoMessage] = useState<string | null>(null)
   const flatShip =
     typeof d?.flatShippingAmount === 'number' && !Number.isNaN(d.flatShippingAmount)
       ? d.flatShippingAmount
@@ -53,31 +60,29 @@ export function CartPageView({
     Boolean(c?.headlineLineBeforeItalic?.trim()) || Boolean(c?.headlineItalic?.trim())
 
   return (
-    <div className="max-w-[1440px] mx-auto px-5 sm:px-8 md:px-16 lg:px-20 pb-28 lg:pb-16">
-      {/* Breadcrumb */}
-      <nav className="pt-8 text-xs" style={{ color: 'var(--ink-500)' }} aria-label="Breadcrumb">
-        <Link href={c?.breadcrumbHomeHref ?? '/'} className="hover:opacity-80">
-          {c?.breadcrumbHomeLabel ?? 'Home'}
-        </Link>
-        <span className="mx-1.5 opacity-40">/</span>
-        <span style={{ color: 'var(--green-900)' }}>{c?.breadcrumbCurrentLabel ?? 'Basket'}</span>
-      </nav>
+    <div className="pt-page-container pb-28 lg:pb-16">
+      <Breadcrumb
+        items={[
+          { label: c?.breadcrumbHomeLabel ?? 'Home', href: c?.breadcrumbHomeHref ?? '/' },
+          { label: c?.breadcrumbCurrentLabel ?? 'Basket' },
+        ]}
+      />
 
       {heroImageUrl ? (
-        <div className="mt-6 relative w-full max-h-[220px] overflow-hidden rounded-2xl">
+        <div className="relative w-full max-h-[140px] overflow-hidden rounded-2xl">
           <Image
             src={heroImageUrl}
             alt=""
             width={1440}
             height={400}
-            className="w-full h-[180px] md:h-[220px] object-cover"
+            className="w-full h-[110px] md:h-[140px] object-cover"
             sizes="100vw"
           />
         </div>
       ) : null}
 
       {items.length === 0 ? (
-        <div className="mt-12 rounded-2xl p-12 text-center max-w-lg mx-auto" style={{ background: 'var(--cream-100)', border: '1px solid var(--cream-400)' }}>
+        <div className="mt-8 rounded-2xl p-12 text-center max-w-lg mx-auto" style={{ background: 'var(--cream-100)', border: '1px solid var(--cream-400)' }}>
           <Icons.bag size={40} style={{ color: 'var(--ink-300)', margin: '0 auto 16px' }} />
           <p className="font-medium" style={{ color: 'var(--ink-500)' }}>{d?.emptyTitle}</p>
           <p className="text-sm mt-1" style={{ color: 'var(--ink-400)' }}>{d?.emptySubtitle}</p>
@@ -91,17 +96,17 @@ export function CartPageView({
         </div>
       ) : (
         <>
-          <div className="mt-8 lg:mt-10 grid lg:grid-cols-[1fr_min(380px,34vw)] gap-10 lg:gap-14 items-start">
+          <div className="mt-5 lg:mt-6 grid lg:grid-cols-[1fr_min(380px,34vw)] gap-10 lg:gap-14 items-start">
             <div>
               <div className="text-[11px] uppercase tracking-[0.18em]" style={{ color: 'var(--ink-500)' }}>
                 {c?.listingEyebrow}
               </div>
               <h1
-                className="mt-3"
+                className="mt-2"
                 style={{
                   fontFamily: 'var(--font-display)',
                   fontWeight: 400,
-                  fontSize: 'clamp(2.25rem, 5vw, 3.5rem)',
+                  fontSize: 'clamp(1.9rem, 3.5vw, 2.6rem)',
                   lineHeight: 1.05,
                   letterSpacing: '-0.02em',
                   color: 'var(--green-900)',
@@ -127,27 +132,34 @@ export function CartPageView({
                 </p>
               ) : null}
 
-              <div className="mt-8 flex flex-col">
+              <div className="mt-5 flex flex-col">
                 {items.map((item, idx) => (
                   <div
                     key={item.id}
                     className="grid grid-cols-[72px_1fr_auto] sm:grid-cols-[100px_1fr_auto] gap-4 sm:gap-6 py-6 items-center border-b border-[var(--cream-400)]"
                     style={idx === 0 ? { borderTop: '1px solid var(--cream-400)' } : undefined}
                   >
-                    <div
-                      className="rounded-xl grid place-items-center aspect-[5/6] max-h-[120px]"
+                    <Link
+                      href={`/shop/${item.slug}`}
+                      className="rounded-xl grid place-items-center aspect-[5/6] max-h-[120px] overflow-hidden"
                       style={{ background: 'var(--cream-100)' }}
+                      tabIndex={-1}
+                      aria-hidden
                     >
                       {item.image ? (
-                        <Image src={item.image} alt={item.name} width={100} height={120} className="object-cover w-full h-full rounded-xl" />
+                        <Image src={item.image} alt="" width={100} height={120} className="object-cover w-full h-full rounded-xl transition-transform duration-300 hover:scale-105" />
                       ) : (
                         <Icons.drop size={28} style={{ color: 'var(--wood-500)' }} />
                       )}
-                    </div>
+                    </Link>
                     <div className="min-w-0">
-                      <div className="font-medium leading-snug" style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1rem, 2.5vw, 1.35rem)', color: 'var(--green-900)' }}>
+                      <Link
+                        href={`/shop/${item.slug}`}
+                        className="font-medium leading-snug hover:underline"
+                        style={{ fontFamily: 'var(--font-display)', fontSize: 'clamp(1rem, 2.5vw, 1.35rem)', color: 'var(--green-900)' }}
+                      >
                         {item.name}
-                      </div>
+                      </Link>
                       <div className="mt-1.5 text-[13px] flex flex-wrap items-center gap-2" style={{ color: 'var(--ink-500)' }}>
                         <span>{item.variantSize}</span>
                         {item.isSubscription && d?.subscribePillLabel ? (
@@ -180,39 +192,62 @@ export function CartPageView({
                     <div className="text-right self-start sm:self-center">
                       <div
                         className="inline-flex items-center rounded-lg border overflow-hidden"
-                        style={{ borderColor: 'var(--cream-400)', background: 'var(--cream-100)' }}
+                        style={{ borderColor: 'var(--cream-400)', background: 'var(--cream-100)', flex: '0 0 auto' }}
                       >
                         <button
                           type="button"
                           onClick={() => updateQty(item.id, item.quantity - 1)}
-                          className="w-8 h-8 sm:w-9 sm:h-9 grid place-items-center bg-transparent border-0 cursor-pointer"
-                          style={{ color: 'var(--green-900)' }}
+                          className="grid place-items-center bg-transparent border-0 cursor-pointer"
+                          style={{ color: 'var(--green-900)', width: 32, height: 32, padding: 0, flex: '0 0 auto' }}
                           aria-label="Decrease quantity"
                         >
                           <Icons.minus size={12} />
                         </button>
-                        <span className="w-7 sm:w-8 text-center text-sm font-semibold">{item.quantity}</span>
+                        <span className="text-center text-sm font-semibold" style={{ width: 30, flex: '0 0 auto' }}>
+                          {item.quantity}
+                        </span>
                         <button
                           type="button"
                           onClick={() => updateQty(item.id, item.quantity + 1)}
-                          className="w-8 h-8 sm:w-9 sm:h-9 grid place-items-center bg-transparent border-0 cursor-pointer"
-                          style={{ color: 'var(--green-900)' }}
+                          className="grid place-items-center bg-transparent border-0 cursor-pointer"
+                          style={{ color: 'var(--green-900)', width: 32, height: 32, padding: 0, flex: '0 0 auto' }}
                           aria-label="Increase quantity"
                         >
                           <Icons.plus size={12} />
                         </button>
                       </div>
-                      <div className="mt-3 text-lg font-semibold" style={{ color: 'var(--green-900)' }}>
-                        {formatPrice(item.price * item.quantity)}
+                      <div className="mt-3">
+                        {item.mrp && item.mrp > item.price ? (
+                          <div className="text-xs line-through" style={{ color: 'var(--ink-300)' }}>
+                            {formatPrice(item.mrp * item.quantity)}
+                          </div>
+                        ) : null}
+                        <div className="text-lg font-semibold" style={{ color: 'var(--green-900)' }}>
+                          {formatPrice(item.price * item.quantity)}
+                        </div>
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
 
+              {/* Clear basket — subtle, with confirm */}
+              <div className="mt-4 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm('Remove all items from your basket?')) clearCart()
+                  }}
+                  className="text-xs transition-opacity hover:opacity-70"
+                  style={{ color: 'var(--ink-400)' }}
+                >
+                  Clear basket
+                </button>
+              </div>
+
               {/* Free shipping progress (matches design cart-checkout.jsx) */}
               <div
-                className="mt-8 rounded-xl px-4 py-4 flex gap-3 items-start"
+                className="mt-4 rounded-xl px-4 py-4 flex gap-3 items-start"
                 style={{ background: 'var(--green-100)' }}
               >
                 <Icons.truck size={20} className="shrink-0 mt-0.5" style={{ color: 'var(--green-800)' }} />
@@ -252,6 +287,12 @@ export function CartPageView({
                       {grandTotal >= freeShippingThreshold ? (d?.shippingFreeLabel ?? 'Free') : formatPrice(flatShip)}
                     </span>
                   </div>
+                  {totalSavings > 0 && (
+                    <div className="flex justify-between gap-4" style={{ color: 'var(--green-700)' }}>
+                      <span>You save</span>
+                      <span>−{formatPrice(totalSavings)}</span>
+                    </div>
+                  )}
                   {c?.gstLabel ? (
                     <div className="flex justify-between gap-4 text-sm" style={{ color: 'var(--ink-500)' }}>
                       <span>{c.gstLabel}</span>
@@ -260,21 +301,40 @@ export function CartPageView({
                   ) : null}
                 </div>
 
-                <div className="mt-4 flex gap-2">
-                  <input
-                    readOnly
-                    className="flex-1 rounded-lg px-3 py-2.5 text-sm border bg-[var(--cream-200)]"
-                    style={{ borderColor: 'var(--cream-400)', color: 'var(--ink-500)' }}
-                    placeholder={c?.promoCodePlaceholder ?? ''}
-                    aria-label={c?.promoCodePlaceholder ?? 'Promo code'}
-                  />
-                  <span
-                    className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium border"
-                    style={{ borderColor: 'var(--cream-400)', color: 'var(--ink-500)' }}
-                  >
-                    {c?.promoApplyLabel}
-                  </span>
-                </div>
+                <form
+                  className="mt-4"
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    if (!promoCode.trim()) return
+                    setPromoMessage(`"${promoCode.trim()}" isn't a valid code right now.`)
+                  }}
+                >
+                  <div className="flex gap-2">
+                    <input
+                      value={promoCode}
+                      onChange={(e) => {
+                        setPromoCode(e.target.value)
+                        if (promoMessage) setPromoMessage(null)
+                      }}
+                      className="flex-1 min-w-0 rounded-lg px-3 py-2.5 text-sm border bg-[var(--cream-200)] focus:outline-none focus:ring-1"
+                      style={{ borderColor: 'var(--cream-400)', color: 'var(--ink-700)' }}
+                      placeholder={c?.promoCodePlaceholder ?? 'Promo code'}
+                      aria-label={c?.promoCodePlaceholder ?? 'Promo code'}
+                    />
+                    <button
+                      type="submit"
+                      className="shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium border transition-colors hover:bg-cream-300"
+                      style={{ borderColor: 'var(--cream-400)', color: 'var(--green-900)' }}
+                    >
+                      {c?.promoApplyLabel ?? 'Apply'}
+                    </button>
+                  </div>
+                  {promoMessage && (
+                    <p className="mt-2 text-xs" role="status" style={{ color: 'var(--terra-600)' }}>
+                      {promoMessage}
+                    </p>
+                  )}
+                </form>
 
                 <hr className="my-5" style={{ borderColor: 'var(--cream-400)' }} />
 
@@ -327,6 +387,12 @@ export function CartPageView({
                 <span>{d?.shippingLabel}</span>
                 <span>{grandTotal >= freeShippingThreshold ? (d?.shippingFreeLabel ?? 'Free') : formatPrice(flatShip)}</span>
               </div>
+              {totalSavings > 0 && (
+                <div className="flex justify-between" style={{ color: 'var(--green-700)' }}>
+                  <span>You save</span>
+                  <span>−{formatPrice(totalSavings)}</span>
+                </div>
+              )}
             </div>
             <hr style={{ borderColor: 'var(--cream-400)' }} />
             <div className="flex justify-between items-baseline">

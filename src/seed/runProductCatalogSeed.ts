@@ -4,6 +4,10 @@ import {
   CATALOG_MEDIA,
   CATALOG_PRODUCTS,
 } from '@/seed/productCatalogSeed'
+import {
+  buildProductImagesFromAlts,
+  type ProductImageRow,
+} from '@/seed/imageKitMediaResolve'
 import { runCategoriesSeed } from '@/seed/runCategoriesSeed'
 import { ensureMediaByAltAndUrl } from '@/seed/seedMediaUpload'
 
@@ -11,7 +15,7 @@ export type ProductCatalogSeedRow = {
   kind: 'category' | 'media' | 'product'
   slug?: string
   alt?: string
-  status: 'created' | 'skipped' | 'error'
+  status: 'created' | 'updated' | 'skipped' | 'error'
   id?: string | number
   error?: string
 }
@@ -24,6 +28,32 @@ async function ensureMediaId(payload: Payload, index: number): Promise<string | 
     url: item.url,
     basename: `seed-catalog-${index}`,
   })
+}
+
+/** Build the `images` array for a catalog row: ImageKit gallery first, Unsplash fallback. */
+async function buildProductImages(
+  payload: Payload,
+  row: (typeof CATALOG_PRODUCTS)[number],
+): Promise<ProductImageRow[]> {
+  const galleryAlts: readonly string[] = (row as { galleryAlts?: readonly string[] }).galleryAlts ?? []
+  const images = await buildProductImagesFromAlts(payload, galleryAlts, row.name)
+
+  if (images.length === 0) {
+    const mediaId = await ensureMediaId(payload, row.mediaIndex)
+    images.push({ image: mediaId, alt: CATALOG_MEDIA[row.mediaIndex]?.alt ?? row.name })
+  }
+
+  return images
+}
+
+/** True when an existing product already uses the expected ImageKit gallery. */
+function hasExpectedGallery(
+  existingImages: Array<{ image?: unknown; alt?: string | null }> | null | undefined,
+  expected: ProductImageRow[],
+): boolean {
+  if (!existingImages || existingImages.length !== expected.length) return false
+  const existingAlts = existingImages.map((i) => i.alt ?? '')
+  return expected.every((e, idx) => existingAlts[idx] === e.alt)
 }
 
 /** Categories + demo products (same behaviour as GET /api/seed-products). */
@@ -46,8 +76,47 @@ export async function runProductCatalogSeed(
         depth: 0,
         overrideAccess: true,
       })
+
+      const rowExtras = row as {
+        useCases?: readonly string[]
+        certifications?: readonly string[]
+      }
+
       if (existing.docs[0]) {
-        results.push({ kind: 'product', slug: row.slug, status: 'skipped', id: existing.docs[0].id })
+        // Product exists — refresh its gallery if it still uses legacy
+        // (Unsplash) images or an out-of-date alt list, and backfill the
+        // PLP filter facets (useCases / certifications) when missing.
+        const doc = existing.docs[0] as unknown as {
+          id: string | number
+          images?: Array<{ image?: unknown; alt?: string | null }>
+          useCases?: string[] | null
+          certifications?: string[] | null
+        }
+        const expected = await buildProductImages(payload, row)
+        const galleryOk = hasExpectedGallery(doc.images, expected)
+        const facetsOk =
+          (!rowExtras.useCases?.length || (doc.useCases?.length ?? 0) > 0) &&
+          (!rowExtras.certifications?.length || (doc.certifications?.length ?? 0) > 0)
+
+        if (galleryOk && facetsOk) {
+          results.push({ kind: 'product', slug: row.slug, status: 'skipped', id: doc.id })
+        } else {
+          await payload.update({
+            collection: 'products',
+            id: doc.id,
+            data: {
+              ...(galleryOk ? {} : { images: expected }),
+              ...(doc.useCases?.length || !rowExtras.useCases?.length
+                ? {}
+                : { useCases: [...rowExtras.useCases] }),
+              ...(doc.certifications?.length || !rowExtras.certifications?.length
+                ? {}
+                : { certifications: [...rowExtras.certifications] }),
+            } as Record<string, unknown>,
+            overrideAccess: true,
+          })
+          results.push({ kind: 'product', slug: row.slug, status: 'updated', id: doc.id })
+        }
         continue
       }
 
@@ -62,12 +131,11 @@ export async function runProductCatalogSeed(
         continue
       }
 
-      const mediaId = await ensureMediaId(payload, row.mediaIndex)
+      const images = await buildProductImages(payload, row)
 
       await payload.create({
         collection: 'products',
         overrideAccess: true,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data: {
           name: row.name,
           slug: row.slug,
@@ -85,10 +153,14 @@ export async function runProductCatalogSeed(
           bestSeller: row.bestSeller,
           status: 'published',
           meta: row.meta,
-          batch: row.batch,
           benefits: [...row.benefits],
           variants: row.variants.map((v) => ({ ...v })),
-          images: [{ image: mediaId, alt: CATALOG_MEDIA[row.mediaIndex]?.alt ?? row.name }],
+          images,
+          ...(rowExtras.useCases?.length ? { useCases: [...rowExtras.useCases] } : {}),
+          ...(rowExtras.certifications?.length
+            ? { certifications: [...rowExtras.certifications] }
+            : {}),
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
       })
 

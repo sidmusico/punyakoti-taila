@@ -108,7 +108,7 @@ export const SiteSettings: GlobalConfig = {
               label: 'Footer — Shop column',
               defaultValue: [
                 { label: 'All Oils', href: '/shop' },
-                { label: 'Cooking Oils', href: '/shop?category=cooking' },
+                { label: 'Cooking Oils', href: '/shop?category=cooking-oils' },
                 { label: 'Wellness', href: '/shop?category=wellness' },
                 { label: 'Gift Sets', href: '/shop?category=gift-sets' },
               ],

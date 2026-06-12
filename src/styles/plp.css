@@ -9,11 +9,13 @@
 }
 
 /* ── Breadcrumb + hero ────────────────────────────────────────────────── */
+/* Tight top rhythm: hero + chips + first product row should fit the fold.
+   Horizontal gutters come from the shared .pt-page-container class. */
 .plp-head {
-  padding: 40px 80px 0;
+  /* No padding-top: the shared Breadcrumb brings its own pt-3, matching the PDP. */
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 10px;
 }
 
 .plp-breadcrumb {
@@ -40,11 +42,11 @@
 .plp-hero__title {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: 64px;
+  font-size: 48px;
   line-height: 1;
   letter-spacing: -0.02em;
   color: var(--green-900);
-  margin: 12px 0 0;
+  margin: 6px 0 0;
 }
 
 .plp-hero__title em {
@@ -70,7 +72,7 @@
 
 /* ── Category chips bar ───────────────────────────────────────────────── */
 .plp-chips {
-  padding: 32px 80px 0;
+  padding-top: 16px;
   display: flex;
   gap: 10px;
   overflow-x: auto;
@@ -78,7 +80,8 @@
 
 /* ── Layout: rail + grid ──────────────────────────────────────────────── */
 .plp-body {
-  padding: 32px 80px 80px;
+  padding-top: 20px;
+  padding-bottom: 80px;
   display: grid;
   grid-template-columns: 260px 1fr;
   gap: 56px;
@@ -551,9 +554,8 @@
   min-width: 0;
 }
 
+/* Layout lives on the component (Tailwind utilities); this only spaces it from the grid. */
 .plp-load-more {
-  display: flex;
-  justify-content: center;
   margin-top: 48px;
 }
 
@@ -575,28 +577,16 @@
 
 /* ── Responsive: tablet ──────────────────────────────────────────────── */
 @media (max-width: 1200px) {
-  .plp-head,
-  .plp-chips,
-  .plp-body {
-    padding-left: 40px;
-    padding-right: 40px;
-  }
   .plp-body {
     grid-template-columns: 220px 1fr;
     gap: 36px;
   }
   .plp-hero__title {
-    font-size: 52px;
+    font-size: 42px;
   }
 }
 
 @media (max-width: 960px) {
-  .plp-head,
-  .plp-chips,
-  .plp-body {
-    padding-left: 28px;
-    padding-right: 28px;
-  }
   .plp-body {
     grid-template-columns: 1fr;
     gap: 24px;
@@ -612,7 +602,7 @@
     gap: 12px;
   }
   .plp-hero__title {
-    font-size: 44px;
+    font-size: 38px;
   }
   .plp-toolbar {
     display: none;
@@ -675,14 +665,14 @@
 /* ── Responsive: mobile ──────────────────────────────────────────────── */
 @media (max-width: 640px) {
   .plp-head {
-    padding: 24px 16px 0;
-    gap: 12px;
+    gap: 8px;
   }
   .plp-chips {
-    padding: 16px 16px 0;
+    padding-top: 12px;
   }
   .plp-body {
-    padding: 16px 16px 56px;
+    padding-top: 16px;
+    padding-bottom: 56px;
   }
   .plp-hero__title {
     font-size: 34px;

@@ -72,6 +72,7 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    customers: Customer;
     products: Product;
     orders: Order;
     reviews: Review;
@@ -99,6 +100,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    customers: CustomersSelect<false> | CustomersSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     reviews: ReviewsSelect<false> | ReviewsSelect<true>;
@@ -129,6 +131,7 @@ export interface Config {
     cart: Cart;
     account: Account;
     'order-success': OrderSuccess;
+    'newsletter-popup': NewsletterPopup;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
@@ -140,6 +143,7 @@ export interface Config {
     cart: CartSelect<false> | CartSelect<true>;
     account: AccountSelect<false> | AccountSelect<true>;
     'order-success': OrderSuccessSelect<false> | OrderSuccessSelect<true>;
+    'newsletter-popup': NewsletterPopupSelect<false> | NewsletterPopupSelect<true>;
   };
   locale: null;
   widgets: {
@@ -462,7 +466,7 @@ export interface Media {
   id: number;
   alt?: string | null;
   /**
-   * Sub-folder under /punyakoti-taila. Type a new name to create it on upload. Existing: brand, collections, gifting, home, ingredients, others, process, products, products/achaar-pickles, products/all-oils, products/almond-oil, products/castor-oil, products/coconut-oil, products/dant-manjan, products/dhoop-batti, products/gomutra-ark, products/groundnut-oil, products/real-photos, products/safflower-oil, products/sesame-oil, store, ui-mockups, ui-mockups/claude, ui-mockups/stitch
+   * Sub-folder under /punyakoti-taila. Type a new name to create it on upload. Existing: brand, collections, food, gifting, home, ingredients, others, people, process, products, products/achaar-pickles, products/all-oils, products/almond-oil, products/castor-oil, products/coconut-oil, products/dant-manjan, products/dhoop-batti, products/gomutra-ark, products/groundnut-oil, products/real-photos, products/safflower-oil, products/sesame-oil, store, ui-mockups, ui-mockups/claude, ui-mockups/stitch, wellness
    */
   imagekitFolder?: string | null;
   caption?: {
@@ -770,24 +774,6 @@ export interface Product {
         id?: string | null;
       }[]
     | null;
-  batch?: {
-    batchNumber?: string | null;
-    pressDate?: string | null;
-    bestBefore?: string | null;
-    /**
-     * e.g. < 40°C
-     */
-    pressTemperature?: string | null;
-    /**
-     * e.g. 32% (cold-press standard)
-     */
-    yield?: string | null;
-    /**
-     * e.g. Erode, Tamil Nadu
-     */
-    farmLocation?: string | null;
-    labReportUrl?: string | null;
-  };
   benefits?:
     | {
         title: string;
@@ -1151,6 +1137,27 @@ export interface Form {
   createdAt: string;
 }
 /**
+ * Storefront accounts (synced from Supabase Auth).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers".
+ */
+export interface Customer {
+  id: number;
+  supabaseUserId: string;
+  name?: string | null;
+  email?: string | null;
+  /**
+   * e.g. +919876543210
+   */
+  phone?: string | null;
+  avatarUrl?: string | null;
+  authProvider?: ('phone' | 'google' | 'email') | null;
+  lastSignInAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Customer orders. Created programmatically via checkout API.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1164,7 +1171,7 @@ export interface Order {
   orderId: string;
   razorpayOrderId?: string | null;
   razorpayPaymentId?: string | null;
-  customer?: (number | null) | User;
+  customer?: (number | null) | Customer;
   customerName: string;
   customerEmail: string;
   customerPhone?: string | null;
@@ -1242,9 +1249,13 @@ export interface Testimonial {
   id: number;
   customerName: string;
   /**
-   * e.g. "Bangalore" or "Chennai, Tamil Nadu"
+   * e.g. "Bangalore · Sesame · 6 orders"
    */
   customerLocation?: string | null;
+  /**
+   * Portrait shown on the homepage testimonial card
+   */
+  photo?: (number | null) | Media;
   rating: number;
   /**
    * Short compelling title for the review card
@@ -1507,6 +1518,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'users';
         value: number | User;
+      } | null)
+    | ({
+        relationTo: 'customers';
+        value: number | Customer;
       } | null)
     | ({
         relationTo: 'products';
@@ -2069,6 +2084,21 @@ export interface UsersSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "customers_select".
+ */
+export interface CustomersSelect<T extends boolean = true> {
+  supabaseUserId?: T;
+  name?: T;
+  email?: T;
+  phone?: T;
+  avatarUrl?: T;
+  authProvider?: T;
+  lastSignInAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products_select".
  */
 export interface ProductsSelect<T extends boolean = true> {
@@ -2110,17 +2140,6 @@ export interface ProductsSelect<T extends boolean = true> {
         stock?: T;
         isDefault?: T;
         id?: T;
-      };
-  batch?:
-    | T
-    | {
-        batchNumber?: T;
-        pressDate?: T;
-        bestBefore?: T;
-        pressTemperature?: T;
-        yield?: T;
-        farmLocation?: T;
-        labReportUrl?: T;
       };
   benefits?:
     | T
@@ -2226,6 +2245,7 @@ export interface ReviewsSelect<T extends boolean = true> {
 export interface TestimonialsSelect<T extends boolean = true> {
   customerName?: T;
   customerLocation?: T;
+  photo?: T;
   rating?: T;
   title?: T;
   body?: T;
@@ -2748,8 +2768,6 @@ export interface HomepageSetting {
      * Hero side image (optional). Renders alongside the SVG bottle if set.
      */
     image?: (number | null) | Media;
-    batchCaptionLeft?: string | null;
-    batchCaptionRight?: string | null;
     pressWeekKicker?: string | null;
     pressWeekTitle?: string | null;
     backgroundStyle?: ('cream' | 'dark-green' | 'warm-white') | null;
@@ -2929,6 +2947,10 @@ export interface HomepageSetting {
       label?: string | null;
       href?: string | null;
     };
+    /**
+     * Six oils in display order (sesame → coconut → groundnut → mustard → sunflower → black sesame). Uses each product’s Payload gallery / ImageKit image.
+     */
+    products?: (number | Product)[] | null;
   };
   testimonialsBandEnabled?: boolean | null;
   testimonialsBand?: {
@@ -2940,6 +2962,7 @@ export interface HomepageSetting {
       | {
           customerName: string;
           customerLocation?: string | null;
+          photo?: (number | null) | Media;
           initials?: string | null;
           rating?: number | null;
           title?: string | null;
@@ -2963,6 +2986,10 @@ export interface HomepageSetting {
           title: string;
           read?: string | null;
           slug: string;
+          /**
+           * Editorial photo for the journal card (falls back to gradient if empty)
+           */
+          image?: (number | null) | Media;
           toneA?: string | null;
           toneB?: string | null;
           id?: string | null;
@@ -3085,11 +3112,6 @@ export interface ProductDetail {
           id?: string | null;
         }[]
       | null;
-    batchBadge?: string | null;
-    labelPressDate?: string | null;
-    labelTemperature?: string | null;
-    labelYield?: string | null;
-    labelOrigin?: string | null;
     shippingBullets?:
       | {
           icon?: ('leaf' | 'drop' | 'truck' | 'shield' | 'package' | 'star') | null;
@@ -3300,6 +3322,75 @@ export interface OrderSuccess {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletter-popup".
+ */
+export interface NewsletterPopup {
+  id: number;
+  /**
+   * Master switch — untick to hide the popup everywhere.
+   */
+  enabled?: boolean | null;
+  /**
+   * Seconds after page load before the popup appears.
+   */
+  delaySeconds?: number | null;
+  /**
+   * Days to wait before showing again after a visitor dismisses it. Subscribers never see it again.
+   */
+  snoozeDays?: number | null;
+  panel?: {
+    kickerLine?: string | null;
+    title?: string | null;
+    /**
+     * Part of the title rendered in italic mustard.
+     */
+    titleItalic?: string | null;
+    /**
+     * Optional photo. When empty, the illustrated bottle is shown.
+     */
+    image?: (number | null) | Media;
+    /**
+     * Bottle illustration used when no photo is set.
+     */
+    bottleVariant?: ('sesame' | 'coconut' | 'groundnut' | 'mustard' | 'sunflower' | 'blackSes' | 'castor') | null;
+    footerLeft?: string | null;
+    footerRight?: string | null;
+  };
+  content?: {
+    eyebrow?: string | null;
+    headlinePre?: string | null;
+    /**
+     * Rendered in italic mustard.
+     */
+    headlineItalic?: string | null;
+    headlinePost?: string | null;
+    body?: string | null;
+    bullets?:
+      | {
+          icon?: ('leaf' | 'mail' | 'shield' | 'check' | 'drop' | 'star') | null;
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    emailLabel?: string | null;
+    emailPlaceholder?: string | null;
+    ctaLabel?: string | null;
+    privacyPrefix?: string | null;
+    privacyLinkLabel?: string | null;
+    privacyHref?: string | null;
+    privacySuffix?: string | null;
+    dismissLabel?: string | null;
+    successTitle?: string | null;
+    /**
+     * Use {email} to interpolate the subscribed address.
+     */
+    successBody?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -3490,8 +3581,6 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
         reviewCount?: T;
         bottleVariant?: T;
         image?: T;
-        batchCaptionLeft?: T;
-        batchCaptionRight?: T;
         pressWeekKicker?: T;
         pressWeekTitle?: T;
         backgroundStyle?: T;
@@ -3674,6 +3763,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
               label?: T;
               href?: T;
             };
+        products?: T;
       };
   testimonialsBandEnabled?: T;
   testimonialsBand?:
@@ -3688,6 +3778,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
           | {
               customerName?: T;
               customerLocation?: T;
+              photo?: T;
               initials?: T;
               rating?: T;
               title?: T;
@@ -3715,6 +3806,7 @@ export interface HomepageSettingsSelect<T extends boolean = true> {
               title?: T;
               read?: T;
               slug?: T;
+              image?: T;
               toneA?: T;
               toneB?: T;
               id?: T;
@@ -3811,11 +3903,6 @@ export interface ProductDetailSelect<T extends boolean = true> {
               label?: T;
               id?: T;
             };
-        batchBadge?: T;
-        labelPressDate?: T;
-        labelTemperature?: T;
-        labelYield?: T;
-        labelOrigin?: T;
         shippingBullets?:
           | T
           | {
@@ -3962,6 +4049,55 @@ export interface OrderSuccessSelect<T extends boolean = true> {
         heroImageCaptionLeft?: T;
         heroImageCaptionRight?: T;
         celebrationImage?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletter-popup_select".
+ */
+export interface NewsletterPopupSelect<T extends boolean = true> {
+  enabled?: T;
+  delaySeconds?: T;
+  snoozeDays?: T;
+  panel?:
+    | T
+    | {
+        kickerLine?: T;
+        title?: T;
+        titleItalic?: T;
+        image?: T;
+        bottleVariant?: T;
+        footerLeft?: T;
+        footerRight?: T;
+      };
+  content?:
+    | T
+    | {
+        eyebrow?: T;
+        headlinePre?: T;
+        headlineItalic?: T;
+        headlinePost?: T;
+        body?: T;
+        bullets?:
+          | T
+          | {
+              icon?: T;
+              text?: T;
+              id?: T;
+            };
+        emailLabel?: T;
+        emailPlaceholder?: T;
+        ctaLabel?: T;
+        privacyPrefix?: T;
+        privacyLinkLabel?: T;
+        privacyHref?: T;
+        privacySuffix?: T;
+        dismissLabel?: T;
+        successTitle?: T;
+        successBody?: T;
       };
   updatedAt?: T;
   createdAt?: T;

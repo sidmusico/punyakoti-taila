@@ -40,7 +40,9 @@ export const useCartStore = create<CartState>()(
       isOpen: false,
 
       addItem: (incoming) => {
-        const id = `${incoming.productId}-${incoming.variantSize}`
+        // Subscription and one-time purchases of the same variant are
+        // different line items (different price + fulfilment) — never merge.
+        const id = `${incoming.productId}-${incoming.variantSize}${incoming.isSubscription ? '-sub' : ''}`
         set((state) => {
           const existing = state.items.find((i) => i.id === id)
           if (existing) {

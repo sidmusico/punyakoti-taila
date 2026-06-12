@@ -41,7 +41,7 @@ export const Orders: CollectionConfig = {
     {
       name: 'customer',
       type: 'relationship',
-      relationTo: 'users',
+      relationTo: 'customers',
       label: 'Customer (registered)',
     },
     {

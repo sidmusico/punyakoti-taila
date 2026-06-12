@@ -44,11 +44,6 @@ export const productDetailSeedDefaults = {
       { sizeValue: '1L', label: '1 L' },
       { sizeValue: '5L', label: '5 L' },
     ],
-    batchBadge: 'Current batch',
-    labelPressDate: 'Press date',
-    labelTemperature: 'Temperature',
-    labelYield: 'Yield',
-    labelOrigin: 'Origin',
     shippingBullets: [
       { icon: 'truck', text: 'Free shipping on orders above ₹999' },
       { icon: 'package', text: 'Dispatched within 24 hours · Delivered in 3–5 days' },
@@ -160,6 +155,43 @@ export const orderSuccessSeedDefaults = {
     viewOrdersLabel: 'View my orders',
     heroImageCaptionLeft: '',
     heroImageCaptionRight: '',
+  },
+} as const
+
+/** Defaults for the `newsletter-popup` global — pure subscription pitch, no press/origin info. */
+export const newsletterPopupSeedDefaults = {
+  enabled: true,
+  delaySeconds: 6,
+  snoozeDays: 7,
+  panel: {
+    kickerLine: 'Punyakoti Taila',
+    title: 'Goodness, bottled.',
+    titleItalic: 'bottled.',
+    bottleVariant: 'sesame',
+    footerLeft: 'Pure tradition',
+    footerRight: 'Pure goodness',
+  },
+  content: {
+    eyebrow: 'Join the family',
+    headlinePre: 'Fifteen',
+    headlineItalic: 'percent off,',
+    headlinePost: 'your first order.',
+    body: 'A short newsletter with member-only offers, new arrivals, and simple recipes — plus a 15% discount code for your first order.',
+    bullets: [
+      { icon: 'star', text: 'Member-only offers & early access' },
+      { icon: 'mail', text: 'One short email a fortnight — no spam' },
+      { icon: 'shield', text: 'Unsubscribe anytime, in one click' },
+    ],
+    emailLabel: 'Email',
+    emailPlaceholder: 'your@kitchen.in',
+    ctaLabel: 'Get my code',
+    privacyPrefix: 'By subscribing you agree to our',
+    privacyLinkLabel: 'privacy policy',
+    privacyHref: '/privacy',
+    privacySuffix: "We won't sell your address.",
+    dismissLabel: 'No thanks, keep shopping',
+    successTitle: 'Check your inbox.',
+    successBody: 'Your code is on its way to {email}.',
   },
 } as const
 

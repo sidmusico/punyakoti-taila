@@ -233,53 +233,6 @@ export const Products: CollectionConfig = {
       ],
     },
 
-    // ── Batch / provenance ──────────────────────────────────────
-    {
-      name: 'batch',
-      type: 'group',
-      label: 'Batch & provenance',
-      fields: [
-        {
-          name: 'batchNumber',
-          type: 'text',
-          label: 'Batch #',
-        },
-        {
-          name: 'pressDate',
-          type: 'date',
-          label: 'Press date',
-        },
-        {
-          name: 'bestBefore',
-          type: 'date',
-          label: 'Best before',
-        },
-        {
-          name: 'pressTemperature',
-          type: 'text',
-          label: 'Press temperature',
-          admin: { description: 'e.g. < 40°C' },
-        },
-        {
-          name: 'yield',
-          type: 'text',
-          label: 'Oil yield',
-          admin: { description: 'e.g. 32% (cold-press standard)' },
-        },
-        {
-          name: 'farmLocation',
-          type: 'text',
-          label: 'Farm / origin location',
-          admin: { description: 'e.g. Erode, Tamil Nadu' },
-        },
-        {
-          name: 'labReportUrl',
-          type: 'text',
-          label: 'Lab report URL',
-        },
-      ],
-    },
-
     // ── Health & nutrition ──────────────────────────────────────
     {
       name: 'benefits',

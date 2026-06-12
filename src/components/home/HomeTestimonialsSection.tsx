@@ -1,10 +1,11 @@
 import React from 'react'
 
 import { FALLBACK_TESTIMONIALS } from '@/components/home/home-constants'
-import { PtAvatarInitials, type PtAvatarTone } from '@/components/ui/pt/PtAvatarInitials'
+import { TestimonialsRail } from '@/components/home/TestimonialsRail'
 import { PtEyebrow } from '@/components/ui/pt/PtEyebrow'
-import { PtStars } from '@/components/ui/pt/PtStars'
-import type { HomepageSetting, Testimonial } from '@/payload-types'
+import type { PtAvatarTone } from '@/components/ui/pt/PtAvatarInitials'
+import { resolveMediaAlt, resolveMediaUrl } from '@/utilities/mediaUrl'
+import type { HomepageSetting, Media, Testimonial } from '@/payload-types'
 
 export type TestimonialBandRow = {
   id: string | number
@@ -14,6 +15,8 @@ export type TestimonialBandRow = {
   customerLocation: string
   initials: string
   avatarTone: PtAvatarTone
+  photoUrl?: string | null
+  photoAlt?: string
 }
 
 function initialsFromName(name: string) {
@@ -21,19 +24,31 @@ function initialsFromName(name: string) {
   return `${parts[0]?.[0] ?? '?'}${parts[1]?.[0] ?? ''}`
 }
 
+function photoFromManualItem(photo: string | number | Media | null | undefined) {
+  return {
+    photoUrl: resolveMediaUrl(photo),
+    photoAlt: resolveMediaAlt(photo, ''),
+  }
+}
+
 export function mapManualHomeTestimonials(
   items: NonNullable<NonNullable<HomepageSetting['testimonialsBand']>['manualItems']>,
 ): TestimonialBandRow[] {
   const tones: PtAvatarTone[] = ['warm', 'deep', 'sun']
-  return (items ?? []).map((m, i) => ({
-    id: m.id ?? `manual-${i}`,
-    rating: m.rating ?? 5,
-    body: m.body,
-    customerName: m.customerName,
-    customerLocation: m.customerLocation ?? '',
-    initials: m.initials?.trim() ? m.initials : initialsFromName(m.customerName),
-    avatarTone: tones[i % 3],
-  }))
+  return (items ?? []).map((m, i) => {
+    const { photoUrl, photoAlt } = photoFromManualItem(m.photo)
+    return {
+      id: m.id ?? `manual-${i}`,
+      rating: m.rating ?? 5,
+      body: m.body,
+      customerName: m.customerName,
+      customerLocation: m.customerLocation ?? '',
+      initials: m.initials?.trim() ? m.initials : initialsFromName(m.customerName),
+      avatarTone: tones[i % 3]!,
+      photoUrl,
+      photoAlt: photoAlt || m.customerName,
+    }
+  })
 }
 
 function testimonialRows(
@@ -49,12 +64,15 @@ function testimonialRows(
       customerLocation: t.customerLocation,
       initials: t.initials,
       avatarTone: t.avatarTone,
+      photoUrl: t.photoUrl,
+      photoAlt: t.photoAlt,
     }))
   }
   const tones: PtAvatarTone[] = ['warm', 'deep', 'sun']
   return testimonials.map((t, i) => {
     const parts = (t.customerName ?? '').split(/\s+/)
     const initials = `${parts[0]?.[0] ?? '?'}${parts[1]?.[0] ?? ''}`
+    const { photoUrl, photoAlt } = photoFromManualItem(t.photo)
     return {
       id: t.id,
       rating: t.rating ?? 5,
@@ -62,7 +80,9 @@ function testimonialRows(
       customerName: t.customerName ?? '',
       customerLocation: t.customerLocation ?? '',
       initials,
-      avatarTone: tones[i % 3],
+      avatarTone: tones[i % 3]!,
+      photoUrl,
+      photoAlt: photoAlt || (t.customerName ?? ''),
     }
   })
 }
@@ -106,21 +126,7 @@ export function HomeTestimonialsSection({
             {headline}
           </p>
         ) : null}
-        <div className="testimonials-grid hp-testimonials-grid">
-          {rows.map((t) => (
-            <figure key={t.id} className="hp-testimonial">
-              <div className="hp-testimonial__thumb">
-                <PtAvatarInitials initials={t.initials} tone={t.avatarTone} size={160} />
-              </div>
-              <figcaption className="hp-testimonial__cap">
-                <div className="hp-testimonial__name">{t.customerName}</div>
-                <div className="pt-mono-stamp hp-testimonial__loc">{t.customerLocation}</div>
-              </figcaption>
-              <PtStars value={t.rating} size={12} />
-              <blockquote className="hp-testimonial__quote">&ldquo;{t.body}&rdquo;</blockquote>
-            </figure>
-          ))}
-        </div>
+        <TestimonialsRail items={rows} />
       </div>
     </section>
   )

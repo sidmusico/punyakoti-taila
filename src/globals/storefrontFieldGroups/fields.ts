@@ -180,17 +180,6 @@ export const pdpFields: Field[] = [
             ],
           },
           {
-            label: 'Batch card',
-            description: 'Labels for the provenance / batch panel',
-            fields: [
-              { name: 'batchBadge', type: 'text', defaultValue: 'Current batch' },
-              { name: 'labelPressDate', type: 'text', defaultValue: 'Press date' },
-              { name: 'labelTemperature', type: 'text', defaultValue: 'Temperature' },
-              { name: 'labelYield', type: 'text', defaultValue: 'Yield' },
-              { name: 'labelOrigin', type: 'text', defaultValue: 'Origin' },
-            ],
-          },
-          {
             label: 'Shipping',
             fields: [
               {

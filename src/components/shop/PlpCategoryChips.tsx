@@ -15,7 +15,7 @@ export function PlpCategoryChips({
   chipCategories: Category[]
 }) {
   return (
-    <div className="plp-chips pt-noscroll">
+    <div className="plp-chips pt-page-container pt-noscroll">
       <PlpQueryLink
         href={buildHref(filters, { cat: '', page: 1 })}
         className={cn('pt-chip', !filters.cat && 'pt-chip--active')}

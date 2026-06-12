@@ -6,10 +6,11 @@ import { runPlpCatalogSeed } from '@/seed/runPlpCatalogSeed'
 import { runProductCatalogSeed } from '@/seed/runProductCatalogSeed'
 import { runSitePagesSeed } from '@/seed/runSitePagesSeed'
 import { runStorefrontGlobalsSeed } from '@/seed/runStorefrontGlobalsSeed'
+import { runTestimonialsSeed } from '@/seed/runTestimonialsSeed'
 
 export type FullSeedStep = {
   step: string
-  summary: { total: number; created: number; skipped: number; errors: number }
+  summary: { total: number; created: number; updated: number; skipped: number; errors: number }
   results: unknown[]
 }
 
@@ -17,6 +18,7 @@ function summarize(rows: { status: string }[]) {
   return {
     total: rows.length,
     created: rows.filter((r) => r.status === 'created').length,
+    updated: rows.filter((r) => r.status === 'updated').length,
     skipped: rows.filter((r) => r.status === 'skipped').length,
     errors: rows.filter((r) => r.status === 'error').length,
   }
@@ -65,6 +67,13 @@ export async function runFullSiteSeed(payload: Payload): Promise<{ steps: FullSe
     step: 'pages',
     summary: summarize(pages.results),
     results: pages.results,
+  })
+
+  const testimonials = await runTestimonialsSeed(payload)
+  steps.push({
+    step: 'testimonials',
+    summary: summarize(testimonials.results),
+    results: testimonials.results,
   })
 
   const globals = await runStorefrontGlobalsSeed(payload)

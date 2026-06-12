@@ -15,7 +15,7 @@ const DEFAULT_FAQ = [
   {
     question: 'Is this organic-certified?',
     answer:
-      'Our farms are USDA-NOP and India-Organic certified. We publish lab tests for each batch on the product page.',
+      'Our farms are USDA-NOP and India-Organic certified. We publish lab reports for every oil on the product page.',
   },
   {
     question: "What does 'kachi ghani' mean?",

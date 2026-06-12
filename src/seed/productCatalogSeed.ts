@@ -1,7 +1,11 @@
 /**
  * Sample catalog for `GET /api/seed-products`.
- * Images: Unsplash (https://unsplash.com/license) — hotlinked only during seeding;
- * Payload stores copies under `public/media`.
+ *
+ * Images: each product lists `galleryAlts` — Payload Media alts in the
+ * `<folder>/<file-stem>` format produced by `runImageKitMediaSeed` from the
+ * repo `assets/products/**` mirror on ImageKit (see `imagekitCatalog.generated.ts`).
+ * `CATALOG_MEDIA` (Unsplash) is kept only as a last-resort fallback when an
+ * ImageKit alt cannot be resolved.
  */
 export const CATALOG_CATEGORIES = [
   { slug: 'cooking-oils', title: 'Cooking oils' },
@@ -50,18 +54,19 @@ export const CATALOG_PRODUCTS = [
     featured: true,
     bestSeller: true,
     mediaIndex: 0,
+    galleryAlts: [
+      'sesame-oil/pour-brass-bowl-wide',
+      'sesame-oil/pour-closeup',
+      'sesame-oil/flat-lay-handmade-paper',
+    ],
+    useCases: ['daily-cooking', 'tempering'],
+    certifications: ['single-origin', 'india-organic'],
     variants: [
       { size: '250ml' as const, sku: 'PT-SES-250', price: 220, mrp: 260, subscribePrice: 187, stock: 80, isDefault: false },
       { size: '500ml' as const, sku: 'PT-SES-500', price: 420, mrp: 480, subscribePrice: 357, stock: 120, isDefault: true },
       { size: '1L' as const, sku: 'PT-SES-1L', price: 780, mrp: 900, subscribePrice: 663, stock: 40, isDefault: false },
       { size: '5L' as const, sku: 'PT-SES-5L', price: 3600, mrp: 4100, subscribePrice: 3060, stock: 12, isDefault: false },
     ],
-    batch: {
-      batchNumber: 'SES-24-B',
-      pressTemperature: '< 40°C',
-      yield: '32%',
-      farmLocation: 'Erode, Tamil Nadu',
-    },
     benefits: [
       { title: 'Natural antioxidants', description: 'Sesamol and sesamin from cold pressing.', icon: 'shield' as const },
       { title: 'Heart-friendly fats', description: 'Balanced PUFA/MUFA when used in rotation.', icon: 'heart' as const },
@@ -86,17 +91,20 @@ export const CATALOG_PRODUCTS = [
     featured: true,
     bestSeller: false,
     mediaIndex: 1,
+    galleryAlts: [
+      'coconut-oil/hero-jar-coconuts',
+      'coconut-oil/natural-light-window',
+      'coconut-oil/lifestyle-hand',
+      'coconut-oil/texture-macro',
+      'coconut-oil/wellness-spa',
+    ],
+    useCases: ['daily-cooking', 'hair-body'],
+    certifications: ['single-origin'],
     variants: [
       { size: '250ml' as const, sku: 'PT-COC-250', price: 260, mrp: 300, subscribePrice: 221, stock: 60, isDefault: false },
       { size: '500ml' as const, sku: 'PT-COC-500', price: 480, mrp: 540, subscribePrice: 408, stock: 90, isDefault: true },
       { size: '1L' as const, sku: 'PT-COC-1L', price: 920, mrp: 1040, subscribePrice: 782, stock: 35, isDefault: false },
     ],
-    batch: {
-      batchNumber: 'COC-24-K',
-      pressTemperature: '< 38°C',
-      yield: '36%',
-      farmLocation: 'Kollam, Kerala',
-    },
     benefits: [
       { title: 'Lauric acid', description: 'Naturally present in virgin coconut oil.', icon: 'leaf' as const },
       { title: 'Stable for cooking', description: 'Suits everyday Indian cooking styles.', icon: 'drop' as const },
@@ -120,17 +128,19 @@ export const CATALOG_PRODUCTS = [
     featured: false,
     bestSeller: true,
     mediaIndex: 2,
+    galleryAlts: [
+      'groundnut-oil/hero-cork-bottle',
+      'groundnut-oil/hero-stone-peanuts',
+      'groundnut-oil/clean-white-marble',
+      'groundnut-oil/lifestyle-kitchen',
+    ],
+    useCases: ['daily-cooking', 'tempering'],
+    certifications: ['india-organic'],
     variants: [
       { size: '500ml' as const, sku: 'PT-GN-500', price: 380, mrp: 430, subscribePrice: 323, stock: 100, isDefault: true },
       { size: '1L' as const, sku: 'PT-GN-1L', price: 720, mrp: 820, subscribePrice: 612, stock: 55, isDefault: false },
       { size: '5L' as const, sku: 'PT-GN-5L', price: 3400, mrp: 3900, subscribePrice: 2890, stock: 15, isDefault: false },
     ],
-    batch: {
-      batchNumber: 'GN-24-R',
-      pressTemperature: '< 40°C',
-      yield: '38%',
-      farmLocation: 'Raichur, Karnataka',
-    },
     benefits: [{ title: 'High smoke point', description: 'Great for Indian frying and roasting.', icon: 'shield' as const }],
     meta: { title: 'Wood-pressed groundnut oil', description: 'Karnataka groundnut, wood-pressed, unrefined.' },
   },
@@ -151,17 +161,14 @@ export const CATALOG_PRODUCTS = [
     featured: false,
     bestSeller: false,
     mediaIndex: 3,
+    galleryAlts: ['all-oils/mustard-oil'],
+    useCases: ['tempering', 'daily-cooking'],
+    certifications: ['single-origin'],
     variants: [
       { size: '250ml' as const, sku: 'PT-MUS-250', price: 210, mrp: 245, subscribePrice: 178, stock: 70, isDefault: false },
       { size: '500ml' as const, sku: 'PT-MUS-500', price: 360, mrp: 410, subscribePrice: 306, stock: 85, isDefault: true },
       { size: '1L' as const, sku: 'PT-MUS-1L', price: 680, mrp: 780, subscribePrice: 578, stock: 30, isDefault: false },
     ],
-    batch: {
-      batchNumber: 'MUS-24-A',
-      pressTemperature: '< 40°C',
-      yield: '30%',
-      farmLocation: 'Alwar, Rajasthan',
-    },
     benefits: [{ title: 'Distinct aroma', description: 'Classic North & East Indian dishes.', icon: 'star' as const }],
     meta: { title: 'Kachi ghani mustard oil', description: 'Rajasthan mustard, wood-pressed.' },
   },
@@ -182,20 +189,117 @@ export const CATALOG_PRODUCTS = [
     featured: true,
     bestSeller: false,
     mediaIndex: 4,
+    galleryAlts: [
+      'castor-oil/hero-ayurvedic-tray',
+      'castor-oil/dropper-rustic',
+      'castor-oil/lifestyle-haircare',
+      'castor-oil/product-lineup-sizes',
+    ],
+    useCases: ['hair-body', 'ayurvedic'],
+    certifications: ['single-origin'],
     variants: [
       { size: '250ml' as const, sku: 'PT-CAS-250', price: 290, mrp: 340, subscribePrice: 246, stock: 45, isDefault: true },
       { size: '500ml' as const, sku: 'PT-CAS-500', price: 520, mrp: 600, subscribePrice: 442, stock: 30, isDefault: false },
     ],
-    batch: {
-      batchNumber: 'CAS-24-G',
-      pressTemperature: '< 35°C',
-      yield: '28%',
-      farmLocation: 'Saurashtra, Gujarat',
-    },
     benefits: [
       { title: 'Dense & nourishing', description: 'Traditional hair and skin routines.', icon: 'heart' as const },
       { title: 'Slow press', description: 'Mechanical extraction without solvents.', icon: 'leaf' as const },
     ],
     meta: { title: 'Cold-pressed castor oil · wellness', description: 'Wood-pressed castor from Gujarat.' },
+  },
+  {
+    slug: 'cold-pressed-safflower-vidarbha',
+    name: 'Cold-pressed safflower · Kardi',
+    oilVariant: 'sunflower' as const,
+    tag: 'Light & clean',
+    categorySlug: 'cooking-oils',
+    categoryType: 'cooking' as const,
+    tagline: 'Light golden kardi oil — neutral, high-linoleic, salad-friendly.',
+    description:
+      'Safflower (kardi) from Vidarbha, cold-pressed in small batches. Light body and a clean finish for everyday cooking and dressings.',
+    usageNote: 'Great for salads and light sauté; avoid prolonged deep frying.',
+    ratingDisplay: '4.7',
+    reviewsDisplay: '58 reviews',
+    ratingStars: 4,
+    featured: false,
+    bestSeller: false,
+    mediaIndex: 2,
+    galleryAlts: [
+      'safflower-oil/hero-copper-drip',
+      'safflower-oil/cinematic-drop-flower',
+      'safflower-oil/product-with-seeds',
+    ],
+    useCases: ['salad', 'daily-cooking'],
+    certifications: ['india-organic'],
+    variants: [
+      { size: '250ml' as const, sku: 'PT-SAF-250', price: 240, mrp: 280, subscribePrice: 204, stock: 50, isDefault: false },
+      { size: '500ml' as const, sku: 'PT-SAF-500', price: 440, mrp: 500, subscribePrice: 374, stock: 70, isDefault: true },
+      { size: '1L' as const, sku: 'PT-SAF-1L', price: 820, mrp: 940, subscribePrice: 697, stock: 25, isDefault: false },
+    ],
+    benefits: [
+      { title: 'Light & neutral', description: 'Lets ingredients speak — ideal for dressings.', icon: 'drop' as const },
+      { title: 'High linoleic acid', description: 'Naturally rich in PUFA from cold pressing.', icon: 'leaf' as const },
+    ],
+    meta: { title: 'Cold-pressed safflower (kardi) oil', description: 'Light Vidarbha kardi oil, cold-pressed.' },
+  },
+  {
+    slug: 'cold-pressed-almond-badam',
+    name: 'Cold-pressed almond · Badam',
+    oilVariant: 'groundnut' as const,
+    tag: 'Wellness',
+    categorySlug: 'wellness-oils',
+    categoryType: 'wellness' as const,
+    tagline: 'Sweet badam oil for skin, scalp, and winter nourishment.',
+    description:
+      'Sweet almonds pressed slowly without heat or solvents. A classic Ayurvedic carrier oil for face, hair, and baby massage.',
+    usageNote: 'External use; a few drops warm before massage. Patch-test first.',
+    ratingDisplay: '4.8',
+    reviewsDisplay: '67 reviews',
+    ratingStars: 5,
+    featured: false,
+    bestSeller: false,
+    mediaIndex: 4,
+    galleryAlts: ['almond-oil/hero-dropper'],
+    useCases: ['hair-body', 'ayurvedic'],
+    certifications: ['single-origin'],
+    variants: [
+      { size: '250ml' as const, sku: 'PT-ALM-250', price: 560, mrp: 640, subscribePrice: 476, stock: 35, isDefault: true },
+      { size: '500ml' as const, sku: 'PT-ALM-500', price: 1040, mrp: 1180, subscribePrice: 884, stock: 18, isDefault: false },
+    ],
+    benefits: [
+      { title: 'Vitamin E rich', description: 'Naturally occurring tocopherols for skin.', icon: 'shield' as const },
+      { title: 'Gentle carrier oil', description: 'Suits daily abhyanga and scalp care.', icon: 'heart' as const },
+    ],
+    meta: { title: 'Cold-pressed almond (badam) oil', description: 'Sweet almond oil, cold-pressed for wellness.' },
+  },
+  {
+    slug: 'stone-pressed-black-sesame',
+    name: 'Stone-pressed black sesame',
+    oilVariant: 'blackSes' as const,
+    tag: 'Limited',
+    categorySlug: 'infused-specialty',
+    categoryType: 'cooking' as const,
+    tagline: 'Deep, smoky black sesame — a small-batch specialty press.',
+    description:
+      'Rare black sesame pressed on stone in limited runs. Intense aroma for finishing, pickles, and traditional winter preparations.',
+    usageNote: 'Use sparingly as a finishing oil; pairs well with jaggery preparations.',
+    ratingDisplay: '4.9',
+    reviewsDisplay: '41 reviews',
+    ratingStars: 5,
+    featured: true,
+    bestSeller: false,
+    mediaIndex: 0,
+    galleryAlts: ['sesame-oil/hero-dark-moody', 'sesame-oil/heritage-dark-stone'],
+    useCases: ['tempering', 'ayurvedic'],
+    certifications: ['single-origin'],
+    variants: [
+      { size: '250ml' as const, sku: 'PT-BSES-250', price: 340, mrp: 390, subscribePrice: 289, stock: 25, isDefault: true },
+      { size: '500ml' as const, sku: 'PT-BSES-500', price: 640, mrp: 720, subscribePrice: 544, stock: 14, isDefault: false },
+    ],
+    benefits: [
+      { title: 'Small-batch press', description: 'Stone-pressed in limited seasonal runs.', icon: 'star' as const },
+      { title: 'Rich in lignans', description: 'Black sesame is dense in sesamin.', icon: 'leaf' as const },
+    ],
+    meta: { title: 'Stone-pressed black sesame oil', description: 'Limited-run black sesame, stone-pressed.' },
   },
 ] as const

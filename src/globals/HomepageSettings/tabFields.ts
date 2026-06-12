@@ -137,8 +137,6 @@ export const homepageTabsField: Field = {
               relationTo: 'media',
               admin: { description: 'Hero side image (optional). Renders alongside the SVG bottle if set.' },
             },
-            { name: 'batchCaptionLeft', type: 'text', defaultValue: 'Batch #047' },
-            { name: 'batchCaptionRight', type: 'text', defaultValue: 'Erode · Nov 2025' },
             { name: 'pressWeekKicker', type: 'text', defaultValue: 'Press of the week' },
             { name: 'pressWeekTitle', type: 'text', defaultValue: 'Sesame · Erode' },
             {
@@ -222,7 +220,7 @@ export const homepageTabsField: Field = {
             {
               name: 'body',
               type: 'text',
-              defaultValue: 'Pressed slowly on wooden ghanis. Bottled within 72 hours. Always single-batch.',
+              defaultValue: 'Pressed slowly on wooden ghanis. Bottled within 72 hours of pressing.',
             },
             { name: 'ctaLabel', type: 'text', defaultValue: 'Shop all' },
             { name: 'ctaHref', type: 'text', defaultValue: '/shop' },
@@ -288,7 +286,7 @@ export const homepageTabsField: Field = {
                 { name: 'href', type: 'text', defaultValue: '/about#press' },
               ],
             },
-            { name: 'mediaCaptionLeft', type: 'text', defaultValue: 'Batch #047 · 9-hour press' },
+            { name: 'mediaCaptionLeft', type: 'text', defaultValue: 'Wood-pressed · 9-hour press' },
             { name: 'mediaCaptionRight', type: 'text', defaultValue: 'Erode · Tamil Nadu' },
             {
               name: 'image',
@@ -549,6 +547,17 @@ export const homepageTabsField: Field = {
                 { name: 'href', type: 'text', defaultValue: '/shop' },
               ],
             },
+            {
+              name: 'products',
+              type: 'relationship',
+              relationTo: 'products',
+              hasMany: true,
+              maxRows: 6,
+              admin: {
+                description:
+                  'Six oils in display order (sesame → coconut → groundnut → mustard → sunflower → black sesame). Uses each product’s Payload gallery / ImageKit image.',
+              },
+            },
           ],
         },
       ],
@@ -582,6 +591,7 @@ export const homepageTabsField: Field = {
               fields: [
                 { name: 'customerName', type: 'text', required: true },
                 { name: 'customerLocation', type: 'text' },
+                { name: 'photo', type: 'upload', relationTo: 'media', label: 'Portrait' },
                 { name: 'initials', type: 'text' },
                 { name: 'rating', type: 'number', defaultValue: 5, min: 1, max: 5 },
                 { name: 'title', type: 'text' },
@@ -621,6 +631,13 @@ export const homepageTabsField: Field = {
                 { name: 'title', type: 'text', required: true },
                 { name: 'read', type: 'text', defaultValue: '6 min read' },
                 { name: 'slug', type: 'text', required: true },
+                {
+                  name: 'image',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Card image',
+                  admin: { description: 'Editorial photo for the journal card (falls back to gradient if empty)' },
+                },
                 { name: 'toneA', type: 'text', defaultValue: '#5A7B3E' },
                 { name: 'toneB', type: 'text', defaultValue: '#2E4222' },
               ],

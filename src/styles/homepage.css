@@ -158,15 +158,30 @@
   background: transparent;
 }
 
+.testimonials-grid__cell,
 .testimonials-grid > .hp-testimonial {
   flex: 0 0 clamp(260px, 30vw, 360px);
   scroll-snap-align: start;
 }
 
 @media (max-width: 900px) {
+  .testimonials-grid__cell,
   .testimonials-grid > .hp-testimonial {
-    flex-basis: 78vw;
+    flex-basis: min(78vw, 320px);
   }
+}
+
+.testimonials-rail {
+  margin-top: clamp(28px, 4vw, 44px);
+}
+
+.testimonials-rail--auto .testimonials-grid {
+  scroll-snap-type: none;
+  cursor: grab;
+}
+
+.testimonials-rail--auto .testimonials-grid:active {
+  cursor: grabbing;
 }
 
 .journal-grid {
@@ -834,6 +849,8 @@
   position: absolute;
   top: 16px;
   left: 16px;
+  /* stay above the photo (next/image fill creates its own stacking context) */
+  z-index: 2;
 }
 
 .hp-product-card__badge-slot--compact {
@@ -845,13 +862,30 @@
   position: absolute;
   top: 16px;
   right: 16px;
+  z-index: 2;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--cream-100) 85%, transparent);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(31, 26, 18, 0.08);
   color: var(--ink-400);
   cursor: pointer;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.hp-product-card__wish:hover {
+  color: var(--terra-600, #c25e40);
+  transform: scale(1.08);
 }
 
 .hp-product-card__wish--compact {
   top: 12px;
   right: 12px;
+  width: 30px;
+  height: 30px;
 }
 
 .hp-product-card__image-wrap {
@@ -869,6 +903,21 @@
 .hp-product-card__image-wrap--compact {
   padding: 20px 12px 8px;
   aspect-ratio: 4/5;
+}
+
+/* Photo-first card image (design: "large product image"); Bottle SVG remains the no-photo fallback. */
+.hp-product-card__image-wrap--photo {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
+
+.hp-product-card__image-wrap--photo img {
+  transition: transform 0.4s ease;
+}
+
+.hp-product-card:hover .hp-product-card__image-wrap--photo img {
+  transform: scale(1.04);
 }
 
 .hp-product-card__meta {
@@ -1367,6 +1416,23 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
+.hp-testimonial__photo {
+  width: clamp(140px, 42vw, 200px);
+  aspect-ratio: 1;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(26, 46, 26, 0.12);
+  background: var(--cream-200);
+}
+
+.hp-testimonial__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
 .hp-testimonial > .pt-stars {
   align-self: center;
 }
@@ -1426,6 +1492,30 @@
   align-items: flex-start;
   padding: 16px;
   background: linear-gradient(135deg, var(--hp-tone-a, #5a7b3e) 0%, var(--hp-tone-b, #2e4222) 100%);
+  overflow: hidden;
+}
+
+.hp-journal-card__thumb--photo {
+  padding: 0;
+}
+
+.hp-journal-card__img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.hp-journal-card__tag {
+  position: relative;
+  z-index: 1;
+  margin: 16px;
+}
+
+.hp-journal-card__thumb--photo .hp-journal-card__tag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .hp-journal-card__body {
@@ -1653,5 +1743,244 @@
   .section-bg-image--bg {
     /* Slightly stronger opacity on small screens since text overlays a smaller area */
     opacity: 0.12;
+  }
+}
+
+/* ── Bottle row (“The whole kitchen”) + Three.js ambient ─────────── */
+.bottle-row-section {
+  position: relative;
+  padding: 80px 0 96px;
+  background: var(--green-950);
+  color: var(--cream-100);
+  overflow: visible;
+  isolation: isolate;
+}
+
+.bottle-row__ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bottle-row__ambient-canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.bottle-row-section__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 45%, transparent 0%, rgba(10, 22, 14, 0.55) 100%),
+    linear-gradient(180deg, rgba(10, 22, 14, 0.35) 0%, transparent 22%, transparent 78%, rgba(10, 22, 14, 0.5) 100%);
+}
+
+.bottle-row-section__head {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 0 clamp(20px, 6vw, 80px);
+  margin-bottom: 64px;
+}
+
+.bottle-row-section__eyebrow {
+  color: var(--mustard-400);
+  justify-content: center;
+}
+
+.bottle-row-section__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--cream-100);
+  margin: 16px 0 0;
+}
+
+.bottle-row-section__title-accent {
+  color: var(--mustard-400);
+}
+
+.bottle-row-scroll {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(20px, 3vw, 40px);
+  padding: 20px clamp(20px, 4vw, 60px) 12px;
+  overflow-x: auto;
+  overflow-y: visible;
+  scrollbar-width: none;
+}
+.bottle-row-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.bottle-row__item {
+  flex-shrink: 0;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: visible;
+  color: inherit;
+}
+
+@keyframes bottle-row-enter {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.bottle-row__item--enter {
+  animation: bottle-row-enter 0.85s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.bottle-row__motion {
+  display: block;
+  overflow: visible;
+  transform-style: preserve-3d;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+  animation: bottle-row-idle-float 4.8s ease-in-out infinite;
+}
+
+.bottle-row__item:nth-child(2n) .bottle-row__motion {
+  animation-duration: 5.6s;
+  animation-delay: 0.35s;
+}
+
+.bottle-row__motion--hover {
+  animation: none;
+}
+
+@keyframes bottle-row-idle-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+.bottle-row__frame {
+  position: relative;
+  width: clamp(140px, 13vw, 180px);
+  margin: 0 auto;
+  border-radius: var(--r-md);
+  background: var(--cream-200);
+  box-sizing: border-box;
+  padding: 14px 12px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(251, 247, 236, 0.06);
+  transition:
+    box-shadow 0.45s ease,
+    transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bottle-row__motion--hover .bottle-row__frame,
+.bottle-row__item:focus-visible .bottle-row__frame {
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.35),
+    0 0 32px rgba(222, 176, 77, 0.18),
+    0 0 0 1px rgba(222, 176, 77, 0.25);
+}
+
+.bottle-row__shine {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.35) 0%,
+    transparent 42%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+
+.bottle-row__motion--hover .bottle-row__shine,
+.bottle-row__item:focus-visible .bottle-row__shine {
+  opacity: 1;
+}
+
+.bottle-row__frame--svg {
+  min-height: clamp(180px, 18vw, 220px);
+}
+
+.bottle-row__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+  object-position: center center;
+  position: relative;
+  z-index: 1;
+}
+
+.bottle-row__label {
+  margin-top: 14px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--cream-100);
+  letter-spacing: -0.01em;
+  transition: color 0.3s ease;
+}
+
+.bottle-row__item:hover .bottle-row__label,
+.bottle-row__item:focus-visible .bottle-row__label {
+  color: var(--mustard-400);
+}
+
+.bottle-row-section__cta {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin-top: 56px;
+}
+
+.bottle-row-section__cta-btn {
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+
+.bottle-row-section__cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(222, 176, 77, 0.28);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bottle-row__item--enter {
+    animation: none;
+  }
+  .bottle-row__motion {
+    animation: none;
+    transition: none;
+  }
+  .bottle-row__ambient {
+    display: none;
+  }
+  .bottle-row-section {
+    background: linear-gradient(180deg, var(--green-950) 0%, #0a1610 100%);
   }
 }

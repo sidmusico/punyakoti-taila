@@ -6,6 +6,7 @@ import { runHomepageTabSeed } from '@/seed/runHomepageTabSeed'
 import {
   accountSeedDefaults,
   cartSeedDefaults,
+  newsletterPopupSeedDefaults,
   orderSuccessSeedDefaults,
   productDetailSeedDefaults,
   shopListingSeedDefaults,
@@ -22,7 +23,7 @@ export type GlobalSeedResult = {
 
 type GlobalSeedDef = {
   adminTitle: string
-  slug: 'shop-listing' | 'product-detail' | 'cart' | 'account' | 'order-success'
+  slug: 'shop-listing' | 'product-detail' | 'cart' | 'account' | 'order-success' | 'newsletter-popup'
   jsonFile: string
   fallbackDefaults: Record<string, unknown>
   isUnset: (doc: Record<string, unknown>) => boolean
@@ -87,6 +88,19 @@ const storefrontGlobalSeeds: GlobalSeedDef[] = [
     isUnset: (doc) => {
       const o = doc.orderSuccess as Record<string, unknown> | undefined
       return !o?.thankYouHeadline
+    },
+  },
+  {
+    adminTitle: 'Newsletter popup',
+    slug: 'newsletter-popup',
+    jsonFile: 'newsletter-popup.json',
+    fallbackDefaults: JSON.parse(JSON.stringify(newsletterPopupSeedDefaults)) as Record<
+      string,
+      unknown
+    >,
+    isUnset: (doc) => {
+      const content = doc.content as Record<string, unknown> | undefined
+      return !content?.headlinePre
     },
   },
 ]

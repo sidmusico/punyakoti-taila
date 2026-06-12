@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useCartStore } from '@/store/cart'
@@ -20,6 +20,10 @@ export function CartDrawer() {
   const d = storefront.cartDrawer ?? {}
   const { items, isOpen, closeCart, removeItem, updateQty, total } = useCartStore()
   const grandTotal = total()
+  const totalSavings = items.reduce(
+    (sum, i) => sum + (i.mrp && i.mrp > i.price ? (i.mrp - i.price) * i.quantity : 0),
+    0,
+  )
   const checkoutHref = storefront.cartPage?.checkoutHref ?? '/checkout'
   const flatShip =
     typeof d?.flatShippingAmount === 'number' && !Number.isNaN(d.flatShippingAmount)
@@ -27,27 +31,54 @@ export function CartDrawer() {
       : 99
   const remaining = Math.max(0, freeShippingThreshold - grandTotal)
 
-  if (!isOpen) return null
+  // Close on Escape + lock body scroll while open.
+  useEffect(() => {
+    if (!isOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeCart()
+    }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [isOpen, closeCart])
 
   return (
     <>
       {/* backdrop */}
       <div
-        className="fixed inset-0 z-40"
-        style={{ background: 'rgba(15,26,14,0.45)', backdropFilter: 'blur(4px)' }}
+        className="fixed inset-0 z-40 transition-opacity duration-300"
+        style={{
+          background: 'rgba(15,26,14,0.45)',
+          backdropFilter: 'blur(4px)',
+          opacity: isOpen ? 1 : 0,
+          pointerEvents: isOpen ? 'auto' : 'none',
+        }}
         onClick={closeCart}
+        aria-hidden
       />
 
       {/* drawer */}
       <div
-        className="fixed inset-y-0 z-50 flex flex-col w-full max-w-sm"
+        className="fixed inset-y-0 z-50 flex flex-col w-full max-w-sm transition-transform duration-300 ease-out"
+        role="dialog"
+        aria-modal="true"
+        aria-label={d?.title ?? 'Your Basket'}
+        aria-hidden={!isOpen}
+        inert={!isOpen}
         // `right: var(--site-side-gutter)` keeps the drawer flush with the
         // centered site frame on wide screens (>--site-max-width) instead of
         // hugging the viewport edge. Falls back to 0 on narrow viewports.
         style={{
           right: 'var(--site-side-gutter, 0px)',
           background: 'var(--cream-100)',
-          boxShadow: 'var(--sh-xl)',
+          boxShadow: isOpen ? 'var(--sh-xl)' : 'none',
+          transform: isOpen ? 'translateX(0)' : 'translateX(calc(100% + var(--site-side-gutter, 0px)))',
+          pointerEvents: isOpen ? 'auto' : 'none',
+          visibility: isOpen ? 'visible' : undefined,
         }}
       >
         {/* header */}
@@ -124,23 +155,32 @@ export function CartDrawer() {
                 className="flex gap-3 p-3 rounded-xl"
                 style={{ background: 'var(--cream-200)', border: '1px solid var(--cream-400)' }}
               >
-                {/* image */}
-                <div
+                {/* image — links to the product */}
+                <Link
+                  href={`/shop/${item.slug}`}
+                  onClick={closeCart}
                   className="w-16 h-20 rounded-lg shrink-0 overflow-hidden grid place-items-center"
                   style={{ background: 'var(--cream-300)' }}
+                  tabIndex={-1}
+                  aria-hidden
                 >
                   {item.image ? (
-                    <Image src={item.image} alt={item.name} width={64} height={80} className="object-cover w-full h-full" />
+                    <Image src={item.image} alt="" width={64} height={80} className="object-cover w-full h-full" />
                   ) : (
                     <Icons.drop size={24} style={{ color: 'var(--wood-500)' }} />
                   )}
-                </div>
+                </Link>
 
                 {/* info */}
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm leading-tight" style={{ color: 'var(--ink-900)' }}>
+                  <Link
+                    href={`/shop/${item.slug}`}
+                    onClick={closeCart}
+                    className="font-medium text-sm leading-tight hover:underline"
+                    style={{ color: 'var(--ink-900)' }}
+                  >
                     {item.name}
-                  </p>
+                  </Link>
                   <p className="text-xs mt-0.5 flex flex-wrap items-center gap-1.5" style={{ color: 'var(--ink-400)' }}>
                     <span>{item.variantSize}</span>
                     {item.isSubscription && d?.subscribePillLabel ? (
@@ -154,30 +194,41 @@ export function CartDrawer() {
                       <span>{d?.subscribeSuffix ?? ' · Subscribe'}</span>
                     ) : null}
                   </p>
-                  <div className="flex items-center justify-between mt-2">
-                    {/* qty stepper */}
-                    <div className="flex items-center gap-0 rounded-lg overflow-hidden border" style={{ borderColor: 'var(--cream-400)' }}>
+                  <div className="flex items-center justify-between gap-3 mt-2">
+                    {/* qty stepper — fixed compact size; never grows into the price */}
+                    <div
+                      className="flex items-center rounded-lg overflow-hidden border"
+                      style={{ borderColor: 'var(--cream-400)', flex: '0 0 auto' }}
+                    >
                       <button
                         onClick={() => updateQty(item.id, item.quantity - 1)}
-                        className="w-7 h-7 grid place-items-center text-xs transition-colors hover:bg-cream-300"
-                        style={{ color: 'var(--green-900)' }}
+                        className="grid place-items-center transition-colors hover:bg-cream-300"
+                        style={{ color: 'var(--green-900)', width: 26, height: 26, padding: 0, flex: '0 0 auto' }}
                         aria-label="Decrease quantity"
                       >
-                        <Icons.minus size={12} />
+                        <Icons.minus size={11} />
                       </button>
-                      <span className="w-8 text-center text-sm font-medium" style={{ color: 'var(--ink-900)' }}>
+                      <span
+                        className="text-center text-sm font-medium"
+                        style={{ color: 'var(--ink-900)', width: 28, flex: '0 0 auto' }}
+                      >
                         {item.quantity}
                       </span>
                       <button
                         onClick={() => updateQty(item.id, item.quantity + 1)}
-                        className="w-7 h-7 grid place-items-center text-xs transition-colors hover:bg-cream-300"
-                        style={{ color: 'var(--green-900)' }}
+                        className="grid place-items-center transition-colors hover:bg-cream-300"
+                        style={{ color: 'var(--green-900)', width: 26, height: 26, padding: 0, flex: '0 0 auto' }}
                         aria-label="Increase quantity"
                       >
-                        <Icons.plus size={12} />
+                        <Icons.plus size={11} />
                       </button>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
+                      {item.mrp && item.mrp > item.price ? (
+                        <span className="text-xs line-through" style={{ color: 'var(--ink-300)' }}>
+                          {formatPrice(item.mrp * item.quantity)}
+                        </span>
+                      ) : null}
                       <span className="text-sm font-semibold" style={{ color: 'var(--green-900)' }}>
                         {formatPrice(item.price * item.quantity)}
                       </span>
@@ -206,6 +257,12 @@ export function CartDrawer() {
                 <span>{d?.subtotalLabel ?? 'Subtotal'}</span>
                 <span>{formatPrice(grandTotal)}</span>
               </div>
+              {totalSavings > 0 && (
+                <div className="flex justify-between" style={{ color: 'var(--green-700)' }}>
+                  <span>You save</span>
+                  <span>−{formatPrice(totalSavings)}</span>
+                </div>
+              )}
               <div className="flex justify-between" style={{ color: 'var(--ink-500)' }}>
                 <span>{d?.shippingLabel ?? 'Shipping'}</span>
                 <span style={{ color: grandTotal >= freeShippingThreshold ? 'var(--green-700)' : 'var(--ink-500)' }}>

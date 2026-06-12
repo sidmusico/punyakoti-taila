@@ -12,7 +12,8 @@ import { isSeedApiAuthorized } from '@/seed/seedApiAuth'
  * Pass `?force=1` (or `?force=true`) to **patch** existing products in place
  * with the latest values from `PLP_PRODUCTS` (description, tag, tagline,
  * useCases, …). Variants and images are left untouched so admin edits and
- * uploaded media survive.
+ * uploaded media survive. Products with **no images** always get ImageKit
+ * gallery backfill from `plpProductImages` mapping (no force flag needed).
  */
 export async function GET(req: NextRequest) {
   if (!isSeedApiAuthorized(req)) {
@@ -29,6 +30,7 @@ export async function GET(req: NextRequest) {
     total: results.length,
     created: results.filter((r) => r.status === 'created').length,
     updated: results.filter((r) => r.status === 'updated').length,
+    imagesUpdated: results.filter((r) => r.status === 'images_updated').length,
     skipped: results.filter((r) => r.status === 'skipped').length,
     errors: results.filter((r) => r.status === 'error').length,
   }

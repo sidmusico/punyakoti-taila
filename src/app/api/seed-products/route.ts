@@ -27,6 +27,7 @@ export async function GET(req: NextRequest) {
   const summary = {
     total: results.length,
     created: results.filter((r) => r.status === 'created').length,
+    updated: results.filter((r) => r.status === 'updated').length,
     skipped: results.filter((r) => r.status === 'skipped').length,
     errors: results.filter((r) => r.status === 'error').length,
   }

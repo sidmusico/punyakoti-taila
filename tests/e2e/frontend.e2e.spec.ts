@@ -134,6 +134,65 @@ test.describe('Storefront — home page', () => {
     expect(real(pageErrors), 'unexpected page error during home load').toEqual([])
   })
 
+  test('journal section shows related card images from CMS', async ({ page }) => {
+    await page.goto(HOME)
+
+    const section = page.locator('.hp-container').filter({ hasText: /recipes, rituals/i })
+    await section.scrollIntoViewIfNeeded()
+    await expect(section).toBeVisible()
+
+    const images = section.locator('.hp-journal-card__img')
+    await expect(images).toHaveCount(3)
+    for (let i = 0; i < 3; i++) {
+      const src = await images.nth(i).getAttribute('src')
+      expect(src, `journal card ${i + 1} should load ImageKit`).toMatch(/ik\.imagekit\.io/)
+    }
+  })
+
+  test('testimonials section shows customer portraits and scrollable rail', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 })
+    await page.goto(HOME)
+
+    const section = page.locator('.hp-testimonials')
+    await section.scrollIntoViewIfNeeded()
+    await expect(section).toBeVisible()
+    await expect(section.getByText(/letters from kitchens/i)).toBeVisible()
+
+    const portraits = section.locator('.hp-testimonial__img')
+    await expect(portraits.first()).toBeVisible()
+    expect(await portraits.count()).toBeGreaterThanOrEqual(3)
+
+    const rail = section.locator('.testimonials-grid')
+    await expect(rail).toBeVisible()
+    const metrics = await rail.evaluate((el) => ({
+      scrollWidth: el.scrollWidth,
+      clientWidth: el.clientWidth,
+    }))
+    expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth)
+  })
+
+  test('bottle row section shows six oils with images and shop CTA', async ({ page }) => {
+    await page.goto(HOME)
+
+    const section = page.locator('.bottle-row-section')
+    await section.scrollIntoViewIfNeeded()
+    await expect(section).toBeVisible()
+
+    await expect(section.getByRole('heading', { name: /the whole/i })).toBeVisible()
+    await expect(section.locator('.bottle-row__item')).toHaveCount(6)
+
+    const firstBottle = section.locator('.bottle-row__item').first()
+    await expect(firstBottle).toBeVisible()
+    await expect(firstBottle.locator('img')).toBeVisible()
+
+    const shopAll = section.getByRole('link', { name: /shop all six oils/i })
+    await expect(shopAll).toBeVisible()
+    await expect(shopAll).toHaveAttribute('href', '/shop')
+
+    await firstBottle.hover()
+    await expect(firstBottle).toHaveClass(/bottle-row__item--enter/)
+  })
+
   test('FAQ items expand on click', async ({ page }) => {
     await page.goto(HOME)
     const firstFaq = page.locator('.hp-faq-item').first()

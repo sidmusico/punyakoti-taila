@@ -66,7 +66,7 @@ export default async function OrderSuccessPage({
         </span>
       </header>
 
-      <section className="px-5 sm:px-10 md:px-20 py-12 md:py-16 lg:py-20 grid lg:grid-cols-[1.15fr_1fr] gap-12 lg:gap-16 items-center max-w-[1440px] mx-auto">
+      <section className="pt-page-container py-12 md:py-16 lg:py-20 grid lg:grid-cols-[1.15fr_1fr] gap-12 lg:gap-16 items-center">
         <div>
           <div
             className="w-14 h-14 rounded-full grid place-items-center"
@@ -172,7 +172,7 @@ export default async function OrderSuccessPage({
 
       {/* Horizontal timeline */}
       {steps.length > 0 ? (
-        <section className="px-5 sm:px-10 md:px-20 pb-16 md:pb-20 max-w-[1440px] mx-auto">
+        <section className="pt-page-container pb-16 md:pb-20">
           <div className="text-[11px] uppercase tracking-[0.18em] mb-8" style={{ color: 'var(--ink-500)' }}>
             {o?.nextStepsTitle}
           </div>
@@ -215,7 +215,7 @@ export default async function OrderSuccessPage({
         </section>
       ) : null}
 
-      <section className="px-5 sm:px-10 md:px-20 pb-20 max-w-[1440px] mx-auto">
+      <section className="pt-page-container pb-20">
         <div
           className="rounded-2xl p-6 md:p-8 max-w-xl mx-auto text-center md:text-left"
           style={{ background: 'var(--mustard-100)', border: '1px solid var(--mustard-200)' }}

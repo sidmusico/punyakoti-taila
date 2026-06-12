@@ -25,6 +25,7 @@ export default async function HomePage() {
   let homepage: Partial<HomepageSetting> | null = null
   let featuredProducts: Product[] = []
   let bestSellers: Product[] = []
+  let bottleRowProducts: Product[] = []
   let testimonials: Testimonial[] = []
   let serviceLocations: ServiceLocationCity[] = []
 
@@ -33,6 +34,7 @@ export default async function HomePage() {
     homepage = data.homepage
     featuredProducts = data.featuredProducts
     bestSellers = data.bestSellers
+    bottleRowProducts = data.bottleRowProducts
     testimonials = data.testimonials
     serviceLocations = data.serviceLocations
   } catch (err) {
@@ -44,6 +46,7 @@ export default async function HomePage() {
       homepage={homepage}
       featuredProducts={featuredProducts}
       bestSellers={bestSellers}
+      bottleRowProducts={bottleRowProducts}
       testimonials={testimonials}
       serviceLocations={serviceLocations}
     />

@@ -23,8 +23,6 @@ export const homepageTabDefaults = {
     reviewRating: '4.9 / 5',
     reviewCount: '2,847 verified kitchens',
     bottleVariant: 'sesame',
-    batchCaptionLeft: 'Batch #047',
-    batchCaptionRight: 'Erode · Nov 2025',
     pressWeekKicker: 'Press of the week',
     pressWeekTitle: 'Sesame · Erode',
     backgroundStyle: 'cream',
@@ -40,7 +38,7 @@ export const homepageTabDefaults = {
   trustStripEnabled: true,
   trustStrip: [
     { icon: 'leaf', label: 'Wood-pressed', sub: 'Zero heat, zero solvents' },
-    { icon: 'shield', label: 'Lab tested', sub: 'Every batch, published' },
+    { icon: 'shield', label: 'Lab tested', sub: 'Reports on every bottle' },
     { icon: 'truck', label: 'Free over ₹999', sub: 'Ships in 2–5 days' },
     { icon: 'refresh', label: '30-day return', sub: 'No questions asked' },
   ],
@@ -48,7 +46,7 @@ export const homepageTabDefaults = {
   featuredSection: {
     eyebrow: 'The collection',
     headline: 'Six oils, one philosophy',
-    body: 'Pressed slowly on wooden ghanis. Bottled within 72 hours. Always single-batch.',
+    body: 'Pressed slowly on wooden ghanis. Bottled within 72 hours of pressing.',
     ctaLabel: 'Shop all',
     ctaHref: '/shop',
     columns: '3',
@@ -64,7 +62,7 @@ export const homepageTabDefaults = {
       'We source from trusted organic farmers who share our commitment to sustainable, earth-friendly agriculture. Every drop of Punyakoti Taila is a testament to purity.',
     ctaPrimary: { label: 'Discover our story', href: '/about' },
     ctaSecondary: { label: 'Visit the press', href: '/about#press' },
-    mediaCaptionLeft: 'Batch #047 · 9-hour press',
+    mediaCaptionLeft: 'Wood-pressed · 9-hour press',
     mediaCaptionRight: 'Erode · Tamil Nadu',
   },
   processStepsEnabled: true,
@@ -139,7 +137,7 @@ export const homepageTabDefaults = {
     headlinePrefix: 'What slow looks like,',
     headlineItalic: 'plainly.',
     stats: [
-      { value: '47', label: 'Batches', sub: 'this season alone' },
+      { value: '12', label: 'Farms', sub: 'across Tamil Nadu & Kerala' },
       { value: '2,847', label: 'Kitchens', sub: 'across India' },
       { value: '9 hr', label: 'Per press', sub: 'wooden ghani at 38°C' },
       { value: '4.9', label: 'Reviews', sub: 'from 612 verified buyers' },
@@ -158,13 +156,14 @@ export const homepageTabDefaults = {
     headlineBefore: 'The whole',
     headlineItalic: 'kitchen.',
     cta: { label: 'Shop all six oils', href: '/shop' },
+    // `products` relationship IDs are wired in runHomepageTabSeed from BOTTLE_ROW_PRODUCT_SLUGS.
   },
   testimonialsBandEnabled: true,
   testimonialsBand: {
     eyebrow: 'Letters from kitchens',
     headline: 'Trusted by 2,800+ kitchens',
     source: 'featured',
-    maxItems: 3,
+    maxItems: 5,
   },
   journalEnabled: true,
   journal: {
@@ -223,7 +222,7 @@ export const homepageTabDefaults = {
       {
         question: 'Is this organic-certified?',
         answer:
-          'Our farms are USDA-NOP and India-Organic certified. We publish lab tests for each batch on the product page.',
+          'Our farms are USDA-NOP and India-Organic certified. We publish lab reports for every oil on the product page.',
       },
       {
         question: "What does 'kachi ghani' mean?",

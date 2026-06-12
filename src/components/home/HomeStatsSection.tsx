@@ -7,7 +7,7 @@ import type { MediaLike } from '@/utilities/mediaUrl'
 import { cn } from '@/utilities/ui'
 
 const DEFAULT_STATS = [
-  { value: '47', label: 'Batches', sub: 'this season alone' },
+  { value: '12', label: 'Farms', sub: 'across Tamil Nadu & Kerala' },
   { value: '2,847', label: 'Kitchens', sub: 'across India' },
   { value: '9 hr', label: 'Per press', sub: 'wooden ghani at 38°C' },
   { value: '4.9', label: 'Reviews', sub: 'from 612 verified buyers' },

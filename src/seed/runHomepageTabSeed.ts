@@ -1,13 +1,37 @@
 import type { Payload } from 'payload'
 
+import { BOTTLE_ROW_PRODUCT_SLUGS } from '@/seed/bottleRowProductSlugs'
 import { homepageTabDefaults } from '@/seed/homepageTabDefaults'
 import { mergeMissing } from '@/seed/incrementalMerge'
+import { imageAltForJournalSlug } from '@/seed/journalPostImages'
+import { productIdsBySlugs } from '@/seed/resolveProductIds'
 
 export type HomepageTabSeedResult = {
   slug: 'homepage-settings'
   status: 'created' | 'updated' | 'skipped' | 'forced'
   filledPaths: string[]
   force: boolean
+}
+
+type JournalPostRow = Record<string, unknown> & { slug?: string; image?: unknown }
+
+async function wireJournalPostImages(
+  payload: Payload,
+  posts: JournalPostRow[] | undefined,
+): Promise<string[]> {
+  if (!Array.isArray(posts)) return []
+  const filled: string[] = []
+  for (const post of posts) {
+    if (post.image) continue
+    const slug = post.slug ?? ''
+    const alt = imageAltForJournalSlug(slug)
+    if (!alt) continue
+    const id = await mediaIdByAlt(payload, alt)
+    if (!id) continue
+    post.image = id
+    filled.push(`journal.posts.${slug}.image`)
+  }
+  return filled
 }
 
 async function mediaIdByAlt(payload: Payload, alt: string): Promise<string | number | null> {
@@ -80,6 +104,17 @@ export async function runHomepageTabSeed(
   if (statsBg) defaults.statsBand.backgroundImage = statsBg
   if (faqBg) defaults.faq.backgroundImage = faqBg
 
+  const bottleRowProductIds = await productIdsBySlugs(payload, BOTTLE_ROW_PRODUCT_SLUGS)
+  if (bottleRowProductIds.length > 0) {
+    defaults.bottleRow = {
+      ...defaults.bottleRow,
+      products: bottleRowProductIds,
+    }
+  }
+
+  const defaultJournalPosts = defaults.journal?.posts as JournalPostRow[] | undefined
+  await wireJournalPostImages(payload, defaultJournalPosts)
+
   // Force path — overwrite wholesale.
   if (force) {
     await payload.updateGlobal({
@@ -98,6 +133,20 @@ export async function runHomepageTabSeed(
 
   // Incremental path — fill only missing fields.
   const { merged, filledPaths } = mergeMissing(existing as Record<string, unknown>, defaults)
+
+  const existingBottleProducts = (existing as { bottleRow?: { products?: unknown[] } })?.bottleRow
+    ?.products
+  const bottleProductsMissing =
+    !Array.isArray(existingBottleProducts) || existingBottleProducts.length === 0
+  if (bottleProductsMissing && bottleRowProductIds.length > 0) {
+    const br = (merged.bottleRow as Record<string, unknown> | undefined) ?? {}
+    merged.bottleRow = { ...br, products: bottleRowProductIds }
+    filledPaths.push('bottleRow.products')
+  }
+
+  const mergedJournal = merged.journal as { posts?: JournalPostRow[] } | undefined
+  const journalImagePaths = await wireJournalPostImages(payload, mergedJournal?.posts)
+  filledPaths.push(...journalImagePaths)
 
   if (filledPaths.length === 0) {
     return {

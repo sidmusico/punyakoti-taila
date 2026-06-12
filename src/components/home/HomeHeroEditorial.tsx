@@ -44,8 +44,8 @@ export function HomeHeroEditorial({
   reviewRating = '4.9 / 5',
   reviewCount = '2,847 verified kitchens',
   bottleVariant = 'sesame',
-  batchCaptionLeft = 'Batch #047',
-  batchCaptionRight = 'Erode · Nov 2025',
+  originCaptionLeft = 'Single origin',
+  originCaptionRight = 'Erode · Tamil Nadu',
   pressWeekKicker = 'Press of the week',
   pressWeekTitle = 'Sesame · Erode',
   backgroundStyle = 'cream',
@@ -61,8 +61,8 @@ export function HomeHeroEditorial({
   reviewRating?: string | null
   reviewCount?: string | null
   bottleVariant?: OilVariant | null
-  batchCaptionLeft?: string | null
-  batchCaptionRight?: string | null
+  originCaptionLeft?: string | null
+  originCaptionRight?: string | null
   pressWeekKicker?: string | null
   pressWeekTitle?: string | null
   backgroundStyle?: 'cream' | 'dark-green' | 'warm-white' | null
@@ -124,8 +124,8 @@ export function HomeHeroEditorial({
               </div>
             )}
             <div className="hp-hero-editorial__bottle-caption">
-              <span>{batchCaptionLeft}</span>
-              <span className="hp-hero-editorial__bottle-caption-accent">{batchCaptionRight}</span>
+              <span>{originCaptionLeft}</span>
+              <span className="hp-hero-editorial__bottle-caption-accent">{originCaptionRight}</span>
             </div>
           </div>
           <div className="hp-hero-editorial__float-card">

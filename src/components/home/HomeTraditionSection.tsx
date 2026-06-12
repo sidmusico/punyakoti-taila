@@ -15,7 +15,7 @@ export function HomeTraditionSection({
   paragraph2 = 'We source from trusted organic farmers who share our commitment to sustainable, earth-friendly agriculture. Every drop of Punyakoti Taila is a testament to purity.',
   ctaPrimary = { label: 'Discover our story', href: '/about' },
   ctaSecondary = { label: 'Visit the press', href: '/about#press' },
-  mediaCaptionLeft = 'Batch #047 · 9-hour press',
+  mediaCaptionLeft = 'Wood-pressed · 9-hour press',
   mediaCaptionRight = 'Erode · Tamil Nadu',
   image,
 }: {

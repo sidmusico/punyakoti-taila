@@ -246,7 +246,7 @@ export const seed = async ({
         freeShippingThreshold: 999,
         shopLinks: [
           { label: 'All Oils',     href: '/shop' },
-          { label: 'Cooking Oils', href: '/shop?category=cooking' },
+          { label: 'Cooking Oils', href: '/shop?category=cooking-oils' },
           { label: 'Wellness',     href: '/shop?category=wellness' },
           { label: 'Gift Sets',    href: '/shop?category=gift-sets' },
         ],

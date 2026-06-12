@@ -6,6 +6,7 @@ import config from '@payload-config'
 
 import type { OilVariant } from '@/components/ui/pt/Bottle'
 import { Icons } from '@/components/ui/pt/Icons'
+import { Breadcrumb } from '@/components/shop/Breadcrumb'
 import { PDPActions } from '@/components/shop/PDPActions'
 import { ProductGallery } from '@/components/shop/ProductGallery'
 import type { Media, Product } from '@/payload-types'
@@ -85,9 +86,10 @@ export default async function ProductPage({ params }: PDPProps) {
   const gallerySlides = (product.images ?? [])
     .map((row) => {
       const img = row.image
-      if (typeof img !== 'object' || !img || !('url' in img) || !img.url) return null
+      if (typeof img !== 'object' || !img) return null
       const m = img as Media
-      const src = m.url
+      // Storefront convention: ImageKit-hosted URL first, local Payload URL as fallback.
+      const src = m.imagekitUrl || m.url
       if (!src) return null
       return {
         src,
@@ -122,20 +124,21 @@ export default async function ProductPage({ params }: PDPProps) {
   const ratingLine = product.ratingDisplay?.trim() || pdp?.ratingDisplay || '4.9'
   const reviewsLine = product.reviewsDisplay?.trim() || pdp?.reviewsDisplay || '612 reviews'
 
-  // Batch data
-  const batch = product.batch
-  const pressDate = batch?.pressDate
-    ? new Date(batch.pressDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
-    : undefined
-
   return (
-    <div className="max-w-[1440px] mx-auto px-8 md:px-16 py-12">
-      <div className="grid md:grid-cols-[1fr_1.1fr] gap-12 lg:gap-20">
+    <div className="pt-page-container pb-10">
+      <Breadcrumb
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Shop', href: '/shop' },
+          { label: product.name },
+        ]}
+      />
+      <div className="grid md:grid-cols-[1fr_1.1fr] gap-10 lg:gap-16">
         {/* ── GALLERY ─────────────────────────────────────────────────────── */}
         <ProductGallery slides={gallerySlides} oilVariant={oilVariant} />
 
         {/* ── INFO PANEL ───────────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-5">
           {/* header */}
           <div>
             {product.tag && (
@@ -178,41 +181,13 @@ export default async function ProductPage({ params }: PDPProps) {
             slug,
             name: product.name,
             v: oilVariant,
-            sizes: sizes.map(s => ({
-              label: s.label,
-              price: s.price,
-              sku: s.sku,
-            })),
+            // Per-size mrp/subscribePrice so the price block stays accurate on size switch.
+            sizes,
             price: defaultVariant?.price ?? 0,
             mrp: defaultVariant?.mrp ?? undefined,
             subscribePrice: defaultVariant?.subscribePrice ?? undefined,
+            image: gallerySlides[0]?.src,
           }} />
-
-          {/* batch card */}
-          {batch && (
-            <div className="rounded-xl p-5" style={{ background: 'var(--green-950)', color: 'var(--cream-100)' }}>
-              <div className="flex items-center justify-between mb-4">
-                <span style={{ fontFamily: 'var(--font-body)', fontSize: 11, fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--mustard-400)' }}>
-                  {pdp?.batchBadge ?? 'Current batch'}
-                </span>
-                {batch.batchNumber && (
-                  <span className="text-xs" style={{ color: 'var(--ink-300)' }}>#{batch.batchNumber}</span>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                {[
-                  { label: pdp?.labelPressDate ?? 'Press date', value: pressDate },
-                  { label: pdp?.labelTemperature ?? 'Temperature', value: batch.pressTemperature },
-                  { label: pdp?.labelYield ?? 'Yield', value: batch.yield },
-                ].filter(row => row.value).map(({ label, value }) => (
-                  <div key={label}>
-                    <div style={{ color: 'var(--ink-400)', fontSize: 11, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{label}</div>
-                    <div style={{ color: 'var(--cream-200)', fontWeight: 500, marginTop: 2 }}>{value}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* shipping */}
           {pdp?.shippingBullets && pdp.shippingBullets.length > 0 && (
@@ -237,7 +212,7 @@ export default async function ProductPage({ params }: PDPProps) {
 
       {/* ── DESCRIPTION ─────────────────────────────────────────────────────── */}
       {(product.description || product.usageNote) && (
-        <section className="mt-20 max-w-3xl">
+        <section className="mt-12 md:mt-14 max-w-3xl">
           <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 32, color: 'var(--green-900)', marginBottom: 16 }}>
             {pdp?.aboutHeading ?? 'About this oil'}
           </h2>
@@ -258,7 +233,7 @@ export default async function ProductPage({ params }: PDPProps) {
 
       {/* ── BENEFITS ────────────────────────────────────────────────────────── */}
       {product.benefits && product.benefits.length > 0 && (
-        <section className="mt-16">
+        <section className="mt-12 md:mt-14">
           <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 32, color: 'var(--green-900)', marginBottom: 12 }}>
             {pdp?.benefitsHeading ?? "Why it's good for you"}
           </h2>

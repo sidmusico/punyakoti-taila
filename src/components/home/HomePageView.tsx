@@ -3,6 +3,7 @@ import React from 'react'
 import { BottleRowSection } from '@/components/home/BottleRowSection'
 import { FALLBACK_PRODUCTS, type FallbackProduct } from '@/components/home/home-constants'
 import { HomeBestSellersSection } from '@/components/home/HomeBestSellersSection'
+import { HomeCategoryBand } from '@/components/home/HomeCategoryBand'
 import { HomeFaqSection } from '@/components/home/HomeFaqSection'
 import { HomeFeaturedCollection } from '@/components/home/HomeFeaturedCollection'
 import { HomeHeroCinematic } from '@/components/home/HomeHeroCinematic'
@@ -26,12 +27,14 @@ export function HomePageView({
   homepage,
   featuredProducts,
   bestSellers,
+  bottleRowProducts,
   testimonials,
   serviceLocations = [],
 }: {
   homepage: HomeGlobal
   featuredProducts: Product[]
   bestSellers: Product[]
+  bottleRowProducts: Product[]
   testimonials: Testimonial[]
   serviceLocations?: ServiceLocationCity[]
 }) {
@@ -77,8 +80,6 @@ export function HomePageView({
           reviewRating={hp?.hero?.reviewRating}
           reviewCount={hp?.hero?.reviewCount}
           bottleVariant={hp?.hero?.bottleVariant}
-          batchCaptionLeft={hp?.hero?.batchCaptionLeft}
-          batchCaptionRight={hp?.hero?.batchCaptionRight}
           pressWeekKicker={hp?.hero?.pressWeekKicker}
           pressWeekTitle={hp?.hero?.pressWeekTitle}
           backgroundStyle={hp?.hero?.backgroundStyle}
@@ -98,6 +99,9 @@ export function HomePageView({
       ) : null}
 
       {hp?.trustStripEnabled !== false ? <HomeTrustStrip items={hp?.trustStrip ?? undefined} /> : null}
+
+      {/* Shop by category — quick entry into the three PLP category views */}
+      <HomeCategoryBand />
 
       {hp?.featuredSectionEnabled !== false ? (
         <HomeFeaturedCollection
@@ -199,8 +203,9 @@ export function HomePageView({
         />
       ) : null}
 
-      {hp?.bottleRowEnabled !== false ? (
+      {hp?.bottleRowEnabled !== false && bottleRowProducts.length > 0 ? (
         <BottleRowSection
+          products={bottleRowProducts}
           eyebrow={hp?.bottleRow?.eyebrow}
           headlineBefore={hp?.bottleRow?.headlineBefore}
           headlineItalic={hp?.bottleRow?.headlineItalic}

@@ -39,7 +39,9 @@ export function parseFilters(sp: Record<string, string | string[] | undefined>):
   const min = get('min')
   const max = get('max')
   return {
-    cat: get('cat'),
+    // `cat` is canonical (used by buildHref); `category` is accepted as an
+    // alias so marketing/header/footer links like /shop?category=wellness work.
+    cat: get('cat') || get('category'),
     sizes: list('sizes'),
     uses: list('uses'),
     priceMin: min ? Number(min) : null,

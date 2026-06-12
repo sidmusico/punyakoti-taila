@@ -1,11 +1,16 @@
 import type { Payload } from 'payload'
 
+import {
+  buildProductImagesFromAlts,
+  type ProductImageRow,
+} from '@/seed/imageKitMediaResolve'
 import { PLP_CATEGORIES, PLP_PRODUCTS } from '@/seed/plpCatalogSeed'
+import { galleryAltsForPlpProduct } from '@/seed/plpProductImages'
 
 export type PlpSeedRow = {
   kind: 'category' | 'product'
   slug: string
-  status: 'created' | 'updated' | 'skipped' | 'error'
+  status: 'created' | 'updated' | 'images_updated' | 'skipped' | 'error'
   id?: string | number
   error?: string
 }
@@ -14,14 +19,31 @@ export interface PlpSeedOptions {
   /**
    * When true, existing products are patched in place with the latest field
    * values from `PLP_PRODUCTS` (description, tag, tagline, useCases, …).
-   * Variants and images are left untouched to avoid clobbering admin edits.
+   * Variants are left untouched. Images are backfilled when missing regardless.
    */
   force?: boolean
+}
+
+async function buildPlpProductImages(
+  payload: Payload,
+  slug: string,
+  name: string,
+  oilVariant: (typeof PLP_PRODUCTS)[number]['oilVariant'],
+): Promise<ProductImageRow[]> {
+  const alts = galleryAltsForPlpProduct(slug, oilVariant)
+  return buildProductImagesFromAlts(payload, alts, name)
+}
+
+function productHasImages(
+  doc: { images?: Array<{ image?: unknown }> | null } | undefined,
+): boolean {
+  return (doc?.images?.length ?? 0) > 0
 }
 
 /**
  * Seed PLP categories + products. Idempotent — existing slugs are skipped
  * unless `force: true`, in which case they are patched with the latest values.
+ * Products with no images always get ImageKit gallery backfill on re-run.
  */
 export async function runPlpCatalogSeed(
   payload: Payload,
@@ -80,9 +102,6 @@ export async function runPlpCatalogSeed(
         continue
       }
 
-      // Field bag shared by both create and update paths. We omit `variants`
-      // / `images` from updates so existing pricing and uploaded media survive
-      // re-seeding.
       const editableFields = {
         name: p.name,
         oilVariant: p.oilVariant,
@@ -98,30 +117,53 @@ export async function runPlpCatalogSeed(
       }
 
       if (existing.docs[0]) {
-        if (!force) {
+        const doc = existing.docs[0] as { id: string | number; images?: ProductImageRow[] }
+        const needsImages = !productHasImages(doc)
+        const images = needsImages ? await buildPlpProductImages(payload, p.slug, p.name, p.oilVariant) : []
+
+        if (!force && !needsImages) {
           results.push({
             kind: 'product',
             slug: p.slug,
             status: 'skipped',
-            id: existing.docs[0].id,
+            id: doc.id,
           })
           continue
         }
+
+        const patch: Record<string, unknown> = {}
+        if (force) Object.assign(patch, editableFields)
+        if (needsImages && images.length > 0) patch.images = images
+
+        if (Object.keys(patch).length === 0) {
+          results.push({
+            kind: 'product',
+            slug: p.slug,
+            status: 'skipped',
+            id: doc.id,
+            ...(needsImages && images.length === 0
+              ? { error: 'No ImageKit media found for gallery alts' }
+              : {}),
+          })
+          continue
+        }
+
         await payload.update({
           collection: 'products',
-          id: existing.docs[0].id,
+          id: doc.id,
           overrideAccess: true,
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          data: editableFields as any,
+          data: patch,
         })
         results.push({
           kind: 'product',
           slug: p.slug,
-          status: 'updated',
-          id: existing.docs[0].id,
+          status: needsImages && !force ? 'images_updated' : 'updated',
+          id: doc.id,
         })
         continue
       }
+
+      const images = await buildPlpProductImages(payload, p.slug, p.name, p.oilVariant)
 
       await payload.create({
         collection: 'products',
@@ -132,7 +174,7 @@ export async function runPlpCatalogSeed(
           slug: p.slug,
           status: 'published',
           variants: p.variants.map((v) => ({ ...v })),
-          images: [],
+          images,
         } as any,
       })
       results.push({ kind: 'product', slug: p.slug, status: 'created' })

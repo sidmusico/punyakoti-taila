@@ -685,6 +685,28 @@ html {
   background: linear-gradient(135deg, #5a7b3e 0%, #2e4222 60%, #142010 100%);
 }
 
+/* ── Page container ───────────────────────────────────────────
+   Shared horizontal rhythm for every storefront page (PLP, PDP,
+   cart, order-success…): one max-width, one gutter scale. */
+.pt-page-container {
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+@media (min-width: 640px) {
+  .pt-page-container {
+    padding-inline: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .pt-page-container {
+    padding-inline: 64px;
+  }
+}
+
 /* ── Cards ────────────────────────────────────────────────── */
 .pt-card {
   background: var(--cream-100);
@@ -828,10 +850,6 @@ details > summary::-webkit-details-marker { display: none; }
 .wp-scroll-cue { animation: wp-bob 2.4s ease-in-out infinite; }
 
 /* ── Drop cap ────────────────────────────────────────────────────── */
-/* Bottle row horizontal scroll on mobile */
-.bottle-row-scroll::-webkit-scrollbar { display: none; }
-.bottle-row-scroll { scrollbar-width: none; }
-
 .pt-dropcap::first-letter {
   float: left;
   font-family: var(--font-display);

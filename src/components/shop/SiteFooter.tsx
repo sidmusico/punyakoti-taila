@@ -153,24 +153,24 @@ export async function SiteFooter() {
   /* Default links if CMS is empty */
   const resolvedShopLinks  = shopLinks.length  > 0 ? shopLinks  : [
     { label: 'All oils',   href: '/shop' },
-    { label: 'Sesame',     href: '/shop/sesame-oil' },
-    { label: 'Coconut',    href: '/shop/coconut-oil' },
-    { label: 'Groundnut',  href: '/shop/groundnut-oil' },
-    { label: 'Mustard',    href: '/shop/mustard-oil' },
+    // Slugs match the seeded demo catalog (src/seed/productCatalogSeed.ts).
+    { label: 'Sesame',     href: '/shop/wood-pressed-sesame-erode' },
+    { label: 'Coconut',    href: '/shop/virgin-coconut-kollam' },
+    { label: 'Groundnut',  href: '/shop/groundnut-wood-pressed-karnataka' },
+    { label: 'Mustard',    href: '/shop/kachi-ghani-mustard-alwar' },
     { label: 'Wellness',   href: '/shop?category=wellness' },
     { label: 'Gift sets',  href: '/shop?category=gift-sets' },
   ]
   const resolvedLearnLinks = learnLinks.length > 0 ? learnLinks : [
-    { label: 'Our story',   href: '/about' },
-    { label: 'The press',   href: '/about#press' },
-    { label: 'Journal',     href: '/journal' },
-    { label: 'Recipes',     href: '/journal?tag=recipes' },
-    { label: 'Lab reports', href: '/lab-reports' },
+    { label: 'Our story',      href: '/about' },
+    { label: 'The press',      href: '/about#press' },
+    { label: 'Journal',        href: '/journal' },
+    { label: 'Recipes',        href: '/journal?tag=recipes' },
+    { label: 'Sustainability', href: '/sustainability' },
   ]
   const resolvedHelpLinks  = helpLinks.length  > 0 ? helpLinks  : [
     { label: 'Contact',        href: '/contact' },
-    { label: 'Shipping',       href: '/shipping' },
-    { label: 'Returns',        href: '/returns' },
+    { label: 'Shipping & returns', href: '/returns' },
     { label: 'FAQ',            href: '/support' },
     { label: 'Order tracking', href: '/account?tab=orders' },
   ]

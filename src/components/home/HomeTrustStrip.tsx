@@ -6,7 +6,7 @@ type TrustIcon = 'leaf' | 'drop' | 'truck' | 'shield' | 'star' | 'check' | 'refr
 
 const DEFAULT_ITEMS: { icon: TrustIcon; label: string; sub: string }[] = [
   { icon: 'leaf', label: 'Wood-pressed', sub: 'Zero heat, zero solvents' },
-  { icon: 'shield', label: 'Lab tested', sub: 'Every batch, published' },
+  { icon: 'shield', label: 'Lab tested', sub: 'Reports on every bottle' },
   { icon: 'truck', label: 'Free over ₹999', sub: 'Ships in 2–5 days' },
   { icon: 'refresh', label: '30-day return', sub: 'No questions asked' },
 ]

@@ -7,6 +7,7 @@ import config from '@payload-config'
 import type { Where } from 'payload'
 
 import { ShopProductCard } from '@/components/shop/ShopProductCard'
+import { Breadcrumb } from '@/components/shop/Breadcrumb'
 import { PlpCategoryChips } from '@/components/shop/PlpCategoryChips'
 import { PlpLoadMore } from '@/components/shop/PlpLoadMore'
 import { PlpFilterSidebar, type PlpFacetItem, type PlpFacets } from '@/components/shop/PlpFilterSidebar'
@@ -232,14 +233,15 @@ export default async function ShopPage({ searchParams }: PageProps) {
 
   return (
     <div className="plp-page">
-      <div className="plp-head">
-        <nav className="plp-breadcrumb" aria-label="Breadcrumb">
-          <Link href="/">Home</Link>
-          <span className="plp-breadcrumb__sep"> / </span>
-          <span className="plp-breadcrumb__active">
-            {activeCategory ? activeCategory.title : 'All oils'}
-          </span>
-        </nav>
+      <div className="plp-head pt-page-container">
+        <Breadcrumb
+          items={[
+            { label: 'Home', href: '/' },
+            ...(activeCategory ? [{ label: 'Shop', href: '/shop' }] : []),
+            { label: activeCategory ? activeCategory.title : 'All oils' },
+          ]}
+          className="mb-0"
+        />
 
         <div className="plp-hero">
           <div>
@@ -269,7 +271,7 @@ export default async function ShopPage({ searchParams }: PageProps) {
 
       <PlpCategoryChips filters={filters} chipCategories={chipCategories} />
 
-      <div className="plp-body">
+      <div className="plp-body pt-page-container">
         <PlpFilterSidebar filters={filters} facets={facets} />
 
         <div className="plp-main">
@@ -308,7 +310,9 @@ export default async function ShopPage({ searchParams }: PageProps) {
           ) : (
             <div
               className="plp-grid"
-              key={`${filters.sort}-${filters.cat}-${filters.sizes.join(',')}-${filters.uses.join(',')}-${filters.priceMin ?? ''}-${filters.priceMax ?? ''}-${filters.page}`}
+              // page intentionally excluded: "Load more" must append in place,
+              // not remount the whole grid (which also flashes loaded images).
+              key={`${filters.sort}-${filters.cat}-${filters.sizes.join(',')}-${filters.uses.join(',')}-${filters.priceMin ?? ''}-${filters.priceMax ?? ''}`}
             >
               {(products as Product[]).map((p) => (
                 <ShopProductCard key={p.id} product={p} mode="featured" />
@@ -317,7 +321,11 @@ export default async function ShopPage({ searchParams }: PageProps) {
           )}
 
           {products.length < totalCount ? (
-            <PlpLoadMore href={buildHref(filters, { page: filters.page + 1 })} />
+            <PlpLoadMore
+              href={buildHref(filters, { page: filters.page + 1 })}
+              shown={products.length}
+              total={totalCount}
+            />
           ) : null}
         </div>
       </div>
