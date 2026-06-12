@@ -7,7 +7,7 @@ Start with `.claude/skills/payload/SKILL.md` for a quick reference, then see `.c
 
 **HTTP seed APIs (demo content / fresh DB):** see **`doc/SEED_APIS.md`**. CLI: **`pnpm seed`** (interactive local/prod) or **`pnpm seed -- local all`**. HTTP: `GET /api/seed-all`, `seed-categories`, `seed-media`, etc.
 
-**Vercel deploy:** see **`doc/DEPLOY_VERCEL.md`** — env vars, `main` branch auto-deploy, one-time `pnpm cms:sync` on prod Postgres.
+**Vercel deploy:** production URL **https://punyakoti-taila.vercel.app** — see **`doc/DEPLOY_VERCEL.md`** (env vars, `main` auto-deploy, `pnpm db:sync -- prod` + `pnpm seed -- prod all`).
 
 **Media hosting (ImageKit):** all uploads go to ImageKit via a cloud-storage adapter; the storefront reads `imagekitUrl` from each Media doc. To mirror local `assets/` → ImageKit → Payload Media in one shot, run **`GET /api/sync-assets`** (streams NDJSON progress). To refresh the generated catalog (after uploading via the ImageKit dashboard), run **`pnpm imagekit:list`**. Full guide: **`doc/IMAGEKIT.md`**.
 

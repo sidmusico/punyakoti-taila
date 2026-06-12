@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 
+import { seedWriteContext } from '@/seed/seedContext'
 import { BOTTLE_ROW_PRODUCT_SLUGS } from '@/seed/bottleRowProductSlugs'
 import { homepageTabDefaults } from '@/seed/homepageTabDefaults'
 import { mergeMissing } from '@/seed/incrementalMerge'
@@ -120,7 +121,7 @@ export async function runHomepageTabSeed(
     await payload.updateGlobal({
       slug: 'homepage-settings',
       overrideAccess: true,
-      context: { disableRevalidate: true },
+      context: seedWriteContext,
       data: defaults,
     })
     return {
@@ -166,7 +167,7 @@ export async function runHomepageTabSeed(
   await payload.updateGlobal({
     slug: 'homepage-settings',
     overrideAccess: true,
-    context: { disableRevalidate: true },
+    context: seedWriteContext,
     data: merged,
   })
 

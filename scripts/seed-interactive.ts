@@ -2,10 +2,10 @@
  * Interactive content seed — pick database (local/prod) then seed action.
  *
  * Usage:
- *   pnpm seed                    # menus for target + action
- *   pnpm seed -- local           # local DB, then action menu
- *   pnpm seed -- prod all        # prod + full seed (with confirmation)
- *   pnpm seed -- local homepage  # local + homepage tab seed
+ *   pnpm seed                    # menus: target + action (default: full seed)
+ *   pnpm seed -- local all
+ *   pnpm seed -- prod all        # complete site seed (with confirmation)
+ *   pnpm seed -- local homepage --force
  */
 import 'dotenv/config'
 
@@ -14,10 +14,8 @@ import readline from 'node:readline/promises'
 import { stdin as input, stdout as output } from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-import { getPayload } from 'payload'
-
-import config from '../src/payload.config'
 import { syncAssetsToImageKit } from '../src/lib/imagekit/syncAssets'
+import { loadPayloadForTarget } from './load-payload'
 import { runCategoriesSeed } from '../src/seed/runCategoriesSeed'
 import { runFullSiteSeed } from '../src/seed/runFullSiteSeed'
 import { runHomepageTabSeed } from '../src/seed/runHomepageTabSeed'
@@ -25,16 +23,12 @@ import { runImageKitMediaSeed } from '../src/seed/runImageKitMediaSeed'
 import { runMediaCatalogSeed } from '../src/seed/runMediaCatalogSeed'
 import { runPlpCatalogSeed } from '../src/seed/runPlpCatalogSeed'
 import { runProductCatalogSeed } from '../src/seed/runProductCatalogSeed'
+import { runServiceLocationsSeed } from '../src/seed/runServiceLocationsSeed'
 import { runSitePagesSeed } from '../src/seed/runSitePagesSeed'
 import { runStorefrontGlobalsSeed } from '../src/seed/runStorefrontGlobalsSeed'
 import { runTestimonialsSeed } from '../src/seed/runTestimonialsSeed'
 
-import {
-  applyDatabaseUrl,
-  confirmProd,
-  pickTarget,
-  type Target,
-} from './cli-target'
+import { confirmProd, pickTarget, type Target } from './cli-target'
 
 type SeedKey =
   | 'all'
@@ -48,31 +42,61 @@ type SeedKey =
   | 'homepage'
   | 'pages'
   | 'testimonials'
+  | 'service-locations'
   | 'sync-assets'
 
 const SEED_OPTIONS: Array<{ key: SeedKey; label: string; force?: boolean }> = [
-  { key: 'all', label: 'Full site seed (media → products → PLP → pages → testimonials → globals)' },
-  { key: 'sync-assets', label: 'Sync local assets/ → ImageKit → Payload media' },
+  {
+    key: 'all',
+    label:
+      'Complete site seed (assets → media → products → PLP → testimonials → locations → homepage → pages → globals)',
+  },
+  { key: 'sync-assets', label: 'Sync local assets/ → ImageKit → Payload media only' },
   { key: 'imagekit-media', label: 'ImageKit catalog → Payload media docs' },
   { key: 'categories', label: 'Categories only' },
   { key: 'media', label: 'Media catalog (legacy Unsplash URLs)' },
   { key: 'products', label: 'Products + categories' },
   { key: 'plp', label: 'PLP catalog (chip categories + district products)', force: true },
+  { key: 'testimonials', label: 'Testimonials with portrait images', force: true },
+  { key: 'service-locations', label: 'Service locations (homepage marquee cities)' },
+  { key: 'homepage', label: 'Homepage settings (all bands + product wiring)', force: true },
   { key: 'site-pages', label: 'CMS pages (block layouts)' },
   { key: 'storefront-globals', label: 'Storefront globals (shop, cart, account, …)' },
-  { key: 'homepage', label: 'Homepage settings tab (all homepage bands)', force: true },
   { key: 'pages', label: 'Site pages + storefront globals' },
-  { key: 'testimonials', label: 'Testimonials with portrait images', force: true },
 ]
 
 function summarize(rows: { status: string }[]) {
   return {
     total: rows.length,
     created: rows.filter((r) => r.status === 'created').length,
-    updated: rows.filter((r) => r.status === 'updated').length,
+    updated: rows.filter(
+      (r) => r.status === 'updated' || r.status === 'images_updated' || r.status === 'forced',
+    ).length,
     skipped: rows.filter((r) => r.status === 'skipped').length,
     errors: rows.filter((r) => r.status === 'error').length,
   }
+}
+
+function printSummary(label: string, summary: ReturnType<typeof summarize>) {
+  const pending = summary.errors > 0 ? '  ⚠ errors' : ''
+  console.log(
+    `  ${label.padEnd(22)} created=${summary.created} updated=${summary.updated} skipped=${summary.skipped} errors=${summary.errors}${pending}`,
+  )
+}
+
+function printFullSeedReport(steps: Awaited<ReturnType<typeof runFullSiteSeed>>['steps']) {
+  console.log('\n── Seed summary ──')
+  let totalErrors = 0
+  for (const s of steps) {
+    printSummary(s.step, s.summary)
+    totalErrors += s.summary.errors
+  }
+  if (totalErrors > 0) {
+    console.log('\n  Some steps had errors — see JSON below for details.\n')
+  } else {
+    console.log('\n  All steps completed with no errors.\n')
+  }
+  console.log(JSON.stringify({ summary: steps.map((s) => ({ step: s.step, ...s.summary })) }, null, 2))
 }
 
 async function askForce(actionLabel: string): Promise<boolean> {
@@ -102,13 +126,13 @@ async function pickSeed(argv: string[]): Promise<SeedKey> {
   return SEED_OPTIONS[idx]?.key ?? 'all'
 }
 
-async function runSeedAction(key: SeedKey, force: boolean) {
-  const payload = await getPayload({ config })
+async function runSeedAction(target: Target, key: SeedKey, force: boolean) {
+  const payload = await loadPayloadForTarget(target)
 
   switch (key) {
     case 'all': {
       const { steps } = await runFullSiteSeed(payload)
-      console.log(JSON.stringify({ summary: steps.map((s) => ({ step: s.step, ...s.summary })) }, null, 2))
+      printFullSeedReport(steps)
       return
     }
     case 'categories': {
@@ -171,6 +195,11 @@ async function runSeedAction(key: SeedKey, force: boolean) {
       console.log(JSON.stringify({ summary: summarize(results), results }, null, 2))
       return
     }
+    case 'service-locations': {
+      const { results } = await runServiceLocationsSeed(payload)
+      console.log(JSON.stringify({ summary: summarize(results), results }, null, 2))
+      return
+    }
     case 'sync-assets': {
       const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
       const assetsRoot = path.join(repoRoot, 'assets')
@@ -195,7 +224,6 @@ async function runSeedAction(key: SeedKey, force: boolean) {
 async function main() {
   const argv = process.argv.slice(2).filter((a) => a !== '--')
   const target = await pickTarget(argv, 'Content seed')
-  applyDatabaseUrl(target)
 
   const seedKey = await pickSeed(argv)
   const option = SEED_OPTIONS.find((o) => o.key === seedKey)!
@@ -215,7 +243,7 @@ async function main() {
 
   console.log(`\n[seed] ${option.label} → ${target}\n`)
 
-  await runSeedAction(seedKey, force)
+  await runSeedAction(target, seedKey, force)
   console.log('\n[seed] Done.\n')
   process.exit(0)
 }

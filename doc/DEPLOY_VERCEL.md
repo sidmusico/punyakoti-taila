@@ -1,5 +1,7 @@
 # Deploy to Vercel (main branch)
 
+**Production URL:** [https://punyakoti-taila.vercel.app](https://punyakoti-taila.vercel.app)
+
 Connect this GitHub repo in [Vercel](https://vercel.com/new). Vercel auto-detects **Next.js** + **pnpm** (`pnpm-lock.yaml`). Every push to **`main`** triggers a production deployment.
 
 ## 1. Import project
@@ -22,7 +24,7 @@ Add these in **Project Settings → Environment Variables** for **Production** (
 | `DATABASE_URL` | Yes | Supabase → **Connect** → copy the **pooler** URI (not `db.*.supabase.co`). Example for this project: `postgresql://postgres.dvjirzgoedmgofrmxwwj:YOUR_PASSWORD@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require` — URL-encode `@` in passwords (`taila@punyakoti` → `taila%40punyakoti`). Reset the DB password under **Settings → Database** if auth fails. |
 | `PAYLOAD_SECRET` | Yes | Long random string (same as local). |
 | `PAYLOAD_DISABLE_DB_PUSH` | Yes | `true` — schema is synced via `pnpm cms:sync` locally/CI, not at runtime on Vercel. |
-| `NEXT_PUBLIC_SERVER_URL` | Yes | Canonical site URL, no trailing slash, e.g. `https://punyakotitaila.com` or `https://your-project.vercel.app` until custom domain is live. |
+| `NEXT_PUBLIC_SERVER_URL` | Yes | `https://punyakoti-taila.vercel.app` (no trailing slash). Update when a custom domain (e.g. `punyakotitaila.com`) goes live. |
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | `https://dvjirzgoedmgofrmxwwj.supabase.co` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase Dashboard → **Project Settings → API** → `anon` key |
 | `IMAGEKIT_PUBLIC_KEY` | Yes | ImageKit dashboard |
@@ -58,7 +60,7 @@ This creates `customers`, storefront globals tables, etc. on Supabase.
 Optional — seed demo content on production (destructive on some routes; read `doc/SEED_APIS.md`):
 
 ```bash
-curl -s -H "x-cron-secret: $CRON_SECRET" "https://<your-domain>/api/seed-all?secret=$CRON_SECRET"
+curl -s -H "x-cron-secret: $CRON_SECRET" "https://punyakoti-taila.vercel.app/api/seed-all?secret=$CRON_SECRET"
 ```
 
 ## 4. Supabase Auth (production URLs)
@@ -67,8 +69,8 @@ In Supabase Dashboard → **Authentication → URL Configuration**:
 
 | Setting | Value |
 |---------|--------|
-| Site URL | `https://<your-production-domain>` |
-| Redirect URLs | `https://<your-production-domain>/auth/callback`, `https://*.vercel.app/auth/callback`, `http://localhost:3000/auth/callback` |
+| Site URL | `https://punyakoti-taila.vercel.app` |
+| Redirect URLs | `https://punyakoti-taila.vercel.app/auth/callback`, `https://*.vercel.app/auth/callback`, `http://localhost:3000/auth/callback` |
 
 Google OAuth redirect in **Google Cloud Console** stays:
 
@@ -91,7 +93,7 @@ git push origin main  →  Vercel build  →  Production URL live
 
 Build steps: `pnpm install` → `pnpm build` → `postbuild` runs `next-sitemap`.
 
-Admin panel: `https://<your-domain>/admin` — create the first Payload **admin user** on prod if none exists.
+Admin panel: [https://punyakoti-taila.vercel.app/admin](https://punyakoti-taila.vercel.app/admin) — create the first Payload **admin user** on prod if none exists.
 
 ## 7. Verify after deploy
 

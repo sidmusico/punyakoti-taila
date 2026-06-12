@@ -9,6 +9,10 @@ declare global {
       /** Set to `true` to skip Drizzle dev push (avoids interactive prompts blocking Next dev). */
       PAYLOAD_DISABLE_DB_PUSH?: string
       NEXT_PUBLIC_SERVER_URL: string
+      /** Production storefront URL (reference / `auth:configure-urls`; set `NEXT_PUBLIC_SERVER_URL` on Vercel). */
+      NEXT_PUBLIC_SERVER_URL_PROD?: string
+      /** Supabase Management API — `pnpm auth:configure-urls` only; never expose to the browser. */
+      SUPABASE_ACCESS_TOKEN?: string
       VERCEL_PROJECT_PRODUCTION_URL?: string
       NEXT_PUBLIC_SUPABASE_URL: string
       NEXT_PUBLIC_SUPABASE_ANON_KEY: string

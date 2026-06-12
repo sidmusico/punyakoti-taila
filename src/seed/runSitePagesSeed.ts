@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 
+import { seedWriteContext } from '@/seed/seedContext'
 import { SITE_PAGES_SEED } from '@/seed/sitePagesSeed'
 
 export type PageSeedResult = {
@@ -39,6 +40,7 @@ export async function runSitePagesSeed(payload: Payload): Promise<{ results: Pag
       const created = await payload.create({
         collection: 'pages',
         overrideAccess: true,
+        context: seedWriteContext,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data: {
           title: page.title,

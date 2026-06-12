@@ -29,7 +29,7 @@ That updates the DB schema and regenerates types. Seed routes assume tables alre
 
 | Endpoint | Purpose |
 |----------|---------|
-| **`GET /api/seed-all`** | Runs the full pipeline in order: **media → ImageKit-media → products (includes categories) → pages → storefront + homepage globals**. Best single call for a new empty DB. |
+| **`GET /api/seed-all`** | Complete pipeline: **sync-assets → media → ImageKit-media → products → PLP → testimonials → service locations → homepage → pages → storefront globals**. Best single call for a new empty DB. |
 | **`GET /api/sync-assets`** | Mirror local `assets/` → ImageKit → Payload Media. Streams progress as NDJSON. The everyday workflow when you've added new files locally. See [IMAGEKIT.md §4](./IMAGEKIT.md#4-api-endpoints). |
 | **`GET /api/seed-imagekit-media`** | Cold-boot seed: every file in [imagekitCatalog.generated.ts](../src/seed/imagekitCatalog.generated.ts) becomes a Media doc. Run after `pnpm imagekit:list`. |
 
@@ -45,6 +45,12 @@ Example (HTTP, dev server running):
 
 ```bash
 curl -sS "http://localhost:3000/api/seed-all" | jq .
+```
+
+Production ([punyakoti-taila.vercel.app](https://punyakoti-taila.vercel.app)) — requires `CRON_SECRET`:
+
+```bash
+curl -sS "https://punyakoti-taila.vercel.app/api/seed-all?secret=$CRON_SECRET" | jq .
 ```
 
 ---

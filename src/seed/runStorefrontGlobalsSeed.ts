@@ -1,6 +1,7 @@
 import type { Payload } from 'payload'
 
 import { isHomepageGlobalUnset } from '@/seed/homepageTabDefaults'
+import { seedWriteContext } from '@/seed/seedContext'
 import { readGeneratedGlobalJson } from '@/seed/readGeneratedGlobalJson'
 import { runHomepageTabSeed } from '@/seed/runHomepageTabSeed'
 import {
@@ -133,6 +134,7 @@ export async function runStorefrontGlobalsSeed(
       await payload.updateGlobal({
         slug: g.slug,
         overrideAccess: true,
+        context: seedWriteContext,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         data: data as any,
       })
@@ -174,7 +176,7 @@ export async function runStorefrontGlobalsSeed(
         await payload.updateGlobal({
           slug: 'homepage-settings',
           overrideAccess: true,
-          context: { disableRevalidate: true },
+          context: seedWriteContext,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           data: fromFile as any,
         })

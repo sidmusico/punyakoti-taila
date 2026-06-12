@@ -106,14 +106,26 @@ Do this in the [Supabase Dashboard](https://supabase.com/dashboard) for project 
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `anon` / publishable key |
 | `SUPABASE_SERVICE_ROLE_KEY` | `service_role` (server only) |
 
-### 2.2 URL configuration
+### 2.2 URL configuration (required for Google SSO)
 
-**Authentication → URL Configuration**
+**Authentication → URL Configuration** in the [Supabase Dashboard](https://supabase.com/dashboard/project/dvjirzgoedmgofrmxwwj/auth/url-configuration).
 
-| Setting | Production value |
-|---------|------------------|
-| Site URL | `https://punyakotitaila.com` (or your Vercel URL) |
-| Redirect URLs | `https://punyakotitaila.com/auth/callback`, `http://localhost:3000/auth/callback` |
+| Setting | Value |
+|---------|--------|
+| **Site URL** | `https://punyakoti-taila.vercel.app` |
+| **Redirect URLs** | `https://punyakoti-taila.vercel.app/auth/callback` |
+| | `https://*.vercel.app/auth/callback` |
+| | `http://localhost:3000/auth/callback` |
+
+If **Site URL** is still `http://localhost:3000`, Google sign-in from production will redirect to localhost with `?code=…` — update Site URL and add the redirect URLs above.
+
+**Vercel:** set `NEXT_PUBLIC_SERVER_URL=https://punyakoti-taila.vercel.app` (Production env). Local `.env` keeps `http://localhost:3000`.
+
+**CLI (optional):** with a [Supabase access token](https://supabase.com/dashboard/account/tokens):
+
+```bash
+SUPABASE_ACCESS_TOKEN=your_token pnpm auth:configure-urls
+```
 
 ### 2.3 Email provider
 
@@ -175,7 +187,7 @@ To finish **production** phone + Google login, please provide or confirm:
 
 1. **Google OAuth** — Client ID + Secret (Web application), with redirect URI `https://<ref>.supabase.co/auth/v1/callback`
 2. **Twilio** (or SMS provider Supabase supports) — for Indian mobile OTP in prod
-3. **Production site URL** — exact domain for Vercel `NEXT_PUBLIC_SERVER_URL` and Supabase Site URL
+3. **Production site URL** — `https://punyakoti-taila.vercel.app` for Vercel `NEXT_PUBLIC_SERVER_URL` and Supabase Site URL
 4. **Prod Supabase MCP** — when connected in Cursor (`project-0-punyakoti-taila-supabase-taila-prod`), the agent can read project URL/keys, run advisors, and inspect auth-related tables. Auth provider settings (Google, Twilio, redirect URLs) are still configured in the Supabase Dashboard (MCP cannot toggle Auth providers today).
 
 ---

@@ -6,6 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 
 import { Wordmark } from '@/components/ui/pt/Wordmark'
+import { getAuthCallbackUrl } from '@/lib/auth/authUrls'
 import { createClient } from '@/lib/supabase/client'
 
 type AuthMethod = 'phone' | 'email'
@@ -46,6 +47,11 @@ export function LoginClient() {
   const [apiError, setApiError] = useState(authError === 'auth_callback' ? 'Sign-in failed. Try again.' : '')
 
   const supabase = createClient()
+
+  const authCallbackUrl = () =>
+    getAuthCallbackUrl({
+      browserOrigin: typeof window !== 'undefined' ? window.location.origin : undefined,
+    })
 
   const finishSignIn = async () => {
     await syncCustomer()
@@ -110,7 +116,7 @@ export function LoginClient() {
         password,
         options: {
           data: { full_name: name, name },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
+          emailRedirectTo: authCallbackUrl(),
         },
       })
       setLoading(false)
@@ -140,7 +146,7 @@ export function LoginClient() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: authCallbackUrl(),
         queryParams: { prompt: 'select_account' },
       },
     })
