@@ -19,7 +19,7 @@ Add these in **Project Settings → Environment Variables** for **Production** (
 
 | Variable | Required | Notes |
 |----------|----------|--------|
-| `DATABASE_URL` | Yes | Supabase Dashboard → **Connect** → **Session pooler** → copy URI. Append `?sslmode=require` if missing. **URL-encode `@` in the password** (`taila@punyakoti` → `taila%40punyakoti`). Do **not** use the direct `db.*.supabase.co:5432` host on Vercel — use the `aws-0-….pooler.supabase.com` URI from the dashboard. |
+| `DATABASE_URL` | Yes | Supabase → **Connect** → copy the **pooler** URI (not `db.*.supabase.co`). Example for this project: `postgresql://postgres.dvjirzgoedmgofrmxwwj:YOUR_PASSWORD@aws-1-ap-northeast-2.pooler.supabase.com:6543/postgres?sslmode=require` — URL-encode `@` in passwords (`taila@punyakoti` → `taila%40punyakoti`). Reset the DB password under **Settings → Database** if auth fails. |
 | `PAYLOAD_SECRET` | Yes | Long random string (same as local). |
 | `PAYLOAD_DISABLE_DB_PUSH` | Yes | `true` — schema is synced via `pnpm cms:sync` locally/CI, not at runtime on Vercel. |
 | `NEXT_PUBLIC_SERVER_URL` | Yes | Canonical site URL, no trailing slash, e.g. `https://punyakotitaila.com` or `https://your-project.vercel.app` until custom domain is live. |

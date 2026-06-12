@@ -1,4 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
+import dns from 'node:dns'
 import sharp from 'sharp'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
@@ -33,9 +34,10 @@ const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
 /**
- * Supabase cloud + Node `pg`: `sslmode=require` in the URL forces strict cert
- * verification and breaks on Vercel (`SELF_SIGNED_CERT_IN_CHAIN`). Strip the
- * query flag and pass explicit pool SSL instead.
+ * Supabase cloud + Node `pg` on Vercel/serverless:
+ * - `sslmode=require` in the URL → strict TLS → `SELF_SIGNED_CERT_IN_CHAIN`
+ * - `db.*.supabase.co` often resolves to IPv6 first → `ENETUNREACH` on build
+ * Strip sslmode, set explicit SSL, and force IPv4 DNS lookup.
  */
 function postgresPoolOptions() {
   const raw = process.env.DATABASE_URL || ''
@@ -43,18 +45,31 @@ function postgresPoolOptions() {
     return { connectionString: raw }
   }
 
-  const usesSupabaseSsl =
-    raw.includes('supabase.co') ||
-    raw.includes('pooler.supabase.com') ||
-    raw.includes('sslmode=require')
+  const isSupabaseCloud =
+    raw.includes('supabase.co') || raw.includes('pooler.supabase.com')
 
-  const connectionString = usesSupabaseSsl
+  const usesSsl =
+    isSupabaseCloud || raw.includes('sslmode=require')
+
+  const connectionString = usesSsl
     ? raw.replace(/([?&])sslmode=[^&]+&?/g, '$1').replace(/[?&]$/, '')
     : raw
 
   return {
     connectionString,
-    ...(usesSupabaseSsl ? { ssl: { rejectUnauthorized: false } } : {}),
+    ...(usesSsl ? { ssl: { rejectUnauthorized: false } } : {}),
+    ...(isSupabaseCloud
+      ? {
+          // Prefer IPv4 — Vercel build workers often cannot reach Supabase IPv6 endpoints.
+          lookup: (
+            hostname: string,
+            _opts: dns.LookupOptions,
+            callback: (err: NodeJS.ErrnoException | null, address: string, family?: number) => void,
+          ) => {
+            dns.lookup(hostname, { family: 4 }, callback)
+          },
+        }
+      : {}),
   }
 }
 

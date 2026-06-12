@@ -420,6 +420,91 @@ export const accountFields: Field[] = [
             ],
           },
           {
+            label: 'Tabs & headlines',
+            description: 'Tokens: {firstName} {memberSince} {orders} {bottles} {count}',
+            fields: [
+              { name: 'tabLabelDashboard', type: 'text', defaultValue: 'Dashboard' },
+              { name: 'tabLabelOrders', type: 'text', defaultValue: 'Orders' },
+              { name: 'tabLabelSubscriptions', type: 'text', defaultValue: 'Subscriptions' },
+              { name: 'tabLabelWishlist', type: 'text', defaultValue: 'Saved bottles' },
+              { name: 'overviewEyebrow', type: 'text', defaultValue: 'Member since {memberSince}' },
+              { name: 'overviewTitle', type: 'text', defaultValue: 'Hello, ' },
+              { name: 'overviewItalic', type: 'text', defaultValue: '{firstName}.' },
+              { name: 'ordersEyebrow', type: 'text', defaultValue: '{orders} lifetime · {bottles} bottles' },
+              { name: 'ordersTitle', type: 'text', defaultValue: 'Your ' },
+              { name: 'ordersItalic', type: 'text', defaultValue: 'orders.' },
+              { name: 'subsEyebrowActive', type: 'text', defaultValue: '{count} on your shelf · saving 15% per delivery' },
+              { name: 'subsEyebrowEmpty', type: 'text', defaultValue: 'Save 15% on every delivery' },
+              { name: 'subsTitle', type: 'text', defaultValue: 'Your ' },
+              { name: 'subsItalic', type: 'text', defaultValue: 'shelf.' },
+              { name: 'wishlistEyebrow', type: 'text', defaultValue: 'Saved for later' },
+              { name: 'wishlistTitle', type: 'text', defaultValue: 'Bottles you ' },
+              { name: 'wishlistItalic', type: 'text', defaultValue: 'noted.' },
+            ],
+          },
+          {
+            label: 'Dashboard',
+            fields: [
+              { name: 'statOrdersLabel', type: 'text', defaultValue: 'Orders' },
+              { name: 'statOrdersSub', type: 'text', defaultValue: 'lifetime' },
+              { name: 'statBottlesLabel', type: 'text', defaultValue: 'Bottles' },
+              { name: 'statBottlesSub', type: 'text', defaultValue: 'delivered' },
+              { name: 'statSpentLabel', type: 'text', defaultValue: 'Spent' },
+              { name: 'statSpentSub', type: 'text', defaultValue: 'with us' },
+              { name: 'statMemberLabel', type: 'text', defaultValue: 'Member' },
+              { name: 'onItsWayHeading', type: 'text', defaultValue: 'On its way' },
+            ],
+          },
+          {
+            label: 'Subscriptions',
+            fields: [
+              { name: 'bandShelfLabel', type: 'text', defaultValue: 'On your shelf' },
+              { name: 'bandSpentLabel', type: 'text', defaultValue: 'Spent on subscriptions' },
+              { name: 'bandSavedLabel', type: 'text', defaultValue: 'Saved at 15% off' },
+              { name: 'addSubscriptionLabel', type: 'text', defaultValue: '+ Add a subscription' },
+              { name: 'shelfHeading', type: 'text', defaultValue: 'Your shelf' },
+              { name: 'subscribedChipLabel', type: 'text', defaultValue: 'Subscribed' },
+              {
+                name: 'emptyShelfMessage',
+                type: 'text',
+                defaultValue: 'Nothing on your shelf yet. Choose “Subscribe & save” on any oil to get 15% off every delivery.',
+              },
+              { name: 'browseOilsLabel', type: 'text', defaultValue: 'Browse oils' },
+              {
+                name: 'shelfFootnote',
+                type: 'text',
+                defaultValue:
+                  'Automatic deliveries with skip / pause controls are coming soon — for now, reorder your shelf in one click at the same subscriber price.',
+              },
+            ],
+          },
+          {
+            label: 'Wishlist',
+            fields: [
+              {
+                name: 'emptyWishlistMessage',
+                type: 'text',
+                defaultValue: 'Nothing saved yet. Tap the heart on any bottle to keep it here.',
+              },
+              { name: 'browseCollectionLabel', type: 'text', defaultValue: 'Browse the collection' },
+            ],
+          },
+          {
+            label: 'Sidebar teaser',
+            fields: [
+              { name: 'teaserEnabled', type: 'checkbox', defaultValue: true },
+              { name: 'teaserEyebrow', type: 'text', defaultValue: 'Subscribe & save' },
+              { name: 'teaserTitle', type: 'text', defaultValue: 'Never run out.' },
+              {
+                name: 'teaserBody',
+                type: 'text',
+                defaultValue: '15% off every delivery · pause or cancel anytime.',
+              },
+              { name: 'teaserCtaLabel', type: 'text', defaultValue: 'Browse oils' },
+              { name: 'teaserCtaHref', type: 'text', defaultValue: '/shop' },
+            ],
+          },
+          {
             label: 'Sidebar nav',
             fields: [
               {

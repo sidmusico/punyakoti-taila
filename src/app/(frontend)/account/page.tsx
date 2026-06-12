@@ -22,12 +22,60 @@ export async function generateMetadata(): Promise<Metadata> {
 
 type TabId = 'overview' | 'orders' | 'subscriptions' | 'wishlist'
 
-const TABS: Array<{ id: TabId; label: string; icon: 'user' | 'package' | 'heart' | 'refresh' }> = [
-  { id: 'overview', label: 'Dashboard', icon: 'user' },
-  { id: 'orders', label: 'Orders', icon: 'package' },
-  { id: 'subscriptions', label: 'Subscriptions', icon: 'refresh' },
-  { id: 'wishlist', label: 'Saved bottles', icon: 'heart' },
-]
+/**
+ * New CMS copy fields (Account global → Tabs & headlines / Dashboard /
+ * Subscriptions / Wishlist / Sidebar teaser). Typed locally so the page
+ * compiles before `pnpm cms:sync` regenerates payload-types.
+ */
+type AccountExtraCopy = Partial<{
+  tabLabelDashboard: string | null
+  tabLabelOrders: string | null
+  tabLabelSubscriptions: string | null
+  tabLabelWishlist: string | null
+  overviewEyebrow: string | null
+  overviewTitle: string | null
+  overviewItalic: string | null
+  ordersEyebrow: string | null
+  ordersTitle: string | null
+  ordersItalic: string | null
+  subsEyebrowActive: string | null
+  subsEyebrowEmpty: string | null
+  subsTitle: string | null
+  subsItalic: string | null
+  wishlistEyebrow: string | null
+  wishlistTitle: string | null
+  wishlistItalic: string | null
+  statOrdersLabel: string | null
+  statOrdersSub: string | null
+  statBottlesLabel: string | null
+  statBottlesSub: string | null
+  statSpentLabel: string | null
+  statSpentSub: string | null
+  statMemberLabel: string | null
+  onItsWayHeading: string | null
+  bandShelfLabel: string | null
+  bandSpentLabel: string | null
+  bandSavedLabel: string | null
+  addSubscriptionLabel: string | null
+  shelfHeading: string | null
+  subscribedChipLabel: string | null
+  emptyShelfMessage: string | null
+  browseOilsLabel: string | null
+  shelfFootnote: string | null
+  emptyWishlistMessage: string | null
+  browseCollectionLabel: string | null
+  teaserEnabled: boolean | null
+  teaserEyebrow: string | null
+  teaserTitle: string | null
+  teaserBody: string | null
+  teaserCtaLabel: string | null
+  teaserCtaHref: string | null
+}>
+
+/** "{firstName}" style token interpolation for CMS copy. */
+function interp(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{(\w+)\}/g, (_, k) => vars[k] ?? `{${k}}`)
+}
 
 function formatPrice(n: number) {
   return `₹${Math.round(n).toLocaleString('en-IN')}`
@@ -153,7 +201,15 @@ export default async function AccountPage({
   const { customer, email, phone } = session
   const { storefront } = await getStorefrontBundle()
   const a = storefront.account
+  const cms = (a ?? {}) as AccountExtraCopy
   const navItems = a?.navItems?.filter((n) => n.href && n.label) ?? []
+
+  const TABS: Array<{ id: TabId; label: string; icon: 'user' | 'package' | 'heart' | 'refresh' }> = [
+    { id: 'overview', label: cms.tabLabelDashboard ?? 'Dashboard', icon: 'user' },
+    { id: 'orders', label: cms.tabLabelOrders ?? 'Orders', icon: 'package' },
+    { id: 'subscriptions', label: cms.tabLabelSubscriptions ?? 'Subscriptions', icon: 'refresh' },
+    { id: 'wishlist', label: cms.tabLabelWishlist ?? 'Saved bottles', icon: 'heart' },
+  ]
 
   /* Live order data for this customer (depth 1 so reorder gets product slugs). */
   let orders: Order[] = []
@@ -223,28 +279,49 @@ export default async function AccountPage({
   const firstName = (customer.name || displayEmail).split(/[\s@]/)[0] || 'there'
   const memberSince = new Date(customer.createdAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
 
+  const tokenVars = {
+    firstName,
+    memberSince,
+    orders: String(lifetimeOrders),
+    bottles: String(lifetimeBottles),
+    count: String(shelf.length),
+  }
+  const t = (template: string) => interp(template, tokenVars)
+
   const meta =
     tab === 'orders'
-      ? { eyebrow: `${lifetimeOrders} lifetime · ${lifetimeBottles} bottles`, title: 'Your ', italic: 'orders.' }
+      ? {
+          eyebrow: t(cms.ordersEyebrow ?? '{orders} lifetime · {bottles} bottles'),
+          title: t(cms.ordersTitle ?? 'Your '),
+          italic: t(cms.ordersItalic ?? 'orders.'),
+        }
       : tab === 'subscriptions'
         ? {
             eyebrow: shelf.length
-              ? `${shelf.length} on your shelf · saving 15% per delivery`
-              : 'Save 15% on every delivery',
-            title: 'Your ',
-            italic: 'shelf.',
+              ? t(cms.subsEyebrowActive ?? '{count} on your shelf · saving 15% per delivery')
+              : t(cms.subsEyebrowEmpty ?? 'Save 15% on every delivery'),
+            title: t(cms.subsTitle ?? 'Your '),
+            italic: t(cms.subsItalic ?? 'shelf.'),
           }
         : tab === 'wishlist'
-          ? { eyebrow: 'Saved for later', title: 'Bottles you ', italic: 'noted.' }
-          : { eyebrow: `Member since ${memberSince}`, title: 'Hello, ', italic: `${firstName}.` }
+          ? {
+              eyebrow: t(cms.wishlistEyebrow ?? 'Saved for later'),
+              title: t(cms.wishlistTitle ?? 'Bottles you '),
+              italic: t(cms.wishlistItalic ?? 'noted.'),
+            }
+          : {
+              eyebrow: t(cms.overviewEyebrow ?? 'Member since {memberSince}'),
+              title: t(cms.overviewTitle ?? 'Hello, '),
+              italic: t(cms.overviewItalic ?? '{firstName}.'),
+            }
 
   const activeTabLabel = TABS.find((t) => t.id === tab)?.label
 
   const statCards = [
-    { l: 'Orders', v: String(lifetimeOrders), s: 'lifetime' },
-    { l: 'Bottles', v: String(lifetimeBottles), s: 'delivered' },
-    { l: 'Spent', v: formatPrice(lifetimeSpent), s: 'with us' },
-    { l: 'Member', v: memberSince.split(' ')[0] ?? '—', s: memberSince.split(' ')[1] ?? '' },
+    { l: cms.statOrdersLabel ?? 'Orders', v: String(lifetimeOrders), s: cms.statOrdersSub ?? 'lifetime' },
+    { l: cms.statBottlesLabel ?? 'Bottles', v: String(lifetimeBottles), s: cms.statBottlesSub ?? 'delivered' },
+    { l: cms.statSpentLabel ?? 'Spent', v: formatPrice(lifetimeSpent), s: cms.statSpentSub ?? 'with us' },
+    { l: cms.statMemberLabel ?? 'Member', v: memberSince.split(' ')[0] ?? '—', s: memberSince.split(' ')[1] ?? '' },
   ]
 
   return (
@@ -353,21 +430,27 @@ export default async function AccountPage({
             </div>
           </nav>
 
-          {/* subscribe teaser (design: dark tier card) */}
-          <div className="mt-7 rounded-xl p-[18px]" style={{ background: 'var(--green-950)', color: 'var(--cream-100)' }}>
-            <div className="pt-eyebrow" style={{ color: 'var(--mustard-400)' }}>Subscribe &amp; save</div>
-            <div className="mt-1.5" style={{ fontFamily: 'var(--font-display)', fontSize: 22 }}>Never run out.</div>
-            <p className="mt-1.5 text-xs leading-relaxed" style={{ color: 'rgba(245,239,224,0.6)' }}>
-              15% off every delivery · pause or cancel anytime.
-            </p>
-            <Link
-              href="/shop"
-              className="mt-3 inline-block rounded-lg px-4 py-2 text-xs font-semibold transition-opacity hover:opacity-90"
-              style={{ background: 'var(--mustard-500)', color: 'var(--green-950)' }}
-            >
-              Browse oils
-            </Link>
-          </div>
+          {/* subscribe teaser (design: dark tier card) — CMS-toggleable */}
+          {cms.teaserEnabled !== false && (
+            <div className="mt-7 rounded-xl p-[18px]" style={{ background: 'var(--green-950)', color: 'var(--cream-100)' }}>
+              <div className="pt-eyebrow" style={{ color: 'var(--mustard-400)' }}>
+                {cms.teaserEyebrow ?? 'Subscribe & save'}
+              </div>
+              <div className="mt-1.5" style={{ fontFamily: 'var(--font-display)', fontSize: 22 }}>
+                {cms.teaserTitle ?? 'Never run out.'}
+              </div>
+              <p className="mt-1.5 text-xs leading-relaxed" style={{ color: 'rgba(245,239,224,0.6)' }}>
+                {cms.teaserBody ?? '15% off every delivery · pause or cancel anytime.'}
+              </p>
+              <Link
+                href={cms.teaserCtaHref ?? '/shop'}
+                className="mt-3 inline-block rounded-lg px-4 py-2 text-xs font-semibold transition-opacity hover:opacity-90"
+                style={{ background: 'var(--mustard-500)', color: 'var(--green-950)' }}
+              >
+                {cms.teaserCtaLabel ?? 'Browse oils'}
+              </Link>
+            </div>
+          )}
         </aside>
 
         {/* ── Main content ────────────────────────────────────────────── */}
@@ -389,7 +472,7 @@ export default async function AccountPage({
               {activeOrder && (
                 <section>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 28, color: 'var(--green-900)', margin: '0 0 14px' }}>
-                    On its way
+                    {cms.onItsWayHeading ?? 'On its way'}
                   </h2>
                   <OrderRow order={activeOrder} />
                 </section>
@@ -469,9 +552,9 @@ export default async function AccountPage({
                 style={{ background: 'var(--green-950)', color: 'var(--cream-100)' }}
               >
                 {[
-                  { l: 'On your shelf', v: String(shelf.length) },
-                  { l: 'Spent on subscriptions', v: formatPrice(subscriptionSpend) },
-                  { l: 'Saved at 15% off', v: subscriptionSavings > 0 ? `~${formatPrice(subscriptionSavings)}` : '—' },
+                  { l: cms.bandShelfLabel ?? 'On your shelf', v: String(shelf.length) },
+                  { l: cms.bandSpentLabel ?? 'Spent on subscriptions', v: formatPrice(subscriptionSpend) },
+                  { l: cms.bandSavedLabel ?? 'Saved at 15% off', v: subscriptionSavings > 0 ? `~${formatPrice(subscriptionSavings)}` : '—' },
                 ].map(({ l, v }) => (
                   <div key={l} className="min-w-[120px]">
                     <div className="pt-eyebrow" style={{ color: 'var(--mustard-400)' }}>{l}</div>
@@ -483,21 +566,21 @@ export default async function AccountPage({
                   className="ml-auto rounded-lg px-5 py-2.5 text-sm font-semibold transition-opacity hover:opacity-90"
                   style={{ background: 'var(--mustard-500)', color: 'var(--green-950)' }}
                 >
-                  + Add a subscription
+                  {cms.addSubscriptionLabel ?? '+ Add a subscription'}
                 </Link>
               </div>
 
               {shelf.length === 0 ? (
                 <EmptyState
                   icon={<Icons.refresh size={36} />}
-                  message="Nothing on your shelf yet. Choose “Subscribe & save” on any oil to get 15% off every delivery."
-                  ctaLabel="Browse oils"
+                  message={cms.emptyShelfMessage ?? 'Nothing on your shelf yet. Choose “Subscribe & save” on any oil to get 15% off every delivery.'}
+                  ctaLabel={cms.browseOilsLabel ?? 'Browse oils'}
                   ctaHref="/shop"
                 />
               ) : (
                 <section>
                   <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 28, color: 'var(--green-900)', margin: '0 0 14px' }}>
-                    Your shelf
+                    {cms.shelfHeading ?? 'Your shelf'}
                   </h2>
                   <div className="flex flex-col gap-3">
                     {shelf.map((s) => (
@@ -512,7 +595,7 @@ export default async function AccountPage({
                               className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider"
                               style={{ background: 'var(--green-100)', color: 'var(--green-800)' }}
                             >
-                              Subscribed
+                              {cms.subscribedChipLabel ?? 'Subscribed'}
                             </span>
                             <span style={{ fontFamily: 'var(--font-mono)' }}>
                               Delivery #{s.deliveries}
@@ -531,8 +614,8 @@ export default async function AccountPage({
                     ))}
                   </div>
                   <p className="mt-4 text-xs" style={{ color: 'var(--ink-400)' }}>
-                    Automatic deliveries with skip / pause controls are coming soon — for now, reorder your
-                    shelf in one click at the same subscriber price.
+                    {cms.shelfFootnote ??
+                      'Automatic deliveries with skip / pause controls are coming soon — for now, reorder your shelf in one click at the same subscriber price.'}
                   </p>
                 </section>
               )}
@@ -542,8 +625,8 @@ export default async function AccountPage({
           {tab === 'wishlist' && (
             <EmptyState
               icon={<Icons.heart size={36} />}
-              message="Nothing saved yet. Tap the heart on any bottle to keep it here."
-              ctaLabel="Browse the collection"
+              message={cms.emptyWishlistMessage ?? 'Nothing saved yet. Tap the heart on any bottle to keep it here.'}
+              ctaLabel={cms.browseCollectionLabel ?? 'Browse the collection'}
               ctaHref="/shop"
             />
           )}
