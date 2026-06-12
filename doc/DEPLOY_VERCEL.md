@@ -19,7 +19,7 @@ Add these in **Project Settings → Environment Variables** for **Production** (
 
 | Variable | Required | Notes |
 |----------|----------|--------|
-| `DATABASE_URL` | Yes | Supabase **Session pooler** URI (port `5432`) or **Transaction pooler** (`6543`). Append `?sslmode=require`. From Dashboard → **Connect**. |
+| `DATABASE_URL` | Yes | Supabase Dashboard → **Connect** → **Session pooler** → copy URI. Append `?sslmode=require` if missing. **URL-encode `@` in the password** (`taila@punyakoti` → `taila%40punyakoti`). Do **not** use the direct `db.*.supabase.co:5432` host on Vercel — use the `aws-0-….pooler.supabase.com` URI from the dashboard. |
 | `PAYLOAD_SECRET` | Yes | Long random string (same as local). |
 | `PAYLOAD_DISABLE_DB_PUSH` | Yes | `true` — schema is synced via `pnpm cms:sync` locally/CI, not at runtime on Vercel. |
 | `NEXT_PUBLIC_SERVER_URL` | Yes | Canonical site URL, no trailing slash, e.g. `https://punyakotitaila.com` or `https://your-project.vercel.app` until custom domain is live. |
@@ -107,7 +107,7 @@ Admin panel: `https://<your-domain>/admin` — create the first Payload **admin 
 |-------|-----|
 | Build fails TypeScript | Run `pnpm build` locally; fix errors before push |
 | `Missing NEXT_PUBLIC_SUPABASE_URL` | Add Supabase env vars in Vercel |
-| DB connection / SSL errors | Use pooler URI with `?sslmode=require`; prefer Session pooler for Payload |
+| DB connection / SSL errors | Use pooler URI with `?sslmode=require`; `payload.config.ts` sets `ssl.rejectUnauthorized: false` for Supabase. Prefer **Session pooler** (port 5432) for Payload |
 | Admin 500 / missing tables | Run `pnpm cms:sync` against prod `DATABASE_URL` |
 | Google login redirect error | Supabase + Google redirect URIs (see §4) |
 | Images 404 | Run `/api/sync-assets` or seed media; check ImageKit env vars |

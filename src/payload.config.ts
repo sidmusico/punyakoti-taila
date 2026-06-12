@@ -32,6 +32,32 @@ import { getServerSideURL } from './utilities/getURL'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
+/**
+ * Supabase cloud + Node `pg`: `sslmode=require` in the URL forces strict cert
+ * verification and breaks on Vercel (`SELF_SIGNED_CERT_IN_CHAIN`). Strip the
+ * query flag and pass explicit pool SSL instead.
+ */
+function postgresPoolOptions() {
+  const raw = process.env.DATABASE_URL || ''
+  if (!raw || raw.includes('sslmode=disable')) {
+    return { connectionString: raw }
+  }
+
+  const usesSupabaseSsl =
+    raw.includes('supabase.co') ||
+    raw.includes('pooler.supabase.com') ||
+    raw.includes('sslmode=require')
+
+  const connectionString = usesSupabaseSsl
+    ? raw.replace(/([?&])sslmode=[^&]+&?/g, '$1').replace(/[?&]$/, '')
+    : raw
+
+  return {
+    connectionString,
+    ...(usesSupabaseSsl ? { ssl: { rejectUnauthorized: false } } : {}),
+  }
+}
+
 export default buildConfig({
   admin: {
     components: {
@@ -72,9 +98,7 @@ export default buildConfig({
   // This config helps us configure global or default features that the other editors can inherit
   editor: defaultLexical,
   db: postgresAdapter({
-    pool: {
-      connectionString: process.env.DATABASE_URL || '',
-    },
+    pool: postgresPoolOptions(),
     // Dev schema push uses Drizzle Kit; ambiguous enum/table diffs open interactive prompts.
     // Without a TTY (Next dev), that can hang every request — set PAYLOAD_DISABLE_DB_PUSH=true
     // then run `supabase db reset` once and clear that var so a clean push can run.

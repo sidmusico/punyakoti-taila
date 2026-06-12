@@ -428,9 +428,9 @@ export const accountFields: Field[] = [
                 label: 'Account sidebar links',
                 defaultValue: [
                   { href: '/account', label: 'Profile', icon: 'user' },
-                  { href: '/account/orders', label: 'My Orders', icon: 'package' },
-                  { href: '/account/saved', label: 'Saved items', icon: 'heart' },
-                  { href: '/account/subscriptions', label: 'Subscriptions', icon: 'refresh' },
+                  { href: '/account?tab=orders', label: 'My Orders', icon: 'package' },
+                  { href: '/account?tab=subscriptions', label: 'Subscriptions', icon: 'refresh' },
+                  { href: '/account?tab=wishlist', label: 'Saved items', icon: 'heart' },
                 ],
                 fields: [
                   { name: 'href', type: 'text', required: true },
