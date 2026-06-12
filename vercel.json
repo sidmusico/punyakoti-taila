@@ -1,0 +1,23 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "installCommand": "pnpm install",
+  "buildCommand": "pnpm build",
+  "regions": ["bom1"],
+  "git": {
+    "deploymentEnabled": {
+      "main": true
+    }
+  },
+  "functions": {
+    "src/app/api/sync-assets/route.ts": {
+      "maxDuration": 300
+    },
+    "src/app/api/seed-all/route.ts": {
+      "maxDuration": 300
+    },
+    "src/app/(frontend)/next/seed/route.ts": {
+      "maxDuration": 60
+    }
+  }
+}

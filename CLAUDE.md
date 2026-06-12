@@ -7,6 +7,8 @@ Start with `.claude/skills/payload/SKILL.md` for a quick reference, then see `.c
 
 **HTTP seed APIs (demo content / fresh DB):** see **`doc/SEED_APIS.md`** (`GET /api/seed-all`, `seed-categories`, `seed-media`, `seed-products`, `seed-site-pages`, `seed-storefront-globals`, `seed-homepage`, `seed-pages`).
 
+**Vercel deploy:** see **`doc/DEPLOY_VERCEL.md`** — env vars, `main` branch auto-deploy, one-time `pnpm cms:sync` on prod Postgres.
+
 **Media hosting (ImageKit):** all uploads go to ImageKit via a cloud-storage adapter; the storefront reads `imagekitUrl` from each Media doc. To mirror local `assets/` → ImageKit → Payload Media in one shot, run **`GET /api/sync-assets`** (streams NDJSON progress). To refresh the generated catalog (after uploading via the ImageKit dashboard), run **`pnpm imagekit:list`**. Full guide: **`doc/IMAGEKIT.md`**.
 
 **Site frame (centered max-width):** the storefront is capped at `--site-max-width` (default `1600px`) and centered with side gutters on wider screens. New `position: fixed` overlays (cart drawer, future cookie banners, etc.) must use `right: var(--site-side-gutter)` (or `left:`) to stay aligned to the centered frame — see **`doc/SITE_FRAME.md`** for variables, fixed/sticky positioning rules, and per-page opt-out.

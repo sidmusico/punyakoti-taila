@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 
+import type { Testimonial } from '@/payload-types'
 import { resolveImageKitMediaId } from '@/seed/imageKitMediaResolve'
 import { TESTIMONIALS_CATALOG } from '@/seed/testimonialsCatalogSeed'
 
@@ -33,8 +34,20 @@ export async function runTestimonialsSeed(
       })
 
       const photoId = await resolveImageKitMediaId(payload, row.photoAlt)
+      const photo =
+        typeof photoId === 'number' ? photoId : photoId != null ? Number(photoId) : undefined
 
-      const data = {
+      const data: Pick<
+        Testimonial,
+        | 'customerName'
+        | 'customerLocation'
+        | 'title'
+        | 'body'
+        | 'rating'
+        | 'featuredOnHome'
+        | 'status'
+        | 'photo'
+      > = {
         customerName: row.customerName,
         customerLocation: row.customerLocation,
         title: row.title,
@@ -42,7 +55,7 @@ export async function runTestimonialsSeed(
         rating: row.rating,
         featuredOnHome: row.featuredOnHome,
         status: row.status,
-        ...(photoId != null ? { photo: photoId } : {}),
+        ...(photo != null && !Number.isNaN(photo) ? { photo } : {}),
       }
 
       if (existing.docs[0]) {

@@ -132,7 +132,10 @@ export async function runHomepageTabSeed(
   }
 
   // Incremental path — fill only missing fields.
-  const { merged, filledPaths } = mergeMissing(existing as Record<string, unknown>, defaults)
+  const { merged, filledPaths } = mergeMissing(
+    existing as unknown as Record<string, unknown>,
+    defaults,
+  )
 
   const existingBottleProducts = (existing as { bottleRow?: { products?: unknown[] } })?.bottleRow
     ?.products
