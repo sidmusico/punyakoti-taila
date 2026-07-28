@@ -1154,6 +1154,29 @@ export interface Customer {
   avatarUrl?: string | null;
   authProvider?: ('phone' | 'google' | 'email') | null;
   lastSignInAt?: string | null;
+  /**
+   * Shipping / billing address book. Edited by the customer from their account.
+   */
+  addresses?:
+    | {
+        /**
+         * e.g. Home, Work
+         */
+        label?: string | null;
+        country?: string | null;
+        fullName: string;
+        phone?: string | null;
+        line1: string;
+        line2?: string | null;
+        landmark?: string | null;
+        city: string;
+        state: string;
+        pincode: string;
+        isDefaultShipping?: boolean | null;
+        isDefaultBilling?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1179,9 +1202,24 @@ export interface Order {
     name: string;
     line1: string;
     line2?: string | null;
+    landmark?: string | null;
     city: string;
     state: string;
     pincode: string;
+    phone?: string | null;
+  };
+  billingSameAsShipping?: boolean | null;
+  /**
+   * Used only when billing differs from shipping.
+   */
+  billingAddress?: {
+    name?: string | null;
+    line1?: string | null;
+    line2?: string | null;
+    landmark?: string | null;
+    city?: string | null;
+    state?: string | null;
+    pincode?: string | null;
     phone?: string | null;
   };
   items: {
@@ -2094,6 +2132,23 @@ export interface CustomersSelect<T extends boolean = true> {
   avatarUrl?: T;
   authProvider?: T;
   lastSignInAt?: T;
+  addresses?:
+    | T
+    | {
+        label?: T;
+        country?: T;
+        fullName?: T;
+        phone?: T;
+        line1?: T;
+        line2?: T;
+        landmark?: T;
+        city?: T;
+        state?: T;
+        pincode?: T;
+        isDefaultShipping?: T;
+        isDefaultBilling?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -2181,6 +2236,20 @@ export interface OrdersSelect<T extends boolean = true> {
         name?: T;
         line1?: T;
         line2?: T;
+        landmark?: T;
+        city?: T;
+        state?: T;
+        pincode?: T;
+        phone?: T;
+      };
+  billingSameAsShipping?: T;
+  billingAddress?:
+    | T
+    | {
+        name?: T;
+        line1?: T;
+        line2?: T;
+        landmark?: T;
         city?: T;
         state?: T;
         pincode?: T;
@@ -3186,6 +3255,47 @@ export interface Cart {
     saveForLaterLabel?: string | null;
     saveForLaterHref?: string | null;
   };
+  /**
+   * Delivery methods and checkout options (the /checkout wizard).
+   */
+  checkout?: {
+    deliveryMethodLabel?: string | null;
+    /**
+     * Each option on the Delivery step. Order here = display order (first is the default).
+     */
+    deliveryMethods?:
+      | {
+          /**
+           * Stable id (e.g. standard). Used to remember the selection.
+           */
+          methodId: string;
+          label: string;
+          /**
+           * Optional pill, e.g. B Corp
+           */
+          badge?: string | null;
+          /**
+           * If on: free when the order clears the Site Settings free-shipping threshold, otherwise the fee below applies.
+           */
+          freeOverThreshold?: boolean | null;
+          /**
+           * Flat fee — or the fee charged below the threshold when the option above is on.
+           */
+          fee?: number | null;
+          etaMinDays: number;
+          etaMaxDays: number;
+          /**
+           * Appended after the date, e.g. "before 6pm".
+           */
+          noteSuffix?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Delivery-instructions checkbox label. Leave empty to hide the checkbox.
+     */
+    leaveAtDoorLabel?: string | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -3208,6 +3318,40 @@ export interface Account {
     viewAllOrdersLabel?: string | null;
     emptyOrdersMessage?: string | null;
     shopNowLabel?: string | null;
+    addressesTitle?: string | null;
+    addressesSubtitle?: string | null;
+    /**
+     * Title of the address summary card on the dashboard.
+     */
+    addressesCardTitle?: string | null;
+    manageAddressesLabel?: string | null;
+    addAddressLabel?: string | null;
+    addFirstAddressLabel?: string | null;
+    editAddressLabel?: string | null;
+    deleteAddressLabel?: string | null;
+    saveAddressLabel?: string | null;
+    cancelLabel?: string | null;
+    setDefaultShippingLabel?: string | null;
+    setDefaultBillingLabel?: string | null;
+    defaultShippingBadge?: string | null;
+    defaultBillingBadge?: string | null;
+    billingSameLabel?: string | null;
+    emptyAddressesMessage?: string | null;
+    deleteAddressConfirm?: string | null;
+    newAddressFormTitle?: string | null;
+    editAddressFormTitle?: string | null;
+    fieldLabelNickname?: string | null;
+    fieldLabelFullName?: string | null;
+    fieldLabelPhone?: string | null;
+    fieldLabelLine1?: string | null;
+    fieldLabelLine2?: string | null;
+    fieldLabelLandmark?: string | null;
+    fieldLabelCity?: string | null;
+    fieldLabelState?: string | null;
+    fieldLabelPincode?: string | null;
+    fieldLabelCountry?: string | null;
+    checkoutUseSavedLabel?: string | null;
+    checkoutUseNewLabel?: string | null;
     tabLabelDashboard?: string | null;
     tabLabelOrders?: string | null;
     tabLabelSubscriptions?: string | null;
@@ -3967,6 +4111,25 @@ export interface CartSelect<T extends boolean = true> {
         saveForLaterLabel?: T;
         saveForLaterHref?: T;
       };
+  checkout?:
+    | T
+    | {
+        deliveryMethodLabel?: T;
+        deliveryMethods?:
+          | T
+          | {
+              methodId?: T;
+              label?: T;
+              badge?: T;
+              freeOverThreshold?: T;
+              fee?: T;
+              etaMinDays?: T;
+              etaMaxDays?: T;
+              noteSuffix?: T;
+              id?: T;
+            };
+        leaveAtDoorLabel?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
@@ -3988,6 +4151,37 @@ export interface AccountSelect<T extends boolean = true> {
         viewAllOrdersLabel?: T;
         emptyOrdersMessage?: T;
         shopNowLabel?: T;
+        addressesTitle?: T;
+        addressesSubtitle?: T;
+        addressesCardTitle?: T;
+        manageAddressesLabel?: T;
+        addAddressLabel?: T;
+        addFirstAddressLabel?: T;
+        editAddressLabel?: T;
+        deleteAddressLabel?: T;
+        saveAddressLabel?: T;
+        cancelLabel?: T;
+        setDefaultShippingLabel?: T;
+        setDefaultBillingLabel?: T;
+        defaultShippingBadge?: T;
+        defaultBillingBadge?: T;
+        billingSameLabel?: T;
+        emptyAddressesMessage?: T;
+        deleteAddressConfirm?: T;
+        newAddressFormTitle?: T;
+        editAddressFormTitle?: T;
+        fieldLabelNickname?: T;
+        fieldLabelFullName?: T;
+        fieldLabelPhone?: T;
+        fieldLabelLine1?: T;
+        fieldLabelLine2?: T;
+        fieldLabelLandmark?: T;
+        fieldLabelCity?: T;
+        fieldLabelState?: T;
+        fieldLabelPincode?: T;
+        fieldLabelCountry?: T;
+        checkoutUseSavedLabel?: T;
+        checkoutUseNewLabel?: T;
         tabLabelDashboard?: T;
         tabLabelOrders?: T;
         tabLabelSubscriptions?: T;

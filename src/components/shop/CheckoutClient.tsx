@@ -7,6 +7,7 @@ import { z } from 'zod'
 
 import { Icons } from '@/components/ui/pt/Icons'
 import { useCartHydrated, useCartStore } from '@/store/cart'
+import type { Cart, Customer } from '@/payload-types'
 
 /* ────────────────────────────────────────────────────────────────────────────
    Schemas — validated per step so users get feedback exactly where they are.
@@ -34,6 +35,41 @@ const EMPTY_FORM: CheckoutForm = {
   email: '', phone: '', name: '', line1: '', line2: '', city: '', state: '', pincode: '',
 }
 
+/* Billing address — same fields as shipping, minus contact. */
+type BillingForm = { name: string; line1: string; line2: string; city: string; state: string; pincode: string }
+const EMPTY_BILLING: BillingForm = { name: '', line1: '', line2: '', city: '', state: '', pincode: '' }
+const billingSchema = z.object({
+  name: z.string().min(2, 'Name is required'),
+  line1: z.string().min(5, 'Address is required'),
+  line2: z.string().optional(),
+  city: z.string().min(2, 'City is required'),
+  state: z.string().min(2, 'State is required'),
+  pincode: z.string().regex(/^\d{6}$/, '6-digit pincode required'),
+})
+
+type CustomerAddress = NonNullable<Customer['addresses']>[number]
+type CheckoutClientProps = {
+  savedAddresses?: CustomerAddress[]
+  contact?: { email?: string | null; phone?: string | null }
+  copy?: { useSaved?: string; useNew?: string; billingSame?: string }
+  /** Delivery methods from the Cart global (Checkout tab); falls back to defaults. */
+  deliveryMethods?: CmsDeliveryMethod[] | null
+  deliveryMethodLabel?: string | null
+  leaveAtDoorLabel?: string | null
+  freeShippingThreshold?: number
+}
+
+/** Reduce an E.164 / spaced phone to the 10 digits the form expects. */
+function digits10(p?: string | null): string {
+  return (p ?? '').replace(/\D/g, '').slice(-10)
+}
+function addressToShipping(a: CustomerAddress): BillingForm {
+  return { name: a.fullName, line1: a.line1, line2: a.line2 ?? '', city: a.city, state: a.state, pincode: a.pincode }
+}
+function addressLabel(a: CustomerAddress): string {
+  return [a.label || a.fullName, a.line1, `${a.city} ${a.pincode}`].filter(Boolean).join(' · ')
+}
+
 /* ────────────────────────────────────────────────────────────────────────────
    Constants
 ──────────────────────────────────────────────────────────────────────────── */
@@ -45,17 +81,36 @@ type DeliveryMethod = {
   id: string
   label: string
   badge?: string
-  /** null = free-shipping logic applies (free over threshold, else flat). */
-  price: number | null
+  /** true = free when the order clears the free-shipping threshold, else `fee`. */
+  freeOverThreshold: boolean
+  /** flat fee, or the below-threshold fee when `freeOverThreshold`. */
+  fee: number
   etaDays: [number, number]
-  note: (eta: string) => string
+  noteSuffix?: string
 }
 
-const DELIVERY_METHODS: DeliveryMethod[] = [
-  { id: 'standard', label: 'Standard', price: null, etaDays: [4, 6], note: (eta) => eta },
-  { id: 'express', label: 'Express', price: 89, etaDays: [1, 1], note: (eta) => `${eta} · before 6pm` },
-  { id: 'carbon-neutral', label: 'Carbon-neutral', badge: 'B Corp', price: 49, etaDays: [3, 3], note: (eta) => `${eta} · cycle-courier in BLR` },
+/** CMS-authored delivery method (Cart global → Checkout → Delivery methods). */
+type CmsDeliveryMethod = NonNullable<NonNullable<Cart['checkout']>['deliveryMethods']>[number]
+
+/** Fallback used when the CMS has no delivery methods configured yet. */
+const DEFAULT_DELIVERY_METHODS: DeliveryMethod[] = [
+  { id: 'standard', label: 'Standard', freeOverThreshold: true, fee: 99, etaDays: [4, 6] },
+  { id: 'express', label: 'Express', freeOverThreshold: false, fee: 89, etaDays: [1, 1], noteSuffix: 'before 6pm' },
+  { id: 'carbon-neutral', label: 'Carbon-neutral', badge: 'B Corp', freeOverThreshold: false, fee: 49, etaDays: [3, 3], noteSuffix: 'cycle-courier in BLR' },
 ]
+
+function mapCmsMethods(methods?: CmsDeliveryMethod[] | null): DeliveryMethod[] {
+  if (!methods || methods.length === 0) return DEFAULT_DELIVERY_METHODS
+  return methods.map((m) => ({
+    id: m.methodId,
+    label: m.label,
+    badge: m.badge ?? undefined,
+    freeOverThreshold: Boolean(m.freeOverThreshold),
+    fee: m.fee ?? 0,
+    etaDays: [m.etaMinDays, m.etaMaxDays] as [number, number],
+    noteSuffix: m.noteSuffix ?? undefined,
+  }))
+}
 
 /** Demo promo codes — swap for a server lookup when the coupon system lands. */
 const PROMO_CODES: Record<string, { pct: number; label: string }> = {
@@ -134,6 +189,37 @@ function Field({
   )
 }
 
+/** Billing-address input — mirrors Field but bound to the BillingForm keys. */
+function BillingField({
+  label, name, value, error, onChange, half = false, placeholder,
+}: {
+  label: string
+  name: keyof BillingForm
+  value: string
+  error?: string
+  onChange: (name: keyof BillingForm, value: string) => void
+  half?: boolean
+  placeholder?: string
+}) {
+  return (
+    <div className={half ? 'col-span-2 sm:col-span-1' : 'col-span-2'}>
+      <label htmlFor={`bill-${name}`} className="block text-xs font-semibold uppercase tracking-wider mb-1.5" style={{ color: 'var(--ink-400)' }}>
+        {label}
+      </label>
+      <input
+        id={`bill-${name}`}
+        value={value}
+        onChange={(e) => onChange(name, e.target.value)}
+        placeholder={placeholder}
+        aria-invalid={Boolean(error)}
+        className="w-full rounded-xl px-4 py-3 text-sm border outline-none transition-all focus:ring-1"
+        style={{ background: 'var(--cream-100)', borderColor: error ? 'var(--terra-600)' : 'var(--cream-400)', color: 'var(--ink-900)' }}
+      />
+      {error && <p className="mt-1 text-xs" style={{ color: 'var(--terra-600)' }}>{error}</p>}
+    </div>
+  )
+}
+
 /** Compact review row for a completed step (matches the "Change" rows in the design). */
 function ReviewRow({ label, value, onChange }: { label: string; value: string; onChange: () => void }) {
   return (
@@ -191,16 +277,55 @@ function Stepper({ current }: { current: StepIndex }) {
    Checkout
 ──────────────────────────────────────────────────────────────────────────── */
 
-export function CheckoutClient() {
+export function CheckoutClient({
+  savedAddresses = [],
+  contact,
+  copy,
+  deliveryMethods,
+  deliveryMethodLabel,
+  leaveAtDoorLabel,
+  freeShippingThreshold = 999,
+}: CheckoutClientProps = {}) {
   const { items, total, itemCount, clearCart } = useCartStore()
   const cartHydrated = useCartHydrated()
   const subtotal = total()
   const count = itemCount()
 
+  const methods = mapCmsMethods(deliveryMethods)
+  const deliverySectionLabel = deliveryMethodLabel || 'Delivery method'
+  // Empty label hides the "leave at door" checkbox (undefined prop keeps the default).
+  const leaveAtDoorText = leaveAtDoorLabel === undefined ? "Leave at the door if I'm not home" : leaveAtDoorLabel
+
+  const defaultAddress =
+    savedAddresses.find((a) => a.isDefaultShipping) ?? savedAddresses[0] ?? null
+
   const [step, setStep] = useState<StepIndex>(0)
-  const [form, setForm] = useState<CheckoutForm>(EMPTY_FORM)
+  const [form, setForm] = useState<CheckoutForm>(() => ({
+    ...EMPTY_FORM,
+    email: contact?.email ?? '',
+    phone: digits10(contact?.phone),
+    ...(defaultAddress ? addressToShipping(defaultAddress) : {}),
+  }))
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(defaultAddress?.id ?? null)
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({})
-  const [deliveryId, setDeliveryId] = useState<string>('standard')
+
+  /* Billing — defaults to "same as shipping"; a saved default-billing address
+     that differs from shipping starts the section expanded and prefilled. */
+  const defaultBilling = savedAddresses.find((a) => a.isDefaultBilling) ?? null
+  const billingDiffers = Boolean(
+    defaultBilling && defaultAddress && defaultBilling.id !== defaultAddress.id,
+  )
+  const [billingSame, setBillingSame] = useState(!billingDiffers)
+  const [billing, setBilling] = useState<BillingForm>(
+    billingDiffers && defaultBilling ? addressToShipping(defaultBilling) : EMPTY_BILLING,
+  )
+  const [billingErrors, setBillingErrors] = useState<Partial<Record<keyof BillingForm, string>>>({})
+
+  const setBillingField = (name: keyof BillingForm, value: string) => {
+    setBilling((b) => ({ ...b, [name]: value }))
+    setBillingErrors((prev) => ({ ...prev, [name]: undefined }))
+  }
+  const [deliveryId, setDeliveryId] = useState<string>(methods[0]?.id ?? 'standard')
   const [leaveAtDoor, setLeaveAtDoor] = useState(false)
   const [promoInput, setPromoInput] = useState('')
   const [promo, setPromo] = useState<{ code: string; pct: number } | null>(null)
@@ -215,8 +340,10 @@ export function CheckoutClient() {
   /* Totals */
   const discount = promo ? (subtotal * promo.pct) / 100 : 0
   const afterDiscount = subtotal - discount
-  const delivery = DELIVERY_METHODS.find((m) => m.id === deliveryId) ?? DELIVERY_METHODS[0]!
-  const shipping = delivery.price === null ? (afterDiscount >= 999 ? 0 : 99) : delivery.price
+  const priceFor = (m: DeliveryMethod) =>
+    m.freeOverThreshold ? (afterDiscount >= freeShippingThreshold ? 0 : m.fee) : m.fee
+  const delivery = methods.find((m) => m.id === deliveryId) ?? methods[0]!
+  const shipping = priceFor(delivery)
   const orderTotal = afterDiscount + shipping
   const gstIncluded = orderTotal - orderTotal / (1 + GST_RATE)
 
@@ -233,10 +360,39 @@ export function CheckoutClient() {
     return false
   }
 
+  const validateBilling = (): boolean => {
+    if (billingSame) {
+      setBillingErrors({})
+      return true
+    }
+    const result = billingSchema.safeParse(billing)
+    if (result.success) {
+      setBillingErrors({})
+      return true
+    }
+    const fe: Partial<Record<keyof BillingForm, string>> = {}
+    result.error.issues.forEach((i) => {
+      fe[i.path[0] as keyof BillingForm] = i.message
+    })
+    setBillingErrors(fe)
+    return false
+  }
+
   const goNext = () => {
     if (!validateStep(step)) return
+    if (step === 1 && !validateBilling()) return
     setStep((s) => Math.min(3, s + 1) as StepIndex)
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const selectSavedAddress = (a: CustomerAddress) => {
+    setSelectedAddressId(a.id ?? null)
+    setForm((f) => ({ ...f, ...addressToShipping(a) }))
+    setErrors({})
+  }
+  const useNewAddress = () => {
+    setSelectedAddressId(null)
+    setForm((f) => ({ ...f, name: '', line1: '', line2: '', city: '', state: '', pincode: '' }))
   }
   const goBack = () => setStep((s) => Math.max(0, s - 1) as StepIndex)
 
@@ -268,6 +424,8 @@ export function CheckoutClient() {
         body: JSON.stringify({
           items,
           address: form,
+          billingSameAsShipping: billingSame,
+          billing: billingSame ? null : billing,
           total: orderTotal,
           delivery: { method: delivery.id, leaveAtDoor },
           promo: promo?.code ?? null,
@@ -298,7 +456,12 @@ export function CheckoutClient() {
           const verifyRes = await fetch('/api/razorpay-webhook', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...response, address: form }),
+            body: JSON.stringify({
+              ...response,
+              address: form,
+              billingSameAsShipping: billingSame,
+              billing: billingSame ? null : billing,
+            }),
           })
           if (verifyRes.ok) {
             clearCart()
@@ -383,6 +546,45 @@ export function CheckoutClient() {
               <h1 className="mt-3 mb-6" style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(1.6rem, 3vw, 2.1rem)', color: 'var(--green-900)' }}>
                 Where should the oils go?
               </h1>
+
+              {/* Saved-address picker (logged-in shoppers) */}
+              {savedAddresses.length > 0 && (
+                <div className="mb-6">
+                  <div className="mb-2 text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--ink-400)' }}>
+                    {copy?.useSaved ?? 'Use a saved address'}
+                  </div>
+                  <div className="flex flex-col gap-2.5" role="radiogroup" aria-label={copy?.useSaved ?? 'Use a saved address'}>
+                    {savedAddresses.map((a) => {
+                      const isOn = selectedAddressId === a.id
+                      return (
+                        <button
+                          key={a.id}
+                          type="button"
+                          role="radio"
+                          aria-checked={isOn}
+                          onClick={() => selectSavedAddress(a)}
+                          className="flex items-start gap-3 rounded-xl border-2 px-4 py-3 text-left transition-all"
+                          style={{ borderColor: isOn ? 'var(--green-800)' : 'var(--cream-400)', background: 'var(--cream-100)' }}
+                        >
+                          <span className="mt-1 grid h-4 w-4 shrink-0 place-items-center rounded-full border-2" style={{ borderColor: isOn ? 'var(--green-800)' : 'var(--ink-300)' }} aria-hidden>
+                            {isOn && <span className="h-2 w-2 rounded-full" style={{ background: 'var(--green-800)' }} />}
+                          </span>
+                          <span className="text-sm" style={{ color: 'var(--ink-700)' }}>{addressLabel(a)}</span>
+                        </button>
+                      )
+                    })}
+                    <button
+                      type="button"
+                      onClick={useNewAddress}
+                      className="self-start text-sm underline underline-offset-4"
+                      style={{ color: selectedAddressId === null ? 'var(--green-900)' : 'var(--green-700)', fontWeight: selectedAddressId === null ? 600 : 400 }}
+                    >
+                      {copy?.useNew ?? '+ Use a new address'}
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Full name" name="name" placeholder="Priya Sharma" autoComplete="name" value={form.name} error={errors.name} onChange={setField} />
                 <Field label="Address line 1" name="line1" placeholder="House / flat / street" autoComplete="address-line1" value={form.line1} error={errors.line1} onChange={setField} />
@@ -391,17 +593,41 @@ export function CheckoutClient() {
                 <Field label="State" name="state" placeholder="Karnataka" autoComplete="address-level1" half value={form.state} error={errors.state} onChange={setField} />
                 <Field label="Pincode" name="pincode" placeholder="560001" autoComplete="postal-code" half value={form.pincode} error={errors.pincode} onChange={setField} />
               </div>
+
+              {/* Billing address — same-as-shipping toggle */}
+              <div className="mt-6 rounded-xl border px-5 py-4" style={{ borderColor: 'var(--cream-400)' }}>
+                <label className="flex items-center gap-2.5 text-sm cursor-pointer" style={{ color: 'var(--ink-700)' }}>
+                  <input
+                    type="checkbox"
+                    checked={billingSame}
+                    onChange={(e) => setBillingSame(e.target.checked)}
+                    className="h-4 w-4 rounded accent-[var(--green-800)]"
+                  />
+                  {copy?.billingSame ?? 'Billing address is the same as my shipping address'}
+                </label>
+
+                {!billingSame && (
+                  <div className="mt-4 grid grid-cols-2 gap-4">
+                    <BillingField label="Full name" name="name" value={billing.name} error={billingErrors.name} onChange={setBillingField} />
+                    <BillingField label="Address line 1" name="line1" value={billing.line1} error={billingErrors.line1} onChange={setBillingField} />
+                    <BillingField label="Address line 2 (optional)" name="line2" value={billing.line2} error={billingErrors.line2} onChange={setBillingField} />
+                    <BillingField label="City" name="city" half value={billing.city} error={billingErrors.city} onChange={setBillingField} />
+                    <BillingField label="State" name="state" half value={billing.state} error={billingErrors.state} onChange={setBillingField} />
+                    <BillingField label="Pincode" name="pincode" half value={billing.pincode} error={billingErrors.pincode} onChange={setBillingField} />
+                  </div>
+                )}
+              </div>
             </section>
           )}
 
           {/* Step 3 — Delivery */}
           {step === 2 && (
             <section className="mt-6">
-              <SectionLabel>Delivery method</SectionLabel>
-              <div className="mt-4 flex flex-col gap-3" role="radiogroup" aria-label="Delivery method">
-                {DELIVERY_METHODS.map((m) => {
+              <SectionLabel>{deliverySectionLabel}</SectionLabel>
+              <div className="mt-4 flex flex-col gap-3" role="radiogroup" aria-label={deliverySectionLabel}>
+                {methods.map((m) => {
                   const isOn = deliveryId === m.id
-                  const price = m.price === null ? (afterDiscount >= 999 ? 0 : 99) : m.price
+                  const price = priceFor(m)
                   return (
                     <button
                       key={m.id}
@@ -434,7 +660,7 @@ export function CheckoutClient() {
                             )}
                           </span>
                           <span className="mt-0.5 block text-sm" style={{ color: 'var(--ink-400)' }}>
-                            {m.note(formatEta(m.etaDays))}
+                            {formatEta(m.etaDays)}{m.noteSuffix ? ` · ${m.noteSuffix}` : ''}
                           </span>
                         </span>
                       </span>
@@ -446,15 +672,17 @@ export function CheckoutClient() {
                 })}
               </div>
 
-              <label className="mt-4 flex items-center gap-2.5 text-sm cursor-pointer" style={{ color: 'var(--ink-700)' }}>
-                <input
-                  type="checkbox"
-                  checked={leaveAtDoor}
-                  onChange={(e) => setLeaveAtDoor(e.target.checked)}
-                  className="h-4 w-4 rounded accent-[var(--green-800)]"
-                />
-                Leave at the door if I&apos;m not home
-              </label>
+              {leaveAtDoorText ? (
+                <label className="mt-4 flex items-center gap-2.5 text-sm cursor-pointer" style={{ color: 'var(--ink-700)' }}>
+                  <input
+                    type="checkbox"
+                    checked={leaveAtDoor}
+                    onChange={(e) => setLeaveAtDoor(e.target.checked)}
+                    className="h-4 w-4 rounded accent-[var(--green-800)]"
+                  />
+                  {leaveAtDoorText}
+                </label>
+              ) : null}
 
               {/* payment teaser */}
               <div className="mt-8 flex items-center justify-between rounded-xl border px-5 py-4" style={{ borderColor: 'var(--cream-400)', color: 'var(--ink-400)' }}>

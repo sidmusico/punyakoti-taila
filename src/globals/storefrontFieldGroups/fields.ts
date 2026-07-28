@@ -390,6 +390,94 @@ export const cartPageFields: Field[] = [
   },
 ]
 
+export const checkoutFields: Field[] = [
+  {
+    name: 'checkout',
+    type: 'group',
+    label: 'Checkout',
+    admin: { description: 'Delivery methods and checkout options (the /checkout wizard).' },
+    fields: [
+      {
+        type: 'tabs',
+        tabs: [
+          {
+            label: 'Delivery methods',
+            description: 'Shipping options shown on the Delivery step. The first row is preselected.',
+            fields: [
+              { name: 'deliveryMethodLabel', type: 'text', defaultValue: 'Delivery method' },
+              {
+                name: 'deliveryMethods',
+                type: 'array',
+                label: 'Delivery methods',
+                minRows: 1,
+                admin: {
+                  description:
+                    'Each option on the Delivery step. Order here = display order (first is the default).',
+                  initCollapsed: false,
+                },
+                defaultValue: [
+                  { methodId: 'standard', label: 'Standard', freeOverThreshold: true, fee: 99, etaMinDays: 4, etaMaxDays: 6 },
+                  { methodId: 'express', label: 'Express', freeOverThreshold: false, fee: 89, etaMinDays: 1, etaMaxDays: 1, noteSuffix: 'before 6pm' },
+                  { methodId: 'carbon-neutral', label: 'Carbon-neutral', badge: 'B Corp', freeOverThreshold: false, fee: 49, etaMinDays: 3, etaMaxDays: 3, noteSuffix: 'cycle-courier in BLR' },
+                ],
+                fields: [
+                  {
+                    type: 'row',
+                    fields: [
+                      { name: 'methodId', type: 'text', required: true, admin: { width: '40%', description: 'Stable id (e.g. standard). Used to remember the selection.' } },
+                      { name: 'label', type: 'text', required: true, admin: { width: '40%' } },
+                      { name: 'badge', type: 'text', label: 'Badge', admin: { width: '20%', description: 'Optional pill, e.g. B Corp' } },
+                    ],
+                  },
+                  {
+                    type: 'row',
+                    fields: [
+                      {
+                        name: 'freeOverThreshold',
+                        type: 'checkbox',
+                        label: 'Free over free-shipping threshold',
+                        defaultValue: false,
+                        admin: { width: '50%', description: 'If on: free when the order clears the Site Settings free-shipping threshold, otherwise the fee below applies.' },
+                      },
+                      {
+                        name: 'fee',
+                        type: 'number',
+                        label: 'Fee (₹)',
+                        min: 0,
+                        defaultValue: 0,
+                        admin: { width: '50%', description: 'Flat fee — or the fee charged below the threshold when the option above is on.' },
+                      },
+                    ],
+                  },
+                  {
+                    type: 'row',
+                    fields: [
+                      { name: 'etaMinDays', type: 'number', label: 'ETA min (days)', required: true, min: 0, defaultValue: 3, admin: { width: '33%' } },
+                      { name: 'etaMaxDays', type: 'number', label: 'ETA max (days)', required: true, min: 0, defaultValue: 5, admin: { width: '33%' } },
+                      { name: 'noteSuffix', type: 'text', label: 'Note suffix', admin: { width: '34%', description: 'Appended after the date, e.g. "before 6pm".' } },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            label: 'Options',
+            fields: [
+              {
+                name: 'leaveAtDoorLabel',
+                type: 'text',
+                defaultValue: "Leave at the door if I'm not home",
+                admin: { description: 'Delivery-instructions checkbox label. Leave empty to hide the checkbox.' },
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
+]
+
 export const accountFields: Field[] = [
   {
     name: 'account',
@@ -417,6 +505,61 @@ export const accountFields: Field[] = [
               { name: 'viewAllOrdersLabel', type: 'text', defaultValue: 'View all →' },
               { name: 'emptyOrdersMessage', type: 'text', defaultValue: 'No orders yet — your first one is one click away.' },
               { name: 'shopNowLabel', type: 'text', defaultValue: 'Shop now' },
+            ],
+          },
+          {
+            label: 'Addresses',
+            description: 'Copy for the saved-addresses book (/account/addresses) and the checkout address picker.',
+            fields: [
+              { name: 'addressesTitle', type: 'text', defaultValue: 'Addresses' },
+              {
+                name: 'addressesSubtitle',
+                type: 'textarea',
+                defaultValue: 'Save your delivery and billing addresses for faster checkout.',
+              },
+              { name: 'addressesCardTitle', type: 'text', defaultValue: 'Addresses', admin: { description: 'Title of the address summary card on the dashboard.' } },
+              { name: 'manageAddressesLabel', type: 'text', defaultValue: 'Manage' },
+              { name: 'addAddressLabel', type: 'text', defaultValue: 'Add address' },
+              { name: 'addFirstAddressLabel', type: 'text', defaultValue: 'Add your first address' },
+              { name: 'editAddressLabel', type: 'text', defaultValue: 'Edit' },
+              { name: 'deleteAddressLabel', type: 'text', defaultValue: 'Delete' },
+              { name: 'saveAddressLabel', type: 'text', defaultValue: 'Save address' },
+              { name: 'cancelLabel', type: 'text', defaultValue: 'Cancel' },
+              { name: 'setDefaultShippingLabel', type: 'text', defaultValue: 'Set as default shipping' },
+              { name: 'setDefaultBillingLabel', type: 'text', defaultValue: 'Set as default billing' },
+              { name: 'defaultShippingBadge', type: 'text', defaultValue: 'Default shipping' },
+              { name: 'defaultBillingBadge', type: 'text', defaultValue: 'Default billing' },
+              {
+                name: 'billingSameLabel',
+                type: 'text',
+                defaultValue: 'Billing address is the same as my shipping address',
+              },
+              {
+                name: 'emptyAddressesMessage',
+                type: 'text',
+                defaultValue: "You haven't saved any addresses yet.",
+              },
+              {
+                name: 'deleteAddressConfirm',
+                type: 'text',
+                defaultValue: 'Remove this address from your account?',
+              },
+              { name: 'newAddressFormTitle', type: 'text', defaultValue: 'New address' },
+              { name: 'editAddressFormTitle', type: 'text', defaultValue: 'Edit address' },
+              // Field labels
+              { name: 'fieldLabelNickname', type: 'text', defaultValue: 'Nickname (optional)' },
+              { name: 'fieldLabelFullName', type: 'text', defaultValue: 'Full name' },
+              { name: 'fieldLabelPhone', type: 'text', defaultValue: 'Phone' },
+              { name: 'fieldLabelLine1', type: 'text', defaultValue: 'Address line 1' },
+              { name: 'fieldLabelLine2', type: 'text', defaultValue: 'Address line 2 (optional)' },
+              { name: 'fieldLabelLandmark', type: 'text', defaultValue: 'Landmark (optional)' },
+              { name: 'fieldLabelCity', type: 'text', defaultValue: 'City' },
+              { name: 'fieldLabelState', type: 'text', defaultValue: 'State' },
+              { name: 'fieldLabelPincode', type: 'text', defaultValue: 'Pincode' },
+              { name: 'fieldLabelCountry', type: 'text', defaultValue: 'Country' },
+              // Checkout picker
+              { name: 'checkoutUseSavedLabel', type: 'text', defaultValue: 'Use a saved address' },
+              { name: 'checkoutUseNewLabel', type: 'text', defaultValue: '+ Use a new address' },
             ],
           },
           {

@@ -9,6 +9,7 @@ export type StorefrontMerged = {
   pdp: ProductDetail['pdp']
   cartDrawer: Cart['cartDrawer']
   cartPage: Cart['cartPage']
+  checkout: Cart['checkout']
   account: Account['account']
   orderSuccess: OrderSuccess['orderSuccess']
 }
@@ -47,6 +48,7 @@ export const getStorefrontBundle = unstable_cache(
       pdp: productDetail.pdp,
       cartDrawer: cart.cartDrawer,
       cartPage: cart.cartPage,
+      checkout: cart.checkout,
       account: account.account,
       orderSuccess: orderSuccess.orderSuccess,
     }

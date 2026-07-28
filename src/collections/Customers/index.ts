@@ -68,6 +68,72 @@ export const Customers: CollectionConfig = {
       type: 'date',
       admin: { readOnly: true, position: 'sidebar', date: { pickerAppearance: 'dayAndTime' } },
     },
+
+    // ── Address book ────────────────────────────────────────────
+    // Managed by the storefront via /api/account/addresses. Exactly one
+    // row should carry isDefaultShipping and one isDefaultBilling; the API
+    // normalizes this on every write.
+    {
+      name: 'addresses',
+      type: 'array',
+      label: 'Saved addresses',
+      labels: { singular: 'Address', plural: 'Addresses' },
+      admin: {
+        description: 'Shipping / billing address book. Edited by the customer from their account.',
+        initCollapsed: true,
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'label',
+              type: 'text',
+              label: 'Nickname',
+              admin: { description: 'e.g. Home, Work', width: '50%' },
+            },
+            { name: 'country', type: 'text', label: 'Country', defaultValue: 'India', admin: { width: '50%' } },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            { name: 'fullName', type: 'text', required: true, label: 'Full name', admin: { width: '50%' } },
+            { name: 'phone', type: 'text', label: 'Phone', admin: { width: '50%' } },
+          ],
+        },
+        { name: 'line1', type: 'text', required: true, label: 'Address line 1' },
+        { name: 'line2', type: 'text', label: 'Address line 2' },
+        { name: 'landmark', type: 'text', label: 'Landmark' },
+        {
+          type: 'row',
+          fields: [
+            { name: 'city', type: 'text', required: true, admin: { width: '40%' } },
+            { name: 'state', type: 'text', required: true, admin: { width: '35%' } },
+            { name: 'pincode', type: 'text', required: true, admin: { width: '25%' } },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'isDefaultShipping',
+              type: 'checkbox',
+              label: 'Default shipping address',
+              defaultValue: false,
+              admin: { width: '50%' },
+            },
+            {
+              name: 'isDefaultBilling',
+              type: 'checkbox',
+              label: 'Default billing address',
+              defaultValue: false,
+              admin: { width: '50%' },
+            },
+          ],
+        },
+      ],
+    },
   ],
   timestamps: true,
 }

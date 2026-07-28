@@ -35,3 +35,7 @@ _tmp*
 # Graphify
 graphify-out/
 .graphifyignore
+
+# Local dev menu (scripts/pt-dev.sh)
+.pt-dev-server.pid
+.pt-dev-server.log

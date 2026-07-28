@@ -67,9 +67,36 @@ export const Orders: CollectionConfig = {
         { name: 'name',     type: 'text', required: true },
         { name: 'line1',    type: 'text', required: true, label: 'Address line 1' },
         { name: 'line2',    type: 'text', label: 'Address line 2' },
+        { name: 'landmark', type: 'text', label: 'Landmark' },
         { name: 'city',     type: 'text', required: true },
         { name: 'state',    type: 'text', required: true },
         { name: 'pincode',  type: 'text', required: true },
+        { name: 'phone',    type: 'text' },
+      ],
+    },
+
+    // ── Billing address ─────────────────────────────────────────
+    {
+      name: 'billingSameAsShipping',
+      type: 'checkbox',
+      label: 'Billing address same as shipping',
+      defaultValue: true,
+    },
+    {
+      name: 'billingAddress',
+      type: 'group',
+      admin: {
+        description: 'Used only when billing differs from shipping.',
+        condition: (data) => data?.billingSameAsShipping === false,
+      },
+      fields: [
+        { name: 'name',     type: 'text', label: 'Name' },
+        { name: 'line1',    type: 'text', label: 'Address line 1' },
+        { name: 'line2',    type: 'text', label: 'Address line 2' },
+        { name: 'landmark', type: 'text', label: 'Landmark' },
+        { name: 'city',     type: 'text' },
+        { name: 'state',    type: 'text' },
+        { name: 'pincode',  type: 'text' },
         { name: 'phone',    type: 'text' },
       ],
     },

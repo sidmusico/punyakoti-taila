@@ -279,6 +279,9 @@ export default async function AccountPage({
   const firstName = (customer.name || displayEmail).split(/[\s@]/)[0] || 'there'
   const memberSince = new Date(customer.createdAt).toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
 
+  const addresses = customer.addresses ?? []
+  const defaultAddress = addresses.find((x) => x.isDefaultShipping) ?? addresses[0] ?? null
+
   const tokenVars = {
     firstName,
     memberSince,
@@ -424,6 +427,15 @@ export default async function AccountPage({
               Personal info
             </Link>
 
+            <Link
+              href="/account/addresses"
+              className="grid grid-cols-[16px_1fr] items-center gap-3 rounded-xl px-3.5 py-3 text-sm font-medium transition-colors hover:bg-cream-300"
+              style={{ color: 'var(--ink-700)' }}
+            >
+              <Icons.pin size={16} />
+              {a?.addressesTitle ?? 'Addresses'}
+            </Link>
+
             <hr className="my-3" style={{ borderColor: 'var(--cream-400)' }} />
             <div className="px-1">
               <LogoutButton />
@@ -500,6 +512,42 @@ export default async function AccountPage({
                     </div>
                   ))}
                 </div>
+              </div>
+
+              {/* addresses card */}
+              <div className="rounded-2xl p-6" style={{ background: 'var(--cream-100)', border: '1px solid var(--cream-400)' }}>
+                <div className="mb-4 flex items-center justify-between">
+                  <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 24, color: 'var(--green-900)', margin: 0 }}>
+                    {a?.addressesCardTitle ?? 'Addresses'}
+                  </h2>
+                  <Link href="/account/addresses" className="text-xs font-medium underline underline-offset-4" style={{ color: 'var(--green-700)' }}>
+                    {a?.manageAddressesLabel ?? 'Manage'}
+                  </Link>
+                </div>
+                {defaultAddress ? (
+                  <div className="rounded-xl p-4" style={{ background: 'var(--cream-200)' }}>
+                    <div className="mb-1 flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-medium" style={{ color: 'var(--ink-900)' }}>
+                        {defaultAddress.label || defaultAddress.fullName}
+                      </span>
+                      <span className="rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider" style={{ background: 'var(--green-100)', color: 'var(--green-800)' }}>
+                        {a?.defaultShippingBadge ?? 'Default shipping'}
+                      </span>
+                    </div>
+                    <div className="text-[13px] leading-relaxed" style={{ color: 'var(--ink-500)' }}>
+                      {defaultAddress.fullName} · {[defaultAddress.line1, defaultAddress.line2, defaultAddress.landmark, `${defaultAddress.city}, ${defaultAddress.state} ${defaultAddress.pincode}`].filter(Boolean).join(' · ')}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between gap-4 rounded-xl p-4" style={{ background: 'var(--cream-200)' }}>
+                    <p className="text-sm" style={{ color: 'var(--ink-400)' }}>
+                      {a?.emptyAddressesMessage ?? "You haven't saved any addresses yet."}
+                    </p>
+                    <Link href="/account/addresses" className="shrink-0 text-xs font-medium underline underline-offset-4" style={{ color: 'var(--green-700)' }}>
+                      {a?.addAddressLabel ?? 'Add address'}
+                    </Link>
+                  </div>
+                )}
               </div>
 
               {/* recent orders */}

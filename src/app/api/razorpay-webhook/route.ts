@@ -13,9 +13,14 @@ export async function POST(req: NextRequest) {
         name: string; email: string; phone: string
         line1: string; line2?: string; city: string; state: string; pincode: string
       }
+      billingSameAsShipping?: boolean
+      billing?: {
+        name?: string; line1?: string; line2?: string; city?: string; state?: string; pincode?: string
+      } | null
     }
 
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, address } = body
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, address, billing } = body
+    const billingSameAsShipping = body.billingSameAsShipping !== false
 
     // ── Verify signature ──────────────────────────────────────────────
     const expectedSignature = crypto
@@ -49,6 +54,19 @@ export async function POST(req: NextRequest) {
           pincode: address.pincode,
           phone: address.phone,
         },
+        billingSameAsShipping,
+        billingAddress:
+          billingSameAsShipping || !billing
+            ? undefined
+            : {
+                name: billing.name || address.name,
+                line1: billing.line1 || '',
+                line2: billing.line2 || '',
+                city: billing.city || '',
+                state: billing.state || '',
+                pincode: billing.pincode || '',
+                phone: address.phone,
+              },
         items: [{ product: null as unknown as number, productName: 'Order via API', variantSize: '500ml', quantity: 1, unitPrice: 0, lineTotal: 0 }],
         subtotal: 0,
         total: 0,

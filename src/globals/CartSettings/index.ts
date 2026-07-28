@@ -1,7 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
 import { revalidateGlobalSlug } from '@/globals/hooks/revalidateGlobalSlug'
-import { cartDrawerFields, cartPageFields } from '@/globals/storefrontFieldGroups/fields'
+import { cartDrawerFields, cartPageFields, checkoutFields } from '@/globals/storefrontFieldGroups/fields'
 
 const SLUG = 'cart'
 
@@ -16,6 +16,7 @@ export const CartSettings: GlobalConfig = {
       tabs: [
         { label: 'Cart drawer', fields: cartDrawerFields },
         { label: 'Cart page', fields: cartPageFields },
+        { label: 'Checkout', fields: checkoutFields },
       ],
     },
   ],
