@@ -12,6 +12,7 @@ import { RenderHero } from '@/heros/RenderHero'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { isReservedAppRouteSlug } from '@/lib/reservedAppRoutes'
 
 export async function generateStaticParams() {
   const payload = await getPayload({ config: configPromise })
@@ -27,9 +28,7 @@ export async function generateStaticParams() {
   })
 
   const params = pages.docs
-    ?.filter((doc) => {
-      return doc.slug !== 'home'
-    })
+    ?.filter((doc) => doc.slug && !isReservedAppRouteSlug(doc.slug))
     .map(({ slug }) => {
       return { slug }
     })
@@ -49,6 +48,11 @@ export default async function Page({ params: paramsPromise }: Args) {
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
   const url = '/' + decodedSlug
+
+  if (isReservedAppRouteSlug(decodedSlug)) {
+    return <PayloadRedirects url={url} />
+  }
+
   let page: RequiredDataFromCollectionSlug<'pages'> | null
 
   page = await queryPageBySlug({

@@ -2,6 +2,7 @@ import type { Payload } from 'payload'
 
 import { seedWriteContext } from '@/seed/seedContext'
 import { SITE_PAGES_SEED } from '@/seed/sitePagesSeed'
+import { isReservedAppRouteSlug } from '@/lib/reservedAppRoutes'
 
 export type PageSeedResult = {
   kind: 'page'
@@ -17,6 +18,17 @@ export async function runSitePagesSeed(payload: Payload): Promise<{ results: Pag
   const results: PageSeedResult[] = []
 
   for (const page of SITE_PAGES_SEED) {
+    if (isReservedAppRouteSlug(page.slug)) {
+      results.push({
+        kind: 'page',
+        title: page.title,
+        slug: page.slug,
+        status: 'skipped',
+        error: 'reserved app route — use dedicated Next.js page',
+      })
+      continue
+    }
+
     try {
       const existing = await payload.find({
         collection: 'pages',
