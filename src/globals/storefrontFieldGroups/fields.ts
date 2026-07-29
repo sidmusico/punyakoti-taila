@@ -418,7 +418,6 @@ export const checkoutFields: Field[] = [
                 defaultValue: [
                   { methodId: 'standard', label: 'Standard', freeOverThreshold: true, fee: 99, etaMinDays: 4, etaMaxDays: 6 },
                   { methodId: 'express', label: 'Express', freeOverThreshold: false, fee: 89, etaMinDays: 1, etaMaxDays: 1, noteSuffix: 'before 6pm' },
-                  { methodId: 'carbon-neutral', label: 'Carbon-neutral', badge: 'B Corp', freeOverThreshold: false, fee: 49, etaMinDays: 3, etaMaxDays: 3, noteSuffix: 'cycle-courier in BLR' },
                 ],
                 fields: [
                   {
@@ -591,7 +590,7 @@ export const accountFields: Field[] = [
               { name: 'statOrdersLabel', type: 'text', defaultValue: 'Orders' },
               { name: 'statOrdersSub', type: 'text', defaultValue: 'lifetime' },
               { name: 'statBottlesLabel', type: 'text', defaultValue: 'Bottles' },
-              { name: 'statBottlesSub', type: 'text', defaultValue: 'delivered' },
+              { name: 'statBottlesSub', type: 'text', defaultValue: 'lifetime' },
               { name: 'statSpentLabel', type: 'text', defaultValue: 'Spent' },
               { name: 'statSpentSub', type: 'text', defaultValue: 'with us' },
               { name: 'statMemberLabel', type: 'text', defaultValue: 'Member' },

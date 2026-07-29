@@ -25,6 +25,7 @@ declare global {
       IMAGEKIT_FOLDER?: string
       RAZORPAY_KEY_ID?: string
       RAZORPAY_KEY_SECRET?: string
+      NEXT_PUBLIC_RAZORPAY_KEY_ID?: string
       RESEND_API_KEY?: string
       RESEND_AUDIENCE_ID?: string
     }

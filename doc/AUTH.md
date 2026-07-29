@@ -19,6 +19,7 @@ Shopper → Supabase Auth (phone OTP | Google | email/password)
 | Login method | Supabase API | Notes |
 |--------------|--------------|-------|
 | Mobile + OTP | `signInWithOtp` + `verifyOtp` | India: configure Twilio (or compatible) on cloud |
+| Email one-time code | `signInWithOtp({ email })` + `verifyOtp({ type: 'email' })` | Branded templates in `supabase/templates/` |
 | Google | `signInWithOAuth({ provider: 'google' })` | OAuth client in Google Cloud + Supabase |
 | Email + password | `signUp` / `signInWithPassword` | Enabled in Supabase Auth → Email |
 
@@ -80,6 +81,8 @@ SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET=...
 
 Emails are captured in **Mailpit**: http://127.0.0.1:54324
 
+Branded **confirmation** and **magic link / OTP** templates live in `supabase/templates/` (wired in `config.toml`). Restart Supabase after editing templates.
+
 ### 1.6 Payload schema
 
 After pulling auth code:
@@ -128,6 +131,18 @@ SUPABASE_ACCESS_TOKEN=your_token pnpm auth:configure-urls
 ```
 
 ### 2.3 Email sign-up & sign-in
+
+**Branded auth emails (OTP + signup confirm)** can be sent via **Resend** using templates in Payload → **Globals → Email templates**:
+
+1. Set `SUPABASE_AUTH_HOOK_SECRET` in `.env` / Vercel.
+2. Supabase Dashboard → **Authentication → Hooks → Send email** → HTTPS  
+   `https://punyakoti-taila.vercel.app/api/auth/hook/send-email`  
+   Header: `Authorization: Bearer <SUPABASE_AUTH_HOOK_SECRET>`
+3. Disable built-in SMTP for those mail types if you want all auth mail through Resend (hook replaces default send).
+
+Until the hook is enabled, Supabase still sends auth mail (Mailpit locally / Supabase SMTP in cloud).
+
+**Authentication → Email Templates** (production): paste the HTML from `supabase/templates/confirmation.html` and `magic_link.html`, or match subjects to your brand — optional if using the send-email hook above.
 
 **Authentication → Providers → Email**
 
@@ -183,8 +198,9 @@ Payload Drizzle push / migrations run against the same Postgres (`DATABASE_URL`)
 
 | Route | Purpose |
 |-------|---------|
-| `/login` | Phone OTP, email/password, Google |
-| `/auth/callback` | OAuth code exchange + customer sync |
+| `/login` | Phone OTP, email/password, Google, forgot password |
+| `/login/reset-password` | Set new password after recovery email link |
+| `/auth/callback` | OAuth code exchange, email/recovery links, customer sync |
 | `/account` | Profile overview (requires session) |
 | `/account/profile` | Edit name, phone, etc. |
 | `POST /api/auth/logout` | Sign out |
@@ -199,7 +215,7 @@ To finish **production** phone + Google login, please provide or confirm:
 1. **Google OAuth** — Client ID + Secret (Web application), with redirect URI `https://<ref>.supabase.co/auth/v1/callback`
 2. **Twilio** (or SMS provider Supabase supports) — for Indian mobile OTP in prod
 3. **Production site URL** — `https://punyakoti-taila.vercel.app` for Vercel `NEXT_PUBLIC_SERVER_URL` and Supabase Site URL
-4. **Prod Supabase MCP** — when connected in Cursor (`project-0-punyakoti-taila-supabase-taila-prod`), the agent can read project URL/keys, run advisors, and inspect auth-related tables. Auth provider settings (Google, Twilio, redirect URLs) are still configured in the Supabase Dashboard (MCP cannot toggle Auth providers today).
+4. **Supabase MCP (Cursor)** — project config: `.cursor/mcp.json` → `supabase-taila-prod` (cloud) and `supabase-taila-local` (`supabase start` required). Agents can read project URL/keys, run SQL, advisors, etc. Auth provider settings (Google, Twilio, redirect URLs) are still configured in the Supabase Dashboard (MCP cannot toggle Auth providers today).
 
 ---
 
@@ -211,4 +227,5 @@ To finish **production** phone + Google login, please provide or confirm:
 | OTP never arrives locally | Use `auth.sms.test_otp` numbers; check `supabase/config.toml` |
 | OTP never arrives in prod | Configure Twilio under Phone provider |
 | `/account` redirects to login | Check `NEXT_PUBLIC_SUPABASE_*` env vars; cookies blocked? |
+| Reset email → `login?error=auth_callback` | Re-paste `recovery.html` (use `token_hash`, not `ConfirmationURL`); add reset callback URL to Supabase redirect allow-list — see `doc/SUPABASE_EMAIL_TEMPLATES.md` |
 | Admin vs shopper confused | `/admin` = Payload users; `/login` = Supabase only |

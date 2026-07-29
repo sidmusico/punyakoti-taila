@@ -12,6 +12,7 @@ import {
   productDetailSeedDefaults,
   shopListingSeedDefaults,
 } from '@/seed/storefrontSeedDefaults'
+import { emailTemplatesSeedDefaults } from '@/seed/emailTemplatesSeedDefaults'
 
 export type GlobalSeedResult = {
   kind: 'global'
@@ -204,6 +205,47 @@ export async function runStorefrontGlobalsSeed(
       kind: 'global',
       title: 'Homepage settings (global)',
       slug: 'homepage-settings',
+      status: 'error',
+      error: message,
+    })
+  }
+
+  try {
+    const existingEmail = await payload.findGlobal({
+      slug: 'email-templates',
+      depth: 0,
+      overrideAccess: true,
+    })
+    const confirmed = (existingEmail as { orderConfirmed?: { subject?: string } })?.orderConfirmed
+    if (confirmed?.subject) {
+      results.push({
+        kind: 'global',
+        title: 'Email templates',
+        slug: 'email-templates',
+        status: 'skipped',
+      })
+    } else {
+      await payload.updateGlobal({
+        slug: 'email-templates',
+        overrideAccess: true,
+        context: seedWriteContext,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: emailTemplatesSeedDefaults as any,
+      })
+      results.push({
+        kind: 'global',
+        title: 'Email templates',
+        slug: 'email-templates',
+        status: 'created',
+        id: 'from-code-defaults',
+      })
+    }
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err)
+    results.push({
+      kind: 'global',
+      title: 'Email templates',
+      slug: 'email-templates',
       status: 'error',
       error: message,
     })

@@ -36,6 +36,7 @@ Add these in **Project Settings → Environment Variables** for **Production** (
 | `RAZORPAY_KEY_ID` | For checkout | Razorpay keys |
 | `RAZORPAY_KEY_SECRET` | For checkout | Razorpay keys |
 | `RESEND_API_KEY` | For email | Resend |
+| `RESEND_FROM` | For email | Verified sender domain in Resend |
 | `RESEND_AUDIENCE_ID` | Optional | Newsletter audience |
 
 Vercel sets automatically (do not add manually):
@@ -44,6 +45,16 @@ Vercel sets automatically (do not add manually):
 - `VERCEL_PROJECT_PRODUCTION_URL` — production hostname (without `https://`)
 
 Copy values from your local `.env` where they already work. **Never commit `.env`.**
+
+**Sync missing Production env vars** (Vercel MCP cannot read or set env vars — use CLI):
+
+```bash
+vercel login
+pnpm vercel:env:sync:dry   # preview keys to add
+pnpm vercel:env:sync       # adds missing keys only; uses DATABASE_URL_PROD → DATABASE_URL
+```
+
+Set real `CRON_SECRET` and `PREVIEW_SECRET` in `.env` before syncing (not `YOUR_*` placeholders). On Vercel, `NEXT_PUBLIC_SERVER_URL` is set to `https://punyakoti-taila.vercel.app`.
 
 ## 3. One-time production database setup
 

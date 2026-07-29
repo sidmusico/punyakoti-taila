@@ -281,6 +281,66 @@ preflight_dev_start() {
   return 1
 }
 
+# Stop Next dev and start dev:safe in background (storefront + Payload /admin).
+restart_ui_and_payload() {
+  echo ""
+  echo -e "${BOLD}Restart storefront UI + Payload CMS${RESET}"
+  echo -e "  ${DIM}Stops Next on :${DEV_PORT}, clears dev lock, starts pnpm dev:safe in background.${RESET}"
+  echo ""
+
+  if ! preflight_dev_start; then
+    return 1
+  fi
+
+  stop_next_dev_server
+
+  echo -e "${GREEN}→ pnpm dev:safe (background)${RESET}"
+  nohup pnpm dev:safe >"$LOG_FILE" 2>&1 &
+  echo $! >"$PID_FILE"
+  echo "PID $(cat "$PID_FILE") — log: $LOG_FILE"
+  sleep 3
+  echo ""
+  echo -e "${BOLD}── Stack status (after restart) ──${RESET}"
+  print_service_status_board
+  echo ""
+  return 0
+}
+
+# Stop and start all local Supabase Docker containers (Postgres for Payload).
+rebuild_supabase_containers() {
+  echo ""
+  echo -e "${BOLD}Rebuild local Supabase (Docker)${RESET}"
+  echo -e "  ${DIM}supabase stop → supabase start — fixes exited DB containers and stuck CLI state.${RESET}"
+  echo -e "  ${DIM}Does not wipe Payload data (use Reset menu for supabase db reset).${RESET}"
+  echo ""
+
+  command -v supabase >/dev/null 2>&1 || die "supabase CLI not installed"
+
+  if command -v docker >/dev/null 2>&1 && ! docker info >/dev/null 2>&1; then
+    die "Docker Desktop is not running. Start Docker, then try again."
+  fi
+
+  if ! confirm_yes "Stop and restart all local Supabase containers?"; then
+    echo "Cancelled."
+    return 0
+  fi
+
+  echo ""
+  if repair_supabase_local; then
+    echo -e "${GREEN}Supabase stack rebuilt.${RESET}"
+  else
+    echo -e "${RED}Rebuild failed.${RESET} Try manually: supabase stop && supabase start"
+    return 1
+  fi
+
+  echo ""
+  print_supabase_cli_status
+  echo -e "${BOLD}── Stack status ──${RESET}"
+  print_service_status_board
+  echo ""
+  return 0
+}
+
 # PIDs listening on a TCP port (macOS/Linux: lsof).
 pids_on_port() {
   local port="$1"
@@ -530,11 +590,12 @@ menu_run_app() {
   echo "   5) Start dev server in background (safe)"
   echo "   6) Stop dev server (free port ${DEV_PORT})"
   echo "   7) Tail background dev log"
+  echo "   8) Restart UI + Payload — stop Next → dev:safe in background"
   echo "   0) Back"
   echo ""
 
   local n
-  n="$(pick_number "Enter 0–7" 7)" || { echo "Invalid choice"; pause; return; }
+  n="$(pick_number "Enter 0–8" 8)" || { echo "Invalid choice"; pause; return; }
 
   case "$n" in
     0) return ;;
@@ -573,6 +634,10 @@ menu_run_app() {
         pause
       fi
       ;;
+    8)
+      restart_ui_and_payload || true
+      pause
+      ;;
     *) echo "Invalid choice"; pause ;;
   esac
 }
@@ -591,11 +656,12 @@ menu_database() {
   echo "   5) Supabase stop"
   echo "   6) Generate payload-types.ts only"
   echo "   7) Show stack & workflow cheat sheet"
+  echo "   8) Rebuild Supabase Docker stack (stop → start, keeps DB data)"
   echo "   0) Back"
   echo ""
 
   local n
-  n="$(pick_number "Enter 0–7" 7)" || { echo "Invalid choice"; pause; return; }
+  n="$(pick_number "Enter 0–8" 8)" || { echo "Invalid choice"; pause; return; }
 
   case "$n" in
     0) return ;;
@@ -636,6 +702,10 @@ menu_database() {
       ;;
     7)
       print_stack_cheat_sheet
+      pause
+      ;;
+    8)
+      rebuild_supabase_containers || true
       pause
       ;;
     *) echo "Invalid choice"; pause ;;
@@ -839,11 +909,13 @@ main_menu() {
     echo "   6) Tooling (Supabase Auth, ImageKit, docs)"
     echo "   7) Environment & health (Payload + Supabase)"
     echo "   8) Stack & workflow cheat sheet"
+    echo "   9) Restart storefront UI + Payload (stop Next → dev:safe)"
+    echo "  10) Rebuild local Supabase Docker (stop → start)"
     echo "   0) Exit"
     echo ""
 
     local n
-    n="$(pick_number "Choose" 8 0 0)" || continue
+    n="$(pick_number "Choose" 10 0 0)" || continue
 
     case "$n" in
       0) echo "Bye."; exit 0 ;;
@@ -855,6 +927,8 @@ main_menu() {
       6) menu_tooling ;;
       7) menu_health ;;
       8) banner; print_stack_cheat_sheet; pause ;;
+      9) restart_ui_and_payload; pause ;;
+      10) rebuild_supabase_containers; pause ;;
       *) echo "Invalid choice"; pause ;;
     esac
   done
@@ -881,8 +955,16 @@ if [[ $# -gt 0 ]]; then
       print_stack_cheat_sheet
       exit 0
       ;;
+    restart-ui)
+      restart_ui_and_payload
+      exit 0
+      ;;
+    rebuild-supabase)
+      rebuild_supabase_containers
+      exit 0
+      ;;
     *)
-      echo "Usage: $0 [seed <local|prod> <seed-key> [force]] | [health] | [stack]"
+      echo "Usage: $0 [seed <local|prod> <seed-key> [force]] | [health] | [stack] | [restart-ui] | [rebuild-supabase]"
       exit 1
       ;;
   esac

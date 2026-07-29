@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '../../access/authenticated'
+import { sendWelcomeOnCreate } from './hooks/sendWelcomeEmail'
 
 /**
  * Storefront shoppers synced from Supabase Auth.
@@ -8,6 +9,9 @@ import { authenticated } from '../../access/authenticated'
  */
 export const Customers: CollectionConfig = {
   slug: 'customers',
+  hooks: {
+    afterChange: [sendWelcomeOnCreate],
+  },
   access: {
     admin: authenticated,
     create: () => false,

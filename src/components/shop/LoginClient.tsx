@@ -1,16 +1,23 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { z } from 'zod'
 
 import { Wordmark } from '@/components/ui/pt/Wordmark'
-import { getAuthCallbackUrl } from '@/lib/auth/authUrls'
+import { getAuthCallbackUrl, getPasswordResetCallbackUrl } from '@/lib/auth/authUrls'
 import { createClient } from '@/lib/supabase/client'
 
 type AuthMethod = 'phone' | 'email'
 type PhoneStep = 'number' | 'otp'
+type EmailAuthMode = 'password' | 'otp'
+type EmailOtpStep = 'email' | 'code'
+
+function safeNextPath(next: string | null): string {
+  if (next && next.startsWith('/') && !next.startsWith('//')) return next
+  return '/account'
+}
 
 const emailSchema = z.object({
   email: z.string().email('Valid email required'),
@@ -34,6 +41,8 @@ export function LoginClient() {
   const authError = searchParams.get('error')
 
   const [method, setMethod] = useState<AuthMethod>('phone')
+  const [emailAuthMode, setEmailAuthMode] = useState<EmailAuthMode>('password')
+  const [emailOtpStep, setEmailOtpStep] = useState<EmailOtpStep>('email')
   const [emailTab, setEmailTab] = useState<'login' | 'register'>('login')
   const [phoneStep, setPhoneStep] = useState<PhoneStep>('number')
   const [phone, setPhone] = useState('')
@@ -47,13 +56,53 @@ export function LoginClient() {
   const [apiError, setApiError] = useState(authError === 'auth_callback' ? 'Sign-in failed. Try again.' : '')
   const [infoMessage, setInfoMessage] = useState('')
   const [needsEmailConfirm, setNeedsEmailConfirm] = useState(false)
+  const [emailForgot, setEmailForgot] = useState(false)
 
   const supabase = createClient()
+
+  useEffect(() => {
+    if (searchParams.get('forgot') === '1') {
+      setMethod('email')
+      setEmailAuthMode('password')
+      setEmailForgot(true)
+      setApiError('')
+      setInfoMessage('')
+    }
+  }, [searchParams])
 
   const authCallbackUrl = () =>
     getAuthCallbackUrl({
       browserOrigin: typeof window !== 'undefined' ? window.location.origin : undefined,
     })
+
+  const passwordResetRedirectUrl = () =>
+    getPasswordResetCallbackUrl({
+      browserOrigin: typeof window !== 'undefined' ? window.location.origin : undefined,
+    })
+
+  const requestPasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setApiError('')
+    setInfoMessage('')
+    const parsed = z.string().email().safeParse(email)
+    if (!parsed.success) {
+      setErrors({ email: 'Valid email required' })
+      return
+    }
+    setLoading(true)
+    setErrors({})
+    const { error } = await supabase.auth.resetPasswordForEmail(parsed.data, {
+      redirectTo: passwordResetRedirectUrl(),
+    })
+    setLoading(false)
+    if (error) {
+      setApiError(error.message)
+      return
+    }
+    setInfoMessage(
+      'If an account exists for that email, we sent a link to reset your password. Check your inbox and spam folder.',
+    )
+  }
 
   const resendConfirmationEmail = async () => {
     if (!email) {
@@ -78,8 +127,50 @@ export function LoginClient() {
 
   const finishSignIn = async () => {
     await syncCustomer()
-    router.push('/account')
+    router.push(safeNextPath(searchParams.get('next')))
     router.refresh()
+  }
+
+  const sendEmailOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setApiError('')
+    setInfoMessage('')
+    const parsed = z.string().email().safeParse(email)
+    if (!parsed.success) {
+      setErrors({ email: 'Valid email required' })
+      return
+    }
+    setLoading(true)
+    setErrors({})
+    const { error } = await supabase.auth.signInWithOtp({
+      email: parsed.data,
+      options: { shouldCreateUser: true, emailRedirectTo: authCallbackUrl() },
+    })
+    setLoading(false)
+    if (error) {
+      setApiError(error.message)
+      return
+    }
+    setEmailOtpStep('code')
+    setInfoMessage('We sent a 6-digit code to your email. Enter it below (check spam).')
+  }
+
+  const verifyEmailOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setApiError('')
+    setLoading(true)
+    const { error } = await supabase.auth.verifyOtp({
+      email: email.trim(),
+      token: otp,
+      type: 'email',
+    })
+    setLoading(false)
+    if (error) {
+      setApiError(error.message)
+      return
+    }
+    setOtp('')
+    await finishSignIn()
   }
 
   const sendOtp = async (e: React.FormEvent) => {
@@ -234,6 +325,9 @@ export function LoginClient() {
                 setInfoMessage('')
                 setNeedsEmailConfirm(false)
                 setErrors({})
+                setEmailAuthMode('password')
+                setEmailOtpStep('email')
+                setEmailForgot(false)
               }}
               className="flex-1 py-2.5 text-sm font-medium transition-all rounded-xl capitalize"
               style={
@@ -328,6 +422,128 @@ export function LoginClient() {
               </button>
             </form>
           )
+        ) : emailForgot ? (
+          <form onSubmit={requestPasswordReset} className="flex flex-col gap-4">
+            <h2 className="text-base font-semibold" style={{ color: 'var(--ink-900)' }}>
+              Reset your password
+            </h2>
+            <p className="text-sm" style={{ color: 'var(--ink-500)' }}>
+              Enter your account email and we&apos;ll send a link to choose a new password.
+            </p>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full rounded-xl px-4 py-3 text-sm border outline-none"
+              style={{
+                background: 'var(--cream-200)',
+                borderColor: errors.email ? '#A23A1F' : 'var(--cream-400)',
+              }}
+            />
+            {errors.email && (
+              <p className="text-xs" style={{ color: '#A23A1F' }}>
+                {errors.email}
+              </p>
+            )}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 rounded-xl font-semibold text-sm disabled:opacity-60"
+              style={{ background: 'var(--green-800)', color: 'var(--cream-100)' }}
+            >
+              {loading ? '…' : 'Send reset link'}
+            </button>
+            <button
+              type="button"
+              className="text-sm"
+              style={{ color: 'var(--green-700)' }}
+              onClick={() => {
+                setEmailForgot(false)
+                setApiError('')
+                setInfoMessage('')
+              }}
+            >
+              Back to sign in
+            </button>
+          </form>
+        ) : emailAuthMode === 'otp' ? (
+          emailOtpStep === 'email' ? (
+            <form onSubmit={sendEmailOtp} className="flex flex-col gap-4">
+              <p className="text-sm" style={{ color: 'var(--ink-500)' }}>
+                We&apos;ll email you a one-time sign-in code.
+              </p>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="w-full rounded-xl px-4 py-3 text-sm border outline-none"
+                style={{
+                  background: 'var(--cream-200)',
+                  borderColor: errors.email ? '#A23A1F' : 'var(--cream-400)',
+                }}
+              />
+              {errors.email && (
+                <p className="text-xs" style={{ color: '#A23A1F' }}>
+                  {errors.email}
+                </p>
+              )}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 rounded-xl font-semibold text-sm disabled:opacity-60"
+                style={{ background: 'var(--green-800)', color: 'var(--cream-100)' }}
+              >
+                {loading ? '…' : 'Send email code'}
+              </button>
+              <button
+                type="button"
+                className="text-sm"
+                style={{ color: 'var(--green-700)' }}
+                onClick={() => {
+                  setEmailAuthMode('password')
+                  setInfoMessage('')
+                }}
+              >
+                Use password instead
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={verifyEmailOtp} className="flex flex-col gap-4">
+              <p className="text-sm" style={{ color: 'var(--ink-500)' }}>
+                Code sent to <strong>{email}</strong>
+              </p>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="6-digit code"
+                className="w-full rounded-xl px-4 py-3 text-sm border outline-none tracking-widest text-center"
+                style={{ background: 'var(--cream-200)', borderColor: 'var(--cream-400)' }}
+              />
+              <button
+                type="submit"
+                disabled={loading || otp.length < 6}
+                className="w-full py-3.5 rounded-xl font-semibold text-sm disabled:opacity-60"
+                style={{ background: 'var(--green-800)', color: 'var(--cream-100)' }}
+              >
+                {loading ? '…' : 'Verify & sign in'}
+              </button>
+              <button
+                type="button"
+                className="text-sm"
+                style={{ color: 'var(--green-700)' }}
+                onClick={() => {
+                  setEmailOtpStep('email')
+                  setOtp('')
+                }}
+              >
+                Change email
+              </button>
+            </form>
+          )
         ) : (
           <>
             <div className="flex rounded-xl overflow-hidden mb-4" style={{ background: 'var(--cream-300)' }}>
@@ -385,6 +601,11 @@ export function LoginClient() {
                   borderColor: errors.email ? '#A23A1F' : 'var(--cream-400)',
                 }}
               />
+              {errors.email && (
+                <p className="mt-1 text-xs" style={{ color: '#A23A1F' }}>
+                  {errors.email}
+                </p>
+              )}
               <input
                 type="password"
                 value={password}
@@ -396,6 +617,26 @@ export function LoginClient() {
                   borderColor: errors.password ? '#A23A1F' : 'var(--cream-400)',
                 }}
               />
+              {errors.password && (
+                <p className="mt-1 text-xs" style={{ color: '#A23A1F' }}>
+                  {errors.password}
+                </p>
+              )}
+              {emailTab === 'login' && (
+                <button
+                  type="button"
+                  className="text-xs text-left -mt-2"
+                  style={{ color: 'var(--green-700)' }}
+                  onClick={() => {
+                    setEmailForgot(true)
+                    setApiError('')
+                    setInfoMessage('')
+                    setErrors({})
+                  }}
+                >
+                  Forgot password?
+                </button>
+              )}
               <button
                 type="submit"
                 disabled={loading}
@@ -404,6 +645,21 @@ export function LoginClient() {
               >
                 {loading ? '…' : emailTab === 'login' ? 'Sign in' : 'Create account'}
               </button>
+              {emailTab === 'login' && (
+                <button
+                  type="button"
+                  className="text-sm"
+                  style={{ color: 'var(--green-700)' }}
+                  onClick={() => {
+                    setEmailAuthMode('otp')
+                    setEmailOtpStep('email')
+                    setApiError('')
+                    setInfoMessage('')
+                  }}
+                >
+                  Sign in with email code instead
+                </button>
+              )}
             </form>
           </>
         )}

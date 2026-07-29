@@ -29,7 +29,7 @@ describe('checkout delivery methods (Cart global)', () => {
     const cart = await payload.findGlobal({ slug: 'cart', depth: 0 })
     const methods = cart.checkout?.deliveryMethods ?? []
 
-    expect(methods.length).toBeGreaterThanOrEqual(3)
+    expect(methods.length).toBeGreaterThanOrEqual(2)
 
     const standard = methods.find((m) => m.methodId === 'standard')
     expect(standard).toBeTruthy()

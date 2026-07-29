@@ -130,6 +130,7 @@ export interface Config {
     'product-detail': ProductDetail;
     cart: Cart;
     account: Account;
+    'email-templates': EmailTemplate;
     'order-success': OrderSuccess;
     'newsletter-popup': NewsletterPopup;
   };
@@ -142,6 +143,7 @@ export interface Config {
     'product-detail': ProductDetailSelect<false> | ProductDetailSelect<true>;
     cart: CartSelect<false> | CartSelect<true>;
     account: AccountSelect<false> | AccountSelect<true>;
+    'email-templates': EmailTemplatesSelect<false> | EmailTemplatesSelect<true>;
     'order-success': OrderSuccessSelect<false> | OrderSuccessSelect<true>;
     'newsletter-popup': NewsletterPopupSelect<false> | NewsletterPopupSelect<true>;
   };
@@ -1192,12 +1194,57 @@ export interface Order {
    * e.g. PT-20240601-0001
    */
   orderId: string;
-  razorpayOrderId?: string | null;
-  razorpayPaymentId?: string | null;
+  status?:
+    | (
+        | 'pending'
+        | 'confirmed'
+        | 'packed'
+        | 'shipped'
+        | 'out_for_delivery'
+        | 'delivered'
+        | 'cancelled'
+        | 'refunded'
+        | 'returned'
+      )
+    | null;
+  paymentStatus?: ('pending' | 'paid' | 'failed' | 'refunded') | null;
   customer?: (number | null) | Customer;
   customerName: string;
   customerEmail: string;
   customerPhone?: string | null;
+  /**
+   * Saving a tracking number (or courier) on a Confirmed/Packed order moves status to Shipped and emails the customer.
+   */
+  trackingNumber?: string | null;
+  /**
+   * e.g. Delhivery, Shiprocket
+   */
+  courierPartner?: string | null;
+  estimatedDelivery?: string | null;
+  /**
+   * Setting this date moves status to Delivered and sends the delivery email.
+   */
+  deliveredAt?: string | null;
+  notes?: string | null;
+  /**
+   * Older orders only stored the method name.
+   */
+  deliveryMethod?: string | null;
+  /**
+   * Captured at checkout from Cart → Delivery methods. Fee charged is in Payment details.
+   */
+  deliveryDetails?: {
+    methodId?: string | null;
+    label?: string | null;
+    badge?: string | null;
+    etaLabel?: string | null;
+    etaMinDays?: number | null;
+    etaMaxDays?: number | null;
+    noteSuffix?: string | null;
+    catalogFee?: number | null;
+    freeOverThreshold?: boolean | null;
+    leaveAtDoor?: boolean | null;
+  };
   shippingAddress: {
     name: string;
     line1: string;
@@ -1222,8 +1269,15 @@ export interface Order {
     pincode?: string | null;
     phone?: string | null;
   };
+  /**
+   * Snapshot at checkout.
+   */
   items: {
-    product: number | Product;
+    /**
+     * Thumbnail snapshot at checkout.
+     */
+    imageUrl?: string | null;
+    product?: (number | null) | Product;
     productName: string;
     variantSize: string;
     sku?: string | null;
@@ -1233,22 +1287,14 @@ export interface Order {
     isSubscription?: boolean | null;
     id?: string | null;
   }[];
+  razorpayOrderId?: string | null;
+  razorpayPaymentId?: string | null;
+  paymentMethod?: ('upi' | 'card' | 'netbanking' | 'paylater' | 'cod') | null;
   subtotal: number;
   shippingFee?: number | null;
   discount?: number | null;
   couponCode?: string | null;
   total: number;
-  paymentMethod?: ('upi' | 'card' | 'netbanking' | 'paylater' | 'cod') | null;
-  paymentStatus?: ('pending' | 'paid' | 'failed' | 'refunded') | null;
-  status?: ('pending' | 'confirmed' | 'packed' | 'shipped' | 'delivered' | 'cancelled' | 'returned') | null;
-  trackingNumber?: string | null;
-  /**
-   * e.g. Delhivery, Shiprocket
-   */
-  courierPartner?: string | null;
-  estimatedDelivery?: string | null;
-  deliveredAt?: string | null;
-  notes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2224,12 +2270,32 @@ export interface ProductsSelect<T extends boolean = true> {
  */
 export interface OrdersSelect<T extends boolean = true> {
   orderId?: T;
-  razorpayOrderId?: T;
-  razorpayPaymentId?: T;
+  status?: T;
+  paymentStatus?: T;
   customer?: T;
   customerName?: T;
   customerEmail?: T;
   customerPhone?: T;
+  trackingNumber?: T;
+  courierPartner?: T;
+  estimatedDelivery?: T;
+  deliveredAt?: T;
+  notes?: T;
+  deliveryMethod?: T;
+  deliveryDetails?:
+    | T
+    | {
+        methodId?: T;
+        label?: T;
+        badge?: T;
+        etaLabel?: T;
+        etaMinDays?: T;
+        etaMaxDays?: T;
+        noteSuffix?: T;
+        catalogFee?: T;
+        freeOverThreshold?: T;
+        leaveAtDoor?: T;
+      };
   shippingAddress?:
     | T
     | {
@@ -2258,6 +2324,7 @@ export interface OrdersSelect<T extends boolean = true> {
   items?:
     | T
     | {
+        imageUrl?: T;
         product?: T;
         productName?: T;
         variantSize?: T;
@@ -2268,19 +2335,14 @@ export interface OrdersSelect<T extends boolean = true> {
         isSubscription?: T;
         id?: T;
       };
+  razorpayOrderId?: T;
+  razorpayPaymentId?: T;
+  paymentMethod?: T;
   subtotal?: T;
   shippingFee?: T;
   discount?: T;
   couponCode?: T;
   total?: T;
-  paymentMethod?: T;
-  paymentStatus?: T;
-  status?: T;
-  trackingNumber?: T;
-  courierPartner?: T;
-  estimatedDelivery?: T;
-  deliveredAt?: T;
-  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -3407,6 +3469,141 @@ export interface Account {
   createdAt?: string | null;
 }
 /**
+ * Transactional emails (orders, welcome, OTP). Order emails send when status changes in Orders; welcome on new customer; auth emails via Supabase hook.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-templates".
+ */
+export interface EmailTemplate {
+  id: number;
+  mergeTagsHelp?: string | null;
+  orderConfirmed: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+    includeLineItems?: boolean | null;
+    includeTotals?: boolean | null;
+    includeShippingAddress?: boolean | null;
+  };
+  orderPacked: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+    includeLineItems?: boolean | null;
+    includeTotals?: boolean | null;
+    includeShippingAddress?: boolean | null;
+  };
+  orderShipped: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+    includeLineItems?: boolean | null;
+    includeTotals?: boolean | null;
+    includeShippingAddress?: boolean | null;
+  };
+  orderOutForDelivery: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+    includeLineItems?: boolean | null;
+    includeTotals?: boolean | null;
+    includeShippingAddress?: boolean | null;
+  };
+  orderDelivered: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+    includeLineItems?: boolean | null;
+    includeTotals?: boolean | null;
+    includeShippingAddress?: boolean | null;
+  };
+  orderCancelled: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+    includeLineItems?: boolean | null;
+    includeTotals?: boolean | null;
+    includeShippingAddress?: boolean | null;
+  };
+  orderReturned: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+    includeLineItems?: boolean | null;
+    includeTotals?: boolean | null;
+    includeShippingAddress?: boolean | null;
+  };
+  orderRefunded: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+    includeLineItems?: boolean | null;
+    includeTotals?: boolean | null;
+    includeShippingAddress?: boolean | null;
+  };
+  welcome: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+  };
+  otpEmail: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+  };
+  signupConfirmation: {
+    enabled?: boolean | null;
+    /**
+     * Supports merge tags (see tab description).
+     */
+    subject: string;
+    headline?: string | null;
+    body?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "order-success".
  */
@@ -4232,6 +4429,128 @@ export interface AccountSelect<T extends boolean = true> {
               icon?: T;
               id?: T;
             };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-templates_select".
+ */
+export interface EmailTemplatesSelect<T extends boolean = true> {
+  mergeTagsHelp?: T;
+  orderConfirmed?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
+        includeLineItems?: T;
+        includeTotals?: T;
+        includeShippingAddress?: T;
+      };
+  orderPacked?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
+        includeLineItems?: T;
+        includeTotals?: T;
+        includeShippingAddress?: T;
+      };
+  orderShipped?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
+        includeLineItems?: T;
+        includeTotals?: T;
+        includeShippingAddress?: T;
+      };
+  orderOutForDelivery?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
+        includeLineItems?: T;
+        includeTotals?: T;
+        includeShippingAddress?: T;
+      };
+  orderDelivered?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
+        includeLineItems?: T;
+        includeTotals?: T;
+        includeShippingAddress?: T;
+      };
+  orderCancelled?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
+        includeLineItems?: T;
+        includeTotals?: T;
+        includeShippingAddress?: T;
+      };
+  orderReturned?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
+        includeLineItems?: T;
+        includeTotals?: T;
+        includeShippingAddress?: T;
+      };
+  orderRefunded?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
+        includeLineItems?: T;
+        includeTotals?: T;
+        includeShippingAddress?: T;
+      };
+  welcome?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
+      };
+  otpEmail?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
+      };
+  signupConfirmation?:
+    | T
+    | {
+        enabled?: T;
+        subject?: T;
+        headline?: T;
+        body?: T;
       };
   updatedAt?: T;
   createdAt?: T;

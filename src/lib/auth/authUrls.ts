@@ -40,6 +40,23 @@ export function getAuthOrigin(opts?: {
 export function getAuthCallbackUrl(opts?: {
   requestOrigin?: string
   browserOrigin?: string
+  /**
+   * Password-reset links must land on the same origin where the user requested the reset
+   * (PKCE verifier cookies). OAuth from localhost may still use `NEXT_PUBLIC_SERVER_URL`.
+   */
+  preferBrowserOrigin?: boolean
 }): string {
+  if (opts?.preferBrowserOrigin && opts.browserOrigin) {
+    return `${stripTrailingSlash(opts.browserOrigin)}/auth/callback`
+  }
   return `${getAuthOrigin(opts)}/auth/callback`
+}
+
+/** After the user clicks the reset link, callback exchanges the token then sends them here. */
+export function getPasswordResetCallbackUrl(opts?: {
+  requestOrigin?: string
+  browserOrigin?: string
+}): string {
+  const callback = getAuthCallbackUrl({ ...opts, preferBrowserOrigin: true })
+  return `${callback}?next=${encodeURIComponent('/login/reset-password')}`
 }

@@ -20,6 +20,7 @@ import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { AccountSettings } from './globals/AccountSettings'
 import { CartSettings } from './globals/CartSettings'
+import { EmailTemplates } from './globals/EmailTemplates'
 import { HomepageSettings } from './globals/HomepageSettings'
 import { NewsletterPopup } from './globals/NewsletterPopup'
 import { OrderSuccessSettings } from './globals/OrderSuccessSettings'
@@ -144,6 +145,7 @@ export default buildConfig({
     ProductDetail,
     CartSettings,
     AccountSettings,
+    EmailTemplates,
     OrderSuccessSettings,
     NewsletterPopup,
   ],

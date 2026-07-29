@@ -1,9 +1,18 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { z } from 'zod'
+
+import { buildRazorpayCheckoutOptions, isRazorpayTestKey, razorpayPrefillContact } from '@/lib/razorpay/checkoutDisplayConfig'
+import { Breadcrumb } from '@/components/shop/Breadcrumb'
+import {
+  clearCheckoutDraft,
+  loadCheckoutDraft,
+  saveCheckoutDraft,
+  type CheckoutDraft,
+} from '@/lib/checkout/checkoutDraft'
 
 import { Icons } from '@/components/ui/pt/Icons'
 import { useCartHydrated, useCartStore } from '@/store/cart'
@@ -63,6 +72,48 @@ type CheckoutClientProps = {
 function digits10(p?: string | null): string {
   return (p ?? '').replace(/\D/g, '').slice(-10)
 }
+
+function buildInitialCheckoutState(
+  contact: CheckoutClientProps['contact'],
+  defaultAddress: CustomerAddress | null,
+): Pick<
+  CheckoutDraft,
+  'form' | 'billing' | 'billingSame' | 'step' | 'deliveryId' | 'leaveAtDoor' | 'promo' | 'selectedAddressId'
+> {
+  const draft = loadCheckoutDraft()
+  const shippingFromAddress = defaultAddress ? addressToShipping(defaultAddress) : {}
+  const baseForm: CheckoutForm = {
+    ...EMPTY_FORM,
+    email: contact?.email ?? '',
+    phone: digits10(contact?.phone),
+    ...shippingFromAddress,
+  }
+  const form: CheckoutForm = draft?.form
+    ? {
+        ...baseForm,
+        ...draft.form,
+        email: draft.form.email || baseForm.email,
+        phone: draft.form.phone || baseForm.phone,
+      }
+    : baseForm
+
+  return {
+    form,
+    billing: draft?.billing
+      ? {
+          ...draft.billing,
+          line2: draft.billing.line2 ?? '',
+        }
+      : EMPTY_BILLING,
+    billingSame: draft?.billingSame ?? true,
+    step: Math.min(3, Math.max(0, draft?.step ?? 0)) as StepIndex,
+    deliveryId: draft?.deliveryId ?? '',
+    leaveAtDoor: draft?.leaveAtDoor ?? false,
+    promo: draft?.promo ?? null,
+    selectedAddressId: draft?.selectedAddressId ?? defaultAddress?.id ?? null,
+  }
+}
+
 function addressToShipping(a: CustomerAddress): BillingForm {
   return { name: a.fullName, line1: a.line1, line2: a.line2 ?? '', city: a.city, state: a.state, pincode: a.pincode }
 }
@@ -96,7 +147,6 @@ type CmsDeliveryMethod = NonNullable<NonNullable<Cart['checkout']>['deliveryMeth
 const DEFAULT_DELIVERY_METHODS: DeliveryMethod[] = [
   { id: 'standard', label: 'Standard', freeOverThreshold: true, fee: 99, etaDays: [4, 6] },
   { id: 'express', label: 'Express', freeOverThreshold: false, fee: 89, etaDays: [1, 1], noteSuffix: 'before 6pm' },
-  { id: 'carbon-neutral', label: 'Carbon-neutral', badge: 'B Corp', freeOverThreshold: false, fee: 49, etaDays: [3, 3], noteSuffix: 'cycle-courier in BLR' },
 ]
 
 function mapCmsMethods(methods?: CmsDeliveryMethod[] | null): DeliveryMethod[] {
@@ -130,10 +180,31 @@ function formatEta([from, to]: [number, number]): string {
   return `${fmt(from)} – ${fmt(to)}`
 }
 
+type RazorpayError = {
+  code?: string
+  description?: string
+  reason?: string
+  source?: string
+  step?: string
+}
+
 declare global {
   interface Window {
-    Razorpay: new (opts: Record<string, unknown>) => { open(): void }
+    Razorpay: new (opts: Record<string, unknown>) => {
+      open(): void
+      on(event: string, handler: (response: { error?: RazorpayError }) => void): void
+    }
   }
+}
+
+/** Turn a Razorpay checkout failure into an actionable message for the shopper. */
+function razorpayErrorMessage(err?: RazorpayError): string {
+  const base = err?.description || 'Payment failed. Please try again.'
+  const haystack = `${err?.description ?? ''} ${err?.reason ?? ''} ${err?.code ?? ''}`.toLowerCase()
+  if (haystack.includes('international')) {
+    return `${base} Please use a domestic (India) Visa/Mastercard/RuPay card, UPI, or net banking.`
+  }
+  return base
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
@@ -242,7 +313,7 @@ function ReviewRow({ label, value, onChange }: { label: string; value: string; o
 
 function Stepper({ current }: { current: StepIndex }) {
   return (
-    <nav aria-label="Checkout progress" className="flex items-center justify-center gap-2 sm:gap-3 mb-10 flex-wrap">
+    <nav aria-label="Checkout progress" className="flex items-center justify-center gap-2 sm:gap-3 mb-5 lg:mb-6 flex-wrap">
       {STEPS.map((step, i) => {
         const done = i < current
         const active = i === current
@@ -299,14 +370,15 @@ export function CheckoutClient({
   const defaultAddress =
     savedAddresses.find((a) => a.isDefaultShipping) ?? savedAddresses[0] ?? null
 
-  const [step, setStep] = useState<StepIndex>(0)
-  const [form, setForm] = useState<CheckoutForm>(() => ({
-    ...EMPTY_FORM,
-    email: contact?.email ?? '',
-    phone: digits10(contact?.phone),
-    ...(defaultAddress ? addressToShipping(defaultAddress) : {}),
-  }))
-  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(defaultAddress?.id ?? null)
+  const initial = useMemo(
+    () => buildInitialCheckoutState(contact, defaultAddress),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- hydrate once on mount
+    [],
+  )
+
+  const [step, setStep] = useState<StepIndex>(initial.step as StepIndex)
+  const [form, setForm] = useState<CheckoutForm>(initial.form)
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(initial.selectedAddressId)
   const [errors, setErrors] = useState<Partial<Record<FieldName, string>>>({})
 
   /* Billing — defaults to "same as shipping"; a saved default-billing address
@@ -315,22 +387,42 @@ export function CheckoutClient({
   const billingDiffers = Boolean(
     defaultBilling && defaultAddress && defaultBilling.id !== defaultAddress.id,
   )
-  const [billingSame, setBillingSame] = useState(!billingDiffers)
-  const [billing, setBilling] = useState<BillingForm>(
-    billingDiffers && defaultBilling ? addressToShipping(defaultBilling) : EMPTY_BILLING,
-  )
+  const [billingSame, setBillingSame] = useState(initial.billingSame && !billingDiffers ? true : initial.billingSame)
+  const [billing, setBilling] = useState<BillingForm>(() => {
+    if (initial.billing.line1) {
+      return { ...initial.billing, line2: initial.billing.line2 ?? '' }
+    }
+    if (billingDiffers && defaultBilling) return addressToShipping(defaultBilling)
+    return EMPTY_BILLING
+  })
   const [billingErrors, setBillingErrors] = useState<Partial<Record<keyof BillingForm, string>>>({})
 
   const setBillingField = (name: keyof BillingForm, value: string) => {
     setBilling((b) => ({ ...b, [name]: value }))
     setBillingErrors((prev) => ({ ...prev, [name]: undefined }))
   }
-  const [deliveryId, setDeliveryId] = useState<string>(methods[0]?.id ?? 'standard')
-  const [leaveAtDoor, setLeaveAtDoor] = useState(false)
-  const [promoInput, setPromoInput] = useState('')
-  const [promo, setPromo] = useState<{ code: string; pct: number } | null>(null)
+  const [deliveryId, setDeliveryId] = useState<string>(
+    initial.deliveryId || methods[0]?.id || 'standard',
+  )
+  const [leaveAtDoor, setLeaveAtDoor] = useState(initial.leaveAtDoor)
+  const [promoInput, setPromoInput] = useState(initial.promo?.code ?? '')
+  const [promo, setPromo] = useState<{ code: string; pct: number } | null>(initial.promo)
   const [promoError, setPromoError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [payError, setPayError] = useState<string | null>(null)
+
+  useEffect(() => {
+    saveCheckoutDraft({
+      form,
+      billing,
+      billingSame,
+      step,
+      deliveryId,
+      leaveAtDoor,
+      promo,
+      selectedAddressId,
+    })
+  }, [form, billing, billingSame, step, deliveryId, leaveAtDoor, promo, selectedAddressId])
 
   const setField = (name: FieldName, value: string) => {
     setForm((f) => ({ ...f, [name]: value }))
@@ -409,13 +501,14 @@ export function CheckoutClient({
     }
   }
 
-  /* Final payment — Razorpay stub flow (real keys wired later). */
+  /* Final payment — Razorpay Standard Checkout */
   const handlePay = async () => {
     if (!fullSchema.safeParse(form).success) {
       setStep(0)
       validateStep(0)
       return
     }
+    setPayError(null)
     setLoading(true)
     try {
       const res = await fetch('/api/checkout', {
@@ -431,16 +524,39 @@ export function CheckoutClient({
           promo: promo?.code ?? null,
         }),
       })
-      const { orderId, amount, currency, key } = await res.json()
+      const data = (await res.json()) as {
+        orderId?: string
+        order_id?: string
+        amount?: number
+        currency?: string
+        key?: string
+        checkout_config_id?: string
+        error?: string
+      }
+
+      if (!res.ok) {
+        setPayError(data.error || 'Could not start payment. Check Razorpay keys in .env.')
+        return
+      }
+
+      const orderId = data.orderId ?? data.order_id
+      const { amount, currency, key } = data
+      if (!orderId || amount == null || !currency || !key) {
+        setPayError('Invalid response from payment server.')
+        return
+      }
 
       if (!window.Razorpay) {
-        await new Promise<void>((resolve) => {
+        await new Promise<void>((resolve, reject) => {
           const script = document.createElement('script')
           script.src = 'https://checkout.razorpay.com/v1/checkout.js'
           script.onload = () => resolve()
+          script.onerror = () => reject(new Error('Failed to load Razorpay checkout'))
           document.body.appendChild(script)
         })
       }
+
+      const checkoutOpts = buildRazorpayCheckoutOptions(key)
 
       const rzp = new window.Razorpay({
         key,
@@ -450,29 +566,60 @@ export function CheckoutClient({
         name: 'Punyakoti Taila',
         description: `${count} item(s)`,
         image: '/assets/logo-monogram.svg',
-        prefill: { name: form.name, email: form.email, contact: form.phone },
+        prefill: {
+          name: form.name,
+          email: form.email,
+          contact: razorpayPrefillContact(form.phone),
+        },
         theme: { color: '#244023' },
-        handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
-          const verifyRes = await fetch('/api/razorpay-webhook', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              ...response,
-              address: form,
-              billingSameAsShipping: billingSame,
-              billing: billingSame ? null : billing,
-            }),
-          })
-          if (verifyRes.ok) {
+        method: checkoutOpts.method,
+        config: checkoutOpts.config,
+        ...(data.checkout_config_id ? { checkout_config_id: data.checkout_config_id } : {}),
+        handler: async (response: {
+          razorpay_order_id: string
+          razorpay_payment_id: string
+          razorpay_signature: string
+        }) => {
+          try {
+            // The pending order was already created (with real items/pricing)
+            // by /api/checkout — verify just finalizes it + sends the email.
+            const verifyRes = await fetch('/api/verify-payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature,
+              }),
+            })
+            const verifyData = (await verifyRes.json()) as { success?: boolean; error?: string }
+            if (!verifyRes.ok || !verifyData.success) {
+              setPayError(verifyData.error || 'Payment verification failed.')
+              return
+            }
+            clearCheckoutDraft()
             clearCart()
-            window.location.href = `/order/success?id=${response.razorpay_order_id}`
+            // Look the order up by the unguessable Razorpay order id.
+            window.location.href = `/order/success?ref=${encodeURIComponent(response.razorpay_order_id)}`
+          } catch {
+            setPayError('Payment verification failed. Please contact support if you were charged.')
           }
         },
+        modal: {
+          ondismiss: () => {
+            setPayError('Payment cancelled.')
+            setLoading(false)
+          },
+        },
+      })
+      rzp.on('payment.failed', (response: { error?: RazorpayError }) => {
+        setPayError(razorpayErrorMessage(response.error))
+        setLoading(false)
       })
       rzp.open()
     } catch (err) {
       console.error(err)
-      alert('Payment failed. Please try again.')
+      setPayError('Payment could not be started. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -512,10 +659,16 @@ export function CheckoutClient({
   }
 
   return (
-    <div className="pt-page-container py-8">
+    <div className="pt-page-container pb-28 lg:pb-16">
+      <Breadcrumb
+        items={[
+          { label: 'Home', href: '/' },
+          { label: 'Checkout' },
+        ]}
+      />
       <Stepper current={step} />
 
-      <div className="grid lg:grid-cols-[1fr_min(400px,34vw)] gap-10 lg:gap-14 items-start">
+      <div className="mt-5 lg:mt-6 grid lg:grid-cols-[1fr_min(400px,34vw)] gap-8 lg:gap-10 items-start">
         {/* ── LEFT: step content ─────────────────────────────────────── */}
         <div>
           {/* Completed-step review rows */}
@@ -526,7 +679,7 @@ export function CheckoutClient({
           {step === 0 && (
             <section className="mt-2">
               <SectionLabel>Contact</SectionLabel>
-              <h1 className="mt-3 mb-6" style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(1.6rem, 3vw, 2.1rem)', color: 'var(--green-900)' }}>
+              <h1 className="mt-2 mb-4" style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(1.6rem, 3vw, 2.1rem)', color: 'var(--green-900)' }}>
                 Where can we reach you?
               </h1>
               <div className="grid grid-cols-2 gap-4">
@@ -541,9 +694,9 @@ export function CheckoutClient({
 
           {/* Step 2 — Shipping */}
           {step === 1 && (
-            <section className="mt-6">
+            <section className="mt-4">
               <SectionLabel>Shipping address</SectionLabel>
-              <h1 className="mt-3 mb-6" style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(1.6rem, 3vw, 2.1rem)', color: 'var(--green-900)' }}>
+              <h1 className="mt-2 mb-4" style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(1.6rem, 3vw, 2.1rem)', color: 'var(--green-900)' }}>
                 Where should the oils go?
               </h1>
 
@@ -622,7 +775,7 @@ export function CheckoutClient({
 
           {/* Step 3 — Delivery */}
           {step === 2 && (
-            <section className="mt-6">
+            <section className="mt-4">
               <SectionLabel>{deliverySectionLabel}</SectionLabel>
               <div className="mt-4 flex flex-col gap-3" role="radiogroup" aria-label={deliverySectionLabel}>
                 {methods.map((m) => {
@@ -697,9 +850,9 @@ export function CheckoutClient({
 
           {/* Step 4 — Payment */}
           {step === 3 && (
-            <section className="mt-6">
+            <section className="mt-4">
               <SectionLabel>Payment</SectionLabel>
-              <h1 className="mt-3 mb-6" style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(1.6rem, 3vw, 2.1rem)', color: 'var(--green-900)' }}>
+              <h1 className="mt-2 mb-4" style={{ fontFamily: 'var(--font-display)', fontWeight: 400, fontSize: 'clamp(1.6rem, 3vw, 2.1rem)', color: 'var(--green-900)' }}>
                 Almost there.
               </h1>
               <div className="rounded-xl border px-5 py-5" style={{ borderColor: 'var(--cream-400)', background: 'var(--cream-100)' }}>
@@ -709,7 +862,23 @@ export function CheckoutClient({
                   </span>
                   <div>
                     <p className="font-medium" style={{ color: 'var(--green-900)' }}>Pay securely with Razorpay</p>
-                    <p className="text-sm" style={{ color: 'var(--ink-400)' }}>UPI · Cards · Net Banking · Pay Later</p>
+                    <p className="text-sm" style={{ color: 'var(--ink-400)' }}>
+                      {isRazorpayTestKey(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? '')
+                        ? 'UPI · Net banking · Wallet (test mode — cards hidden)'
+                        : 'UPI · Cards · Net Banking · Wallets'}
+                    </p>
+                    <p className="mt-1 text-xs" style={{ color: 'var(--ink-400)' }}>
+                      {isRazorpayTestKey(process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ?? '') ? (
+                        <>
+                          Enable UPI in Razorpay Dashboard if it is missing. Test UPI:{' '}
+                          <span className="font-mono">success@razorpay</span> · or use net banking (any bank → Success).
+                        </>
+                      ) : (
+                        <>
+                          Test UPI: <span className="font-mono">success@razorpay</span> · Indian test card 4111 1111 1111 1111
+                        </>
+                      )}
+                    </p>
                   </div>
                 </div>
                 <button
@@ -720,6 +889,11 @@ export function CheckoutClient({
                 >
                   {loading ? 'Processing…' : <><Icons.lock size={15} /> Pay {formatPrice(orderTotal)}</>}
                 </button>
+                {payError ? (
+                  <p className="mt-3 text-center text-sm" role="alert" style={{ color: 'var(--terra-600, #b45309)' }}>
+                    {payError}
+                  </p>
+                ) : null}
                 <p className="mt-3 text-center text-xs" style={{ color: 'var(--ink-400)' }}>
                   256-bit SSL · You&apos;ll get a confirmation email at {form.email || 'your inbox'}
                 </p>
@@ -728,7 +902,7 @@ export function CheckoutClient({
           )}
 
           {/* Step nav */}
-          <div className="mt-10 flex items-center justify-between gap-4">
+          <div className="mt-8 flex items-center justify-between gap-4">
             {step > 0 ? (
               <button
                 type="button"
@@ -761,7 +935,7 @@ export function CheckoutClient({
 
         {/* ── RIGHT: order summary ──────────────────────────────────────── */}
         <aside
-          className="rounded-2xl p-6 lg:p-7 lg:sticky lg:top-24"
+          className="rounded-2xl p-6 lg:p-7 lg:sticky lg:top-20"
           style={{ background: 'var(--cream-100)', boxShadow: 'var(--sh-sm)', border: '1px solid var(--cream-400)' }}
         >
           <SectionLabel>In your order · {count}</SectionLabel>

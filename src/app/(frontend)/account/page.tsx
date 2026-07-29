@@ -9,6 +9,7 @@ import { Breadcrumb } from '@/components/shop/Breadcrumb'
 import { Icons } from '@/components/ui/pt/Icons'
 import { LogoutButton } from '@/components/shop/LogoutButton'
 import { ReorderButton, type ReorderItem } from '@/components/shop/ReorderButton'
+import { StatusChip } from '@/components/shop/OrderStatusChip'
 import { getStorefrontSession } from '@/lib/auth/getStorefrontSession'
 import { getStorefrontBundle } from '@/utilities/getStorefrontBundle'
 import type { Order, Product } from '@/payload-types'
@@ -97,21 +98,7 @@ function NavIcon({ icon, size = 16 }: { icon?: string | null; size?: number }) {
   }
 }
 
-/* Status chip tones (design: mustard while moving, green when delivered, terra when off-path). */
-function StatusChip({ status }: { status?: Order['status'] }) {
-  const label = (status ?? 'pending').replace(/^\w/, (c) => c.toUpperCase())
-  const tone =
-    status === 'delivered'
-      ? { background: 'var(--green-100)', color: 'var(--green-800)' }
-      : status === 'cancelled' || status === 'returned'
-        ? { background: 'var(--terra-100)', color: 'var(--terra-700)' }
-        : { background: 'var(--mustard-100)', color: 'var(--mustard-700)' }
-  return (
-    <span className="rounded-full px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider" style={tone}>
-      {label}
-    </span>
-  )
-}
+/* Status chip — shared with order detail. */
 
 function toReorderItems(order: Order): ReorderItem[] {
   return (order.items ?? []).map((i) => {
@@ -133,12 +120,13 @@ function OrderRow({ order }: { order: Order }) {
   const itemNames = (order.items ?? []).map((i) => i.productName).join(', ')
   const bottleCount = (order.items ?? []).reduce((s, i) => s + i.quantity, 0)
   const canReorder = order.status === 'delivered' || order.status === 'cancelled' || order.status === 'returned'
+  const href = `/account/orders/${encodeURIComponent(order.orderId)}`
   return (
     <div
       className="flex flex-wrap items-center justify-between gap-4 rounded-2xl p-5"
       style={{ background: 'var(--cream-100)', border: '1px solid var(--cream-400)' }}
     >
-      <div className="min-w-0 flex-1">
+      <Link href={href} className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2.5 text-xs" style={{ color: 'var(--ink-400)' }}>
           <span style={{ fontFamily: 'var(--font-mono)' }}>#{order.orderId}</span>
           <span>· {formatDate(order.createdAt)}</span>
@@ -153,8 +141,14 @@ function OrderRow({ order }: { order: Order }) {
             <span> · {order.courierPartner ?? 'Tracking'} {order.trackingNumber}</span>
           ) : null}
         </div>
-      </div>
-      {canReorder && <ReorderButton items={toReorderItems(order)} />}
+      </Link>
+      {canReorder ? (
+        <ReorderButton items={toReorderItems(order)} />
+      ) : (
+        <Link href={href} className="text-xs font-medium shrink-0" style={{ color: 'var(--green-800)' }}>
+          View details →
+        </Link>
+      )}
     </div>
   )
 }
@@ -320,9 +314,19 @@ export default async function AccountPage({
 
   const activeTabLabel = TABS.find((t) => t.id === tab)?.label
 
+  const bottlesStatSub = (() => {
+    const raw = (cms.statBottlesSub ?? 'lifetime').trim()
+    if (!raw || raw.toLowerCase() === 'delivered') return 'lifetime'
+    return raw
+  })()
+
   const statCards = [
     { l: cms.statOrdersLabel ?? 'Orders', v: String(lifetimeOrders), s: cms.statOrdersSub ?? 'lifetime' },
-    { l: cms.statBottlesLabel ?? 'Bottles', v: String(lifetimeBottles), s: cms.statBottlesSub ?? 'delivered' },
+    {
+      l: cms.statBottlesLabel ?? 'Bottles',
+      v: String(lifetimeBottles),
+      s: bottlesStatSub,
+    },
     { l: cms.statSpentLabel ?? 'Spent', v: formatPrice(lifetimeSpent), s: cms.statSpentSub ?? 'with us' },
     { l: cms.statMemberLabel ?? 'Member', v: memberSince.split(' ')[0] ?? '—', s: memberSince.split(' ')[1] ?? '' },
   ]

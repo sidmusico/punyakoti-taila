@@ -32,6 +32,7 @@ export async function GET(request: Request) {
   const otpType = parseEmailOtpType(searchParams.get('type'))
   let next = searchParams.get('next') ?? '/account'
   if (!next.startsWith('/')) next = '/account'
+  if (otpType === 'recovery') next = '/login/reset-password'
 
   const hasCode = Boolean(code)
   const hasEmailLink = Boolean(token_hash && otpType)
@@ -68,6 +69,14 @@ export async function GET(request: Request) {
     if (error) {
       console.error('[auth/callback] exchangeCodeForSession:', error.message)
       return NextResponse.redirect(`${siteOrigin}/login?error=auth_callback`)
+    }
+    // PKCE recovery often arrives as `?code=` only (redirect URL not allow-listed). Session is still valid for password update.
+    if (!searchParams.get('next') && !searchParams.get('type')) {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
+      const recoveryAt = session?.user?.recovery_sent_at
+      if (recoveryAt) next = '/login/reset-password'
     }
   }
 

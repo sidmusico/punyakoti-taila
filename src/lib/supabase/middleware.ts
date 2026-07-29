@@ -43,7 +43,18 @@ export async function updateSession(request: NextRequest) {
     },
   })
 
-  await supabase.auth.getUser()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  const path = request.nextUrl.pathname
+  const isAccountRoute = path === '/account' || path.startsWith('/account/')
+  if (isAccountRoute && !user) {
+    const login = request.nextUrl.clone()
+    login.pathname = '/login'
+    login.searchParams.set('next', `${request.nextUrl.pathname}${request.nextUrl.search}`)
+    return NextResponse.redirect(login)
+  }
 
   return supabaseResponse
 }

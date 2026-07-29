@@ -14,14 +14,12 @@ export function ProfileForm({
   const [name, setName] = useState(initialName)
   const [phone, setPhone] = useState(initialPhone)
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError('')
-    setMessage('')
     const res = await fetch('/api/account/profile', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -33,8 +31,7 @@ export function ProfileForm({
       setError(data.error ?? 'Could not save profile')
       return
     }
-    setMessage('Profile updated')
-    router.refresh()
+    router.push('/account')
   }
 
   return (
@@ -66,7 +63,6 @@ export function ProfileForm({
         />
       </div>
       {error && <p className="text-sm" style={{ color: '#A23A1F' }}>{error}</p>}
-      {message && <p className="text-sm" style={{ color: 'var(--green-800)' }}>{message}</p>}
       <button
         type="submit"
         disabled={loading}

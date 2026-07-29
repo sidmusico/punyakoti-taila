@@ -30,4 +30,21 @@ test.describe('storefront login', () => {
     await expect(page.getByPlaceholder('Full name')).toBeVisible()
     await expect(page.locator('form').getByRole('button', { name: 'Create account' })).toBeVisible()
   })
+
+  test('forgot password flow UI', async ({ page }) => {
+    await page.goto(`${BASE}/login`)
+    await page.getByRole('button', { name: /^email$/i }).click()
+    await page.getByRole('button', { name: 'Forgot password?' }).click()
+    await expect(page.getByRole('heading', { name: /reset your password/i })).toBeVisible()
+    await expect(page.getByRole('button', { name: /send reset link/i })).toBeVisible()
+
+    await page.goto(`${BASE}/login?forgot=1`)
+    await expect(page.getByRole('heading', { name: /reset your password/i })).toBeVisible()
+  })
+
+  test('reset password page without session shows expired state', async ({ page }) => {
+    await page.goto(`${BASE}/login/reset-password`)
+    await expect(page.getByRole('heading', { name: /reset link expired/i })).toBeVisible()
+    await expect(page.getByRole('link', { name: /request reset link/i })).toHaveAttribute('href', '/login?forgot=1')
+  })
 })

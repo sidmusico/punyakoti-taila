@@ -54,13 +54,19 @@ export async function ensureCustomer(
   }
 
   if (existing.docs[0]) {
+    const prev = existing.docs[0] as Customer
     const updated = await payload.update({
       collection: 'customers',
-      id: existing.docs[0].id,
+      id: prev.id,
       data: {
-        ...patch,
-        // Keep admin-edited name if user metadata is empty
-        name: patch.name || (existing.docs[0] as Customer).name,
+        supabaseUserId,
+        email: user.email ?? prev.email ?? undefined,
+        // Profile-saved phone/name win over Supabase auth on every request.
+        phone: prev.phone?.trim() || user.phone || undefined,
+        name: prev.name?.trim() || patch.name || prev.name,
+        avatarUrl: patch.avatarUrl ?? prev.avatarUrl,
+        authProvider: patch.authProvider,
+        lastSignInAt: patch.lastSignInAt,
       },
       overrideAccess: true,
     })

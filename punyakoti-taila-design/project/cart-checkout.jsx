@@ -249,7 +249,6 @@ function CheckoutDesktop() {
               {[
                 { t: "Standard", d: "Free · Mon 18 – Wed 20 Nov", p: "Free", a: true },
                 { t: "Express", d: "Sun 17 Nov · before 6pm", p: "₹89" },
-                { t: "Carbon-neutral", d: "Tue 19 Nov · cycle-courier in BLR", p: "₹49", tag: "B Corp" },
               ].map(o => (
                 <div key={o.t} style={{
                   display: "grid", gridTemplateColumns: "20px 1fr auto", gap: 14, alignItems: "center",
@@ -373,7 +372,6 @@ function CheckoutMobile() {
         {[
           { t: "Standard", d: "Free · Mon 18 – Wed 20 Nov", p: "Free", a: true },
           { t: "Express", d: "Sun 17 · before 6pm", p: "₹89" },
-          { t: "Carbon-neutral", d: "Tue 19 · cycle courier", p: "₹49" },
         ].map(o => (
           <div key={o.t} style={{
             padding: 14, borderRadius: "var(--r-md)",

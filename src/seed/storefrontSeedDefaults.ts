@@ -108,7 +108,6 @@ export const cartSeedDefaults = {
     deliveryMethods: [
       { methodId: 'standard', label: 'Standard', freeOverThreshold: true, fee: 99, etaMinDays: 4, etaMaxDays: 6, noteSuffix: '' },
       { methodId: 'express', label: 'Express', freeOverThreshold: false, fee: 89, etaMinDays: 1, etaMaxDays: 1, noteSuffix: 'before 6pm' },
-      { methodId: 'carbon-neutral', label: 'Carbon-neutral', badge: 'B Corp', freeOverThreshold: false, fee: 49, etaMinDays: 3, etaMaxDays: 3, noteSuffix: 'cycle-courier in BLR' },
     ],
   },
 } as const
@@ -184,7 +183,7 @@ export const accountSeedDefaults = {
     statOrdersLabel: 'Orders',
     statOrdersSub: 'lifetime',
     statBottlesLabel: 'Bottles',
-    statBottlesSub: 'delivered',
+    statBottlesSub: 'lifetime',
     statSpentLabel: 'Spent',
     statSpentSub: 'with us',
     statMemberLabel: 'Member',

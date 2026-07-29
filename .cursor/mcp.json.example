@@ -1,0 +1,30 @@
+{
+  "mcpServers": {
+    "supabase-taila-prod": {
+      "url": "https://mcp.supabase.com/mcp?project_ref=dvjirzgoedmgofrmxwwj",
+      "description": "Hosted Supabase project. Authorize in browser on first connect."
+    },
+    "supabase-taila-local": {
+      "url": "http://127.0.0.1:54321/mcp",
+      "description": "Local stack MCP (`supabase start`, API port 54321)."
+    },
+    "vercel": {
+      "url": "https://mcp.vercel.com",
+      "description": "Vercel projects, deployments, and env. Authorize in browser on first connect."
+    },
+    "rzp-mcp-server": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.razorpay.com/mcp",
+        "--header",
+        "Authorization:${AUTH_HEADER}"
+      ],
+      "env": {
+        "AUTH_HEADER": "Basic REPLACE_WITH_base64_of_key_id_colon_key_secret"
+      },
+      "description": "Copy to mcp.json (gitignored). printf 'Basic %s' \"$(printf '%s' \"$RAZORPAY_KEY_ID:$RAZORPAY_KEY_SECRET\" | base64)\""
+    }
+  }
+}

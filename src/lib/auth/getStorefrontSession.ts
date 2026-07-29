@@ -23,8 +23,8 @@ export async function getStorefrontSession(): Promise<{
 
   return {
     supabaseUserId: user.id,
-    email: user.email ?? null,
-    phone: user.phone ?? null,
+    email: user.email ?? customer.email ?? null,
+    phone: customer.phone ?? user.phone ?? null,
     customer,
   }
 }
