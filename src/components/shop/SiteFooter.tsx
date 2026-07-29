@@ -113,14 +113,14 @@ export async function SiteFooter() {
   const footer = (await getFooterSettings()) as any
 
   /* Brand */
-  const tagline   = footer?.tagline   ?? 'Wood-pressed oils, one batch at a time.'
-  const locations = footer?.locations ?? 'Bangalore · Erode · Kollam.'
+  const tagline   = footer?.tagline   ?? 'Wood-pressed oils, pressed slowly.'
+  const locations = footer?.locations ?? 'Raibag · Belagavi.'
   /* Contact — fallback defaults when CMS has no data */
   const rawContact = footer?.contact as { email?: string; phone?: string; address?: string } | undefined
   const contact = {
     email:   rawContact?.email   ?? 'hello@punyakotitaila.com',
     phone:   rawContact?.phone   ?? '+91 98765 43210',
-    address: rawContact?.address ?? 'Bangalore, Karnataka',
+    address: rawContact?.address ?? 'Near Mahaveer Bhavan, Ankali Road, Raibag – 591317, Karnataka',
   }
   const social    = footer?.social  as { instagram?: string; youtube?: string; facebook?: string; twitter?: string; whatsapp?: string } | undefined
 
@@ -147,8 +147,8 @@ export async function SiteFooter() {
   /* Bottom bar */
   const legalEntityName = footer?.legalEntityName ?? 'Punyakoti Foods Pvt. Ltd.'
   const gstin           = footer?.gstin           ?? ''
-  const footerNote      = footer?.footerNote      ?? 'Made slowly in Bangalore'
-  const versionBadge    = footer?.versionBadge    ?? ''
+  const footerNote      = footer?.footerNote      ?? 'Made slowly in Raibag'
+  const versionBadge    = footer?.versionBadge    ?? 'v2.4'
 
   /* Default links if CMS is empty */
   const resolvedShopLinks  = shopLinks.length  > 0 ? shopLinks  : [
@@ -354,8 +354,9 @@ export async function SiteFooter() {
           <div
             style={{
               display: 'flex',
-              alignItems: 'center',
-              gap: 16,
+              flexDirection: 'column',
+              alignItems: 'flex-end',
+              gap: 4,
               fontSize: 12,
               color: 'rgba(251,247,236,0.35)',
             }}

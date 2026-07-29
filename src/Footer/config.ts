@@ -19,13 +19,13 @@ export const Footer: GlobalConfig = {
             {
               name: 'tagline',
               type: 'text',
-              defaultValue: 'Wood-pressed oils, one batch at a time.',
+              defaultValue: 'Wood-pressed oils, pressed slowly.',
               label: 'Brand tagline',
             },
             {
               name: 'locations',
               type: 'text',
-              defaultValue: 'Bangalore · Erode · Kollam.',
+              defaultValue: 'Raibag · Belagavi.',
               label: 'Locations line (shown below tagline)',
             },
             {
@@ -180,15 +180,15 @@ export const Footer: GlobalConfig = {
             {
               name: 'footerNote',
               type: 'text',
-              defaultValue: 'Made slowly in Bangalore',
+              defaultValue: 'Made slowly in Raibag',
               label: 'Craft note (right side)',
             },
             {
               name: 'versionBadge',
               type: 'text',
-              defaultValue: 'v2.4 · batch 047',
+              defaultValue: 'v2.4',
               label: 'Version badge (mono font, right side)',
-              admin: { description: 'e.g. "v2.4 · batch 047"' },
+              admin: { description: 'e.g. "v2.4"' },
             },
             {
               name: 'freeShippingThreshold',

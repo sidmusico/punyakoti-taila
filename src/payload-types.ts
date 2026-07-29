@@ -2774,7 +2774,7 @@ export interface Footer {
   gstin?: string | null;
   footerNote?: string | null;
   /**
-   * e.g. "v2.4 · batch 047"
+   * e.g. "v2.4"
    */
   versionBadge?: string | null;
   /**

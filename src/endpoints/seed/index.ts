@@ -242,7 +242,10 @@ export const seed = async ({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       data: {
         tagline: 'Wood-pressed oils from Raibag, Karnataka. Pressed slowly, bottled with care.',
-        copyrightName: 'Punyakoti Taila',
+        locations: 'Raibag · Belagavi.',
+        footerNote: 'Made slowly in Raibag',
+        versionBadge: 'v2.4',
+        legalEntityName: 'Punyakoti Foods Pvt. Ltd.',
         freeShippingThreshold: 999,
         shopLinks: [
           { label: 'All Oils',     href: '/shop' },
