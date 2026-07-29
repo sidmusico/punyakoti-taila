@@ -11,6 +11,7 @@ import { Icons } from '@/components/ui/pt/Icons'
 import { Breadcrumb } from '@/components/shop/Breadcrumb'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 import { getStorefrontBundle } from '@/utilities/getStorefrontBundle'
+import { OrderSuccessCleanup } from '@/components/shop/OrderSuccessCleanup'
 
 export async function generateMetadata(): Promise<Metadata> {
   const { storefront } = await getStorefrontBundle()
@@ -136,6 +137,7 @@ export default async function OrderSuccessPage({
 
   return (
     <div className="pt-page-container pb-16 lg:pb-12">
+      <OrderSuccessCleanup />
       <Breadcrumb
         items={[
           { label: 'Home', href: '/' },

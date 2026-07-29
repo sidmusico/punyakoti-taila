@@ -8,7 +8,6 @@ import { z } from 'zod'
 import { buildRazorpayCheckoutOptions, isRazorpayTestKey, razorpayPrefillContact } from '@/lib/razorpay/checkoutDisplayConfig'
 import { Breadcrumb } from '@/components/shop/Breadcrumb'
 import {
-  clearCheckoutDraft,
   loadCheckoutDraft,
   saveCheckoutDraft,
   type CheckoutDraft,
@@ -357,7 +356,7 @@ export function CheckoutClient({
   leaveAtDoorLabel,
   freeShippingThreshold = 999,
 }: CheckoutClientProps = {}) {
-  const { items, total, itemCount, clearCart } = useCartStore()
+  const { items, total, itemCount } = useCartStore()
   const cartHydrated = useCartHydrated()
   const subtotal = total()
   const count = itemCount()
@@ -410,6 +409,8 @@ export function CheckoutClient({
   const [promoError, setPromoError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [payError, setPayError] = useState<string | null>(null)
+  /** After Razorpay succeeds — keep checkout UI (not empty-basket) until redirect. */
+  const [confirmingPayment, setConfirmingPayment] = useState(false)
 
   useEffect(() => {
     saveCheckoutDraft({
@@ -580,6 +581,9 @@ export function CheckoutClient({
           razorpay_payment_id: string
           razorpay_signature: string
         }) => {
+          setConfirmingPayment(true)
+          setPayError(null)
+          setLoading(true)
           try {
             // The pending order was already created (with real items/pricing)
             // by /api/checkout — verify just finalizes it + sends the email.
@@ -594,14 +598,17 @@ export function CheckoutClient({
             })
             const verifyData = (await verifyRes.json()) as { success?: boolean; error?: string }
             if (!verifyRes.ok || !verifyData.success) {
+              setConfirmingPayment(false)
+              setLoading(false)
               setPayError(verifyData.error || 'Payment verification failed.')
               return
             }
-            clearCheckoutDraft()
-            clearCart()
-            // Look the order up by the unguessable Razorpay order id.
-            window.location.href = `/order/success?ref=${encodeURIComponent(response.razorpay_order_id)}`
+            const successUrl = `/order/success?ref=${encodeURIComponent(response.razorpay_order_id)}`
+            // Cart clears on the success page — avoid empty-basket flash here.
+            window.location.replace(successUrl)
           } catch {
+            setConfirmingPayment(false)
+            setLoading(false)
             setPayError('Payment verification failed. Please contact support if you were charged.')
           }
         },
@@ -637,6 +644,27 @@ export function CheckoutClient({
   // Wait for the persisted cart to hydrate — SSR/first client render must match.
   if (!cartHydrated) {
     return <div className="min-h-[60vh]" aria-busy="true" />
+  }
+
+  if (confirmingPayment) {
+    return (
+      <div
+        className="flex flex-col items-center justify-center min-h-[60vh] gap-4 text-center px-4"
+        aria-busy="true"
+        aria-live="polite"
+      >
+        <div
+          className="w-12 h-12 rounded-full border-2 border-t-transparent animate-spin"
+          style={{ borderColor: 'var(--green-800)', borderTopColor: 'transparent' }}
+        />
+        <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--green-900)' }}>
+          Confirming your order
+        </h2>
+        <p style={{ color: 'var(--ink-500)', maxWidth: 320 }}>
+          Payment received. This only takes a moment — please don&apos;t close this tab.
+        </p>
+      </div>
+    )
   }
 
   if (items.length === 0) {
